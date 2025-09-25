@@ -1,0 +1,19 @@
+<nav>
+    <ul>
+        <li><a href="{% url 'home:index' %}">Início</a></li>
+
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'agro_app:dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'agro_app:profile' %}">Perfil</a></li>
+            <li>
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Sair</button>
+                </form>
+            </li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Entrar</a></li>
+            <li><a href="{% url 'home:signup' %}">Cadastre-se</a></li>
+        {% endif %}
+    </ul>
+</nav>

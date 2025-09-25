@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="auth-card">
+    <h2 class="sub-title">Cadastre-se</h2>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-field">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {% if form.username.help_text %}
+                <small>{{ form.username.help_text }}</small>
+            {% endif %}
+            {{ form.username.errors }}
+        </div>
+
+        <div class="form-field">
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            {{ form.password.help_text }}
+            {{ form.password.errors }}
+        </div>
+
+        <div class="form-field">
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+        </div>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+    <br>
+    <a href="{% url 'login' %}">Já tem uma conta? Faça login</a>
+</div>
+{% endblock %}

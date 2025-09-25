@@ -1,0 +1,224 @@
+/*
+| Paleta de Cores Oficial do Projeto - AgroData
+|--------------------------------------------------------------------------
+|
+| Marrom (#5D4037) - Fundo do nav e footer
+| Verde (#4CAF50) - Cor principal dos botões e links
+| Amarelo (#FFD700) - Cor do efeito hover
+| Azul (#2196F3) - Cor de destaque (usado na borda do main)
+| Amarelo Pastel (#FFFDD0) - Fundo do card de autenticação
+| Azul Pastel (#E0F7FA) - Fundo do card da dashboard
+|
+*/
+
+/* Define a fonte padrão para todo o corpo da página */
+body {
+    font-family: "Ubuntu", sans-serif;
+}
+
+/* Estilos para o logo e a navegação em TODAS as telas */
+header img {
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    width: 50%;
+}
+
+/* Estilos para a barra de navegação */
+nav {
+    padding: 20px 0;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav ul li a,
+nav ul li button {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    border-radius: 20px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    display: block;
+    /* Estilos adicionais para o botão se comportar como um link */
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+}
+
+nav ul li a:hover,
+nav ul li button:hover {
+    background-color: #FFD700;
+}
+
+/* Estilos responsivos para telas maiores */
+@media (min-width: 992px) {
+    header img {
+        max-width: 300px;
+    }
+
+    nav {
+        background-color: #5D4037;
+        border-radius: 10px;
+    }
+
+    nav ul {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+}
+
+/* Estilos para o rodapé */
+footer {
+    background-color: #5D4037;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    border-radius: 10px;
+}
+
+/* Estilos para o conteúdo principal */
+main {
+    border: 1px dashed #5D4037;
+    margin: 20px 0;
+    padding: 20px;
+}
+
+/* Estilos para cards */
+.card {
+    background-color: #FFD700;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+}
+
+/* Estilos para os títulos */
+.main-title {
+    font-family: "Story Script", sans-serif;
+    color: #2196F3;
+    text-align: center;
+    font-size: 3em;
+    font-weight: bold;
+    text-decoration: underline;
+    margin: 20px 0;
+}
+
+.sub-title {
+    font-family: "Story Script", sans-serif;
+    color: #2196F3;
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+/* Estilos para o card de autenticação */
+.auth-card {
+    background-color: #FFFDD0;
+    border: 1px solid #5D4037;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 400px;
+}
+
+/* Estilos para campos de formulário e rótulos */
+.form-field {
+    margin-bottom: 20px;
+}
+
+.form-field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #5D4037;
+}
+
+.form-field input[type="text"],
+.form-field input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Estilo para o botão */
+button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #FFD700;
+}
+
+
+/* Container para a grade da dashboard */
+.dashboard-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas em telas pequenas */
+    margin: 20px 0;
+}
+
+/* Card que ocupa toda a largura da grid */
+.dash-card-full {
+    grid-column: 1 / -1;
+}
+
+/* Card que ocupa o dobro do espaço */
+.dash-card-wide {
+    grid-column: span 2;
+}
+
+/* Estilos para o card de dashboard */
+.card-dashboard {
+    background-color: #E0F7FA;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.dash-card {
+    background-color: #ffffff;
+    border: 1px solid #5D4037;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    /* Linha abaixo foi removida: margin: 20px auto; */
+    /* Linha abaixo foi removida: max-width: 400px; */
+}
+
+
+/* Ajuste para telas grandes (5 colunas) */
+@media (min-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    /* Novo ajuste para o card largo em telas grandes */
+    .dash-card-wide {
+        grid-column: span 3;
+    }
+}

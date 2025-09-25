@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="auth-card">
+    <h2 class="sub-title">Editar Perfil</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="form-field">
+            <label for="{{ form.first_name.id_for_label }}">Nome:</label>
+            {{ form.first_name }}
+        </div>
+        <div class="form-field">
+            <label for="{{ form.last_name.id_for_label }}">Sobrenome:</label>
+            {{ form.last_name }}
+        </div>
+        <div class="form-field">
+            <label for="{{ form.country.id_for_label }}">País:</label>
+            {{ form.country }}
+        </div>
+        <div class="form-field">
+            <label for="{{ form.state.id_for_label }}">Estado:</label>
+            <select id="{{ form.state.id_for_label }}" name="{{ form.state.name }}" class="form-control">
+                <option value="">Selecione um estado</option>
+            </select>
+        </div>
+        <div class="form-field">
+            <label for="{{ form.city.id_for_label }}">Cidade:</label>
+            <select id="{{ form.city.id_for_label }}" name="{{ form.city.name }}" class="form-control">
+                <option value="">Selecione uma cidade</option>
+            </select>
+        </div>
+        <div class="form-field">
+            <label for="{{ form.birth_date.id_for_label }}">Data de Nascimento:</label>
+            {{ form.birth_date }}
+        </div>
+        <div class="form-field">
+            <label for="{{ form.contact.id_for_label }}">Contato:</label>
+            {{ form.contact }}
+        </div>
+        <div class="form-field">
+            <label for="cultivo-select">Cultivo Principal:</label>
+            <select id="cultivo-select" name="{{ form.cultivo_principal.name }}" class="form-control">
+                <option value="">Selecione uma cidade primeiro</option>
+            </select>
+        </div>
+        <button type="submit">Salvar Alterações</button>
+    </form>
+
+    <a href="{% url 'agro_app:profile' %}">Voltar para o Perfil</a>
+</div>
+
+<input type="hidden" id="get-states-url" value="{% url 'agro_app:get_states' %}">
+<input type="hidden" id="get-cities-url" value="{% url 'agro_app:get_cities' 0 %}">
+<input type="hidden" id="get-products-id-url" value="{% url 'agro_app:get_products_by_city_by_id' 0 %}">
+<input type="hidden" id="get-products-url" value="{% url 'agro_app:get_products_by_city' '0' %}">
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const countrySelect = document.getElementById('id_country');
+        const stateSelect = document.getElementById('id_state');
+        const citySelect = document.getElementById('id_city');
+        const cultivoSelect = document.getElementById('cultivo-select');
+        const getStatesUrl = document.getElementById('get-states-url').value;
+        const getCitiesUrlBase = document.getElementById('get-cities-url').value.slice(0, -1);
+        const getProductsUrlBase = document.getElementById('get-products-id-url').value.slice(0, -1);
+
+        // Preenche o campo de estado
+        function loadStates() {
+            fetch(getStatesUrl)
+                .then(response => response.json())
+                .then(states => {
+                    let optionsHtml = '<option value="">Selecione um estado</option>';
+                    states.sort((a, b) => a.nome.localeCompare(b.nome));
+                    states.forEach(state => {
+                        optionsHtml += `<option value="${state.id}">${state.nome}</option>`;
+                    });
+                    stateSelect.innerHTML = optionsHtml;
+                    stateSelect.value = '{{ profile.state }}' || '';
+                    if ('{{ profile.state }}' && '{{ profile.city }}') {
+                        loadCities('{{ profile.state }}', '{{ profile.city }}');
+                    }
+                })
+                .catch(error => console.error('Erro ao carregar estados:', error));
+        }
+
+        // Preenche o campo de cidade
+        function loadCities(stateId, cityId = null) {
+            fetch(`${getCitiesUrlBase}${stateId}/`)
+                .then(response => response.json())
+                .then(cities => {
+                    let optionsHtml = '<option value="">Selecione uma cidade</option>';
+                    cities.sort((a, b) => a.nome.localeCompare(b.nome));
+                    cities.forEach(city => {
+                        optionsHtml += `<option value="${city.id}">${city.nome}</option>`;
+                    });
+                    citySelect.innerHTML = optionsHtml;
+                    if (cityId) {
+                        citySelect.value = cityId;
+                        loadCrops(cityId);
+                    } else {
+                        citySelect.value = '';
+                        cultivoSelect.innerHTML = '<option value="">Selecione uma cidade primeiro</option>';
+                    }
+                })
+                .catch(error => console.error('Erro ao carregar cidades:', error));
+        }
+
+        // NOVO CÓDIGO: Preenche o campo de cultivo principal
+        function loadCrops(cityId) {
+            if (!cityId) {
+                cultivoSelect.innerHTML = '<option value="">Selecione uma cidade primeiro</option>';
+                return;
+            }
+            fetch(`${getProductsUrlBase}${cityId}/`)
+                .then(response => response.json())
+                .then(products => {
+                    let optionsHtml = '<option value="">Selecione um cultivo</option>';
+                    products.sort((a, b) => a.nome.localeCompare(b.nome));
+                    products.forEach(product => {
+                        optionsHtml += `<option value="${product.id}">${product.nome}</option>`;
+                    });
+                    cultivoSelect.innerHTML = optionsHtml;
+                    cultivoSelect.value = '{{ profile.cultivo_principal }}' || '';
+                })
+                .catch(error => console.error('Erro ao carregar cultivos:', error));
+        }
+
+        // Event listener para o campo de país
+        countrySelect.addEventListener('change', function() {
+            if (this.value === 'Brasil') {
+                loadStates();
+            } else {
+                stateSelect.innerHTML = '<option value="">Selecione um estado</option>';
+                citySelect.innerHTML = '<option value="">Selecione uma cidade</option>';
+                cultivoSelect.innerHTML = '<option value="">Selecione uma cidade primeiro</option>';
+            }
+        });
+
+        // Event listener para o campo de estado
+        stateSelect.addEventListener('change', function() {
+            const selectedStateId = this.value;
+            if (selectedStateId) {
+                loadCities(selectedStateId);
+            } else {
+                citySelect.innerHTML = '<option value="">Selecione uma cidade</option>';
+                cultivoSelect.innerHTML = '<option value="">Selecione uma cidade primeiro</option>';
+            }
+        });
+
+        // NOVO CÓDIGO: Event listener para o campo de cidade
+        citySelect.addEventListener('change', function() {
+            const selectedCityId = this.value;
+            if (selectedCityId) {
+                loadCrops(selectedCityId);
+            } else {
+                cultivoSelect.innerHTML = '<option value="">Selecione uma cidade primeiro</option>';
+            }
+        });
+
+        // Chama as funções no carregamento da página para preencher os dados do perfil
+        if (countrySelect.value === 'Brasil') {
+            loadStates();
+        }
+    });
+</script>
+{% endblock %}
