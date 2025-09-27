@@ -7,9 +7,9 @@
 
     {# inicio card1 #}
     <div class="dash-card dash-card-full">
-        <h2 class="sub-title">Bem-vindo à Dashboard</h2>
+        <h2 class="sub-title">Bem-vindo à Dashboard do AgroData</h2>
         <p>Olá, {{ request.user.username }}! Esta é a sua dashboard pessoal.</p>
-        <p>Você está em {{ city_name|default:"-" }} / {{ state_name|default:"-" }}</p>
+        <p>Você está em **{{ city_name|default:"-" }} / {{ state_name|default:"-" }}**</p>
         <p id="current-date"></p>
     </div>
     {# fim card1 #}
@@ -31,7 +31,7 @@
     <div class="dash-card">
         <h4>Condição do Tempo em {{ city_name|default:"-" }}</h4>
         {% if weather_data %}
-            <p>{{ weather_data.weather.0.description|default:"-"|title }}</p>
+            <p>**{{ weather_data.weather.0.description|default:"-"|title }}**</p>
         {% else %}
             <p>Dados de clima não disponíveis.</p>
         {% endif %}
@@ -58,17 +58,17 @@
             <p>Selecione um produto para começar:</p>
 
             <p>1. Selecione o Estado:</p>
-            <select id="state-select">
+            <select id="state-select" class="form-field">
                 <option value="">Carregando estados...</option>
             </select>
 
             <p>2. Selecione a Cidade:</p>
-            <select id="city-select">
+            <select id="city-select" class="form-field">
                 <option value="">Selecione um estado primeiro</option>
             </select>
 
             <p>3. Selecione o Tipo de Cultivo:</p>
-            <select id="produto-select">
+            <select id="produto-select" class="form-field">
                 <option value="">Selecione uma cidade primeiro</option>
             </select>
             <div id="produto-error-message" style="color: red; margin-top: 5px; display: none;"></div>
@@ -86,7 +86,7 @@
     </div>
 
     {# inicio card6 #}
-    <div class="dash-card dash-card-wide">
+    <div class="dash-card dash-card-responsive-half">
         <h4>⚙️ Sugestões de Plantio para {{ city_name|default:"sua Região" }}</h4>
         <p>Baseado no histórico de **Maior Rendimento (kg/ha)** e **Maior Valor (R$)** na sua cidade.</p>
 
@@ -112,16 +112,88 @@
     </div>
     {# fim card6 #}
 
-    {# inicio card7 #}
-    <div class="dash-card">
-        <h4>Card 7</h4>
-        <p>Conteúdo do Card 7</p>
+    {# inicio card7 - Gerenciamento de Terrenos #}
+    <div class="dash-card dash-card-responsive-half">
+        <h4>🌱 Gerenciamento de Terrenos</h4>
+        <p>Cadastre e acompanhe os seus terrenos e o cultivo principal em cada um.</p>
+
+        <!-- Formulário de Criação de Terreno -->
+        <div class="terreno-form-container" id="terreno-create-form">
+            <h5>Cadastrar Novo Terreno</h5>
+            <form method="post" action="{% url 'agro_app:create_terreno' %}">
+                {% csrf_token %}
+                <!-- Renderiza os campos do formulário -->
+                {% for field in terreno_form %}
+                    <p>
+                        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <ul style="color: red; list-style: none; padding: 0; font-size: 0.9em;">
+                                {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </p>
+                {% endfor %}
+                <button type="submit" class="edit-btn" style="width: 100%; margin-top: 10px;">Salvar Terreno</button>
+            </form>
+        </div>
+
+        <h5 style="margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Seus Terrenos Atuais ({{ terrenos|length }})</h5>
+
+        {% if terrenos %}
+            <ul class="terreno-list">
+                {% for terreno in terrenos %}
+                    <li class="terreno-item">
+                        <div class="terreno-details">
+                            <strong>{{ terreno.name }}</strong>
+                            {# CORREÇÃO DA ÁREA (feito antes, mas mantido para estabilidade) #}
+                            <small>| Área: **{{ terreno.area|default:"0"|floatformat:"0" }} ha** | Cultivo: {{ terreno.cultivo_principal|default:"Não definido" }}</small>
+                        </div>
+                        <div class="terreno-actions">
+                            <!-- Botão de Edição AGORA É UM LINK PARA O NOVO TEMPLATE -->
+                            <a href="{% url 'agro_app:edit_terreno' pk=terreno.pk %}" class="edit-btn">
+                                Editar
+                            </a>
+                            <!-- Formulário de Exclusão com confirmação JS -->
+                            <form method="post" action="{% url 'agro_app:delete_terreno' pk=terreno.pk %}" style="display:inline;" onsubmit="return confirmDelete(event, '{{ terreno.name|escapejs }}')">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn">Excluir</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="margin-top: 10px;">Você ainda não tem terrenos cadastrados. Use o formulário acima para adicionar o seu primeiro.</p>
+        {% endif %}
     </div>
     {# fim card7 #}
 
 </div>
 
 <script>
+    // ** Funções de Confirmação (Card 7) **
+
+    /**
+     * Confirmação de Exclusão.
+     */
+    function confirmDelete(event, terrenoName) {
+        // NOTE: Usamos window.confirm() pois é uma função nativa que simula uma modal simples.
+        if (!window.confirm(`Tem certeza que deseja excluir o terreno "${terrenoName}"? Esta ação não pode ser desfeita.`)) {
+            event.preventDefault(); // Impede o envio do formulário se o usuário cancelar
+            return false;
+        }
+        return true;
+    }
+
+
+    const GET_STATES_URL = "{% url 'agro_app:get_states' %}";
+    // Usamos um placeholder '0' ou 'placeholder' que será substituído no JS
+    const GET_CITIES_URL_TEMPLATE = "{% url 'agro_app:get_cities' 0 %}";
+    const GET_PRODUCTS_BY_CITY_URL_TEMPLATE = "{% url 'agro_app:get_products_by_city' 'placeholder' %}";
+    const GET_DETAILED_DATA_URL_TEMPLATE = "{% url 'agro_app:get_detailed_data' 'placeholder1' 'placeholder2' %}";
+
+    // ** Funções de Lógica da Dashboard (Existentes) **
     document.addEventListener('DOMContentLoaded', function() {
         const stateSelect = document.getElementById('state-select');
         const citySelect = document.getElementById('city-select');
@@ -140,9 +212,11 @@
             stateSelect.innerHTML = '<option value="">Carregando estados...</option>';
             stateSelect.disabled = true;
             try {
-                const response = await fetch('/dashboard/api/get-states/');
+                // CHAMA A URL GERADA PELO DJANGO: GET_STATES_URL
+                const response = await fetch(GET_STATES_URL);
                 if (!response.ok) {
-                    throw new Error('Erro ao carregar os estados.');
+                    // Logamos o erro para debug, mas o template tag garante que a URL está correta.
+                    throw new Error('Erro ao carregar os estados. URL: ' + GET_STATES_URL);
                 }
                 const states = await response.json();
                 stateSelect.innerHTML = '<option value="">Selecione um estado...</option>';
@@ -171,9 +245,11 @@
             citySelect.innerHTML = '<option value="">Carregando cidades...</option>';
             citySelect.disabled = true;
             try {
-                const response = await fetch(`/dashboard/api/get-cities/${stateId}/`);
+                // GERA A URL COM O ID DO ESTADO
+                const url = GET_CITIES_URL_TEMPLATE.replace('0', stateId);
+                const response = await fetch(url);
                 if (!response.ok) {
-                    throw new Error('Erro ao carregar as cidades.');
+                    throw new Error('Erro ao carregar as cidades. URL: ' + url);
                 }
                 const cities = await response.json();
                 citySelect.innerHTML = '<option value="">Selecione uma cidade...</option>';
@@ -207,9 +283,11 @@
                 const cityData = await cityResponse.json();
                 const cityName = cityData.nome;
 
-                const productsResponse = await fetch(`/dashboard/api/get-products-by-city/${cityName}/`);
+                // GERA A URL COM O NOME DA CIDADE
+                const url = GET_PRODUCTS_BY_CITY_URL_TEMPLATE.replace('placeholder', cityName);
+                const productsResponse = await fetch(url);
                 if (!productsResponse.ok) {
-                    throw new Error('Erro ao carregar os produtos.');
+                    throw new Error('Erro ao carregar os produtos. URL: ' + url);
                 }
 
                 const products = await productsResponse.json();
@@ -252,9 +330,13 @@
                 const cityData = await cityResponse.json();
                 const cityName = cityData.nome;
 
-                const response = await fetch(`/dashboard/api/get-detailed-data/${cityName}/${selectedProductId}/`);
+                // GERA A URL COM CIDADE E PRODUTO
+                let url = GET_DETAILED_DATA_URL_TEMPLATE.replace('placeholder1', cityName);
+                url = url.replace('placeholder2', selectedProductId);
+
+                const response = await fetch(url);
                 if (!response.ok) {
-                    throw new Error('Erro ao carregar os dados detalhados.');
+                    throw new Error('Erro ao carregar os dados detalhados. URL: ' + url);
                 }
                 const data = await response.json();
 

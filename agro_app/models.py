@@ -1,5 +1,19 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+
+# Opções de Unidade de Medida para o Terreno
+UNIT_CHOICES = (
+    ('HA', 'Hectare (ha)'),
+    ('M2', 'Metros Quadrados (m²)'),
+)
+
+
+# ==============================================================================
+# Modelos Existentes
+# ==============================================================================
 
 # Modelo para o Plano de Plantio
 class PlanoPlantio(models.Model):
@@ -40,17 +54,66 @@ class DadosSensor(models.Model):
         return f"Dados de sensor para {self.plano_plantio.nome_plantacao} em {self.data_hora.strftime('%d/%m/%Y %H:%M')}"
 
 
-# moelo de profile
+# Modelo de Profile (Incluindo os campos de localização e cultivo principal)
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True, null=True)
-    state = models.CharField(max_length=100, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True, verbose_name="Cidade (IBGE ID ou Nome)") # Usado para busca de clima/agro
+    state = models.CharField(max_length=100, blank=True, null=True, verbose_name="Estado (IBGE ID ou Nome)") # Usado para busca de clima/agro
     country = models.CharField(max_length=100, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
     contact = models.CharField(max_length=100, blank=True, null=True)
-    cultivo_principal = models.CharField(max_length=100, blank=True, null=True)
+    cultivo_principal = models.CharField(max_length=100, blank=True, null=True, verbose_name="Cultivo Principal (Nome Normalizado)")
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"Perfil de {self.user.username if self.user else 'Usuário sem link'}"
+
+# Signals para garantir que um perfil é criado sempre que um novo usuário é criado
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    if hasattr(instance, 'profile'):
+        instance.profile.save()
+
+
+# ==============================================================================
+# NOVO MODELO: TERRENO (Para o Card 7)
+# ==============================================================================
+
+class Terreno(models.Model):
+    """
+    Modelo para representar um terreno gerenciado pelo usuário.
+    Permite que cada usuário cadastre múltiplos terrenos com nome e tamanho.
+    """
+    # Relação: Um usuário pode ter muitos terrenos.
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='terrenos')
+
+    # Nome para identificar o terreno
+    name = models.CharField(max_length=255, verbose_name="Nome do Terreno")
+
+    # Tamanho do terreno
+    size = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Tamanho")
+
+    # Unidade de medida do tamanho
+    unit = models.CharField(
+        max_length=2,
+        choices=UNIT_CHOICES,
+        default='HA',
+        verbose_name="Unidade de Medida"
+    )
+
+    # Futuro: Campo para associar o produto a este terreno específico.
+    # cultivo_associado = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Terreno"
+        verbose_name_plural = "Terrenos"
+        ordering = ['name']
+
+    def __str__(self):
+        return f'{self.name} ({self.size} {self.unit}) de {self.user.username}'

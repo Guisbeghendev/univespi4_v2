@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+    <!-- Usa o estilo de card de autenticação para centralizar e destacar o formulário -->
+    <div class="auth-card">
+        <h2 class="sub-title">✏️ Editar Terreno: {{ terreno.name }}</h2>
+        <p>Use o formulário abaixo para atualizar os dados do seu terreno.</p>
+
+        <!-- O action da view deve garantir que o terreno.pk esteja no contexto -->
+        <form method="post">
+            {% csrf_token %}
+            {% for field in terreno_form %}
+                <div class="form-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                    <!-- Os campos do formulário do Django -->
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul style="color: red; list-style: none; padding: 0; font-size: 0.9em;">
+                            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit">Salvar Alterações</button>
+        </form>
+
+        <p style="margin-top: 20px; text-align: center;">
+            <!-- Link para voltar para a dashboard -->
+            <a href="{% url 'agro_app:dashboard' %}" class="back-link" style="color: #2196F3; font-weight: bold;">← Voltar para a Dashboard</a>
+        </p>
+    </div>
+</main>
+{% endblock %}

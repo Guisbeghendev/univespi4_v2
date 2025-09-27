@@ -120,7 +120,7 @@ main {
     margin: 15px 0;
 }
 
-/* Estilos para o card de autenticação */
+/* Estilos para o card de autenticação (usado também para a página de edição de terreno) */
 .auth-card {
     background-color: #FFFDD0;
     border: 1px solid #5D4037;
@@ -145,6 +145,16 @@ main {
 
 .form-field input[type="text"],
 .form-field input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+/* Adicionado input[type="number"] e select ao estilo de formulário */
+.form-field input[type="number"],
+.form-field select,
+.form-field-input { /* Adicionado form-field-input para inputs genéricos no modal/card7 */
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -223,6 +233,10 @@ button[type="submit"]:hover {
     padding: 20px;
 }
 
+/* Card para o layout 50/50 responsivo (Card 6 e Card 7) - Padrão: 100% */
+.dash-card-responsive-half {
+    grid-column: 1 / -1;
+}
 
 /* Ajuste para telas grandes (5 colunas) */
 @media (min-width: 1200px) {
@@ -230,9 +244,14 @@ button[type="submit"]:hover {
         grid-template-columns: repeat(5, 1fr);
     }
 
-    /* Novo ajuste para o card largo em telas grandes */
+    /* Manter ajuste para o Card 4 */
     .dash-card-wide {
         grid-column: span 3;
+    }
+
+    /* Cards 6 e 7: Ocupam 2 colunas cada, forçando o layout lado a lado (50/50 visual) */
+    .dash-card-responsive-half {
+        grid-column: span 2;
     }
 }
 
@@ -266,4 +285,84 @@ button[type="submit"]:hover {
     font-weight: bold;
     color: #2e7d32;
     font-size: 1.1rem;
+}
+
+
+/* --- ESTILOS PARA O GERENCIAMENTO DE TERRENOS (Card 7) --- */
+
+.terreno-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+.terreno-item {
+    display: flex;
+    flex-direction: column; /* Coluna em telas pequenas */
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+.terreno-item:last-child {
+    border-bottom: none;
+}
+.terreno-details {
+    flex-grow: 1;
+    margin-bottom: 10px;
+}
+/* Estiliza botões e links dentro de terreno-actions */
+.terreno-actions button,
+.terreno-actions a {
+    margin-right: 8px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+    display: inline-block; /* Garante que 'a' se comporte como um botão/link de ação */
+    text-align: center; /* Centraliza o texto do link */
+    text-decoration: none; /* Remove sublinhado do link */
+}
+.terreno-actions .edit-btn {
+    background-color: #2196F3; /* Azul de destaque */
+    color: white;
+}
+.terreno-actions .delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+.terreno-actions .edit-btn:hover {
+    background-color: #007bff;
+}
+.terreno-actions .delete-btn:hover {
+    background-color: #c82333;
+}
+
+/* Estilo para o formulário de criação/edição */
+.terreno-form-container {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+.terreno-form-container h5 {
+    margin-top: 0;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+}
+
+/* Estilos de modal (removidos, pois o modal de edição não existe mais na dashboard) */
+
+
+/* Estilo responsivo para lista de terrenos */
+@media (min-width: 768px) {
+    .terreno-item {
+        flex-direction: row; /* Volta para linha no desktop */
+        align-items: center;
+    }
+    .terreno-details {
+        margin-bottom: 0;
+    }
 }

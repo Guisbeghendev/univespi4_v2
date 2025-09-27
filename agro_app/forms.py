@@ -1,5 +1,5 @@
 from django import forms
-from .models import Profile
+from .models import Profile, Terreno, UNIT_CHOICES # Importa o novo modelo Terreno e as escolhas de Unidade
 
 
 class ProfileForm(forms.ModelForm):
@@ -27,4 +27,25 @@ class ProfileForm(forms.ModelForm):
         fields = ['first_name', 'last_name', 'country', 'state', 'city', 'birth_date', 'contact', 'cultivo_principal']
         widgets = {
             'birth_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+# ==============================================================================
+# NOVO: Formulário de Terreno
+# ==============================================================================
+class TerrenoForm(forms.ModelForm):
+    """
+    Formulário para criar e editar o modelo Terreno.
+    """
+    class Meta:
+        model = Terreno
+        fields = ['name', 'size', 'unit']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Lote Fundos'}),
+            'size': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ex: 15.5'}),
+            'unit': forms.Select(choices=UNIT_CHOICES, attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'name': 'Nome do Terreno',
+            'size': 'Tamanho',
+            'unit': 'Unidade',
         }

@@ -2,17 +2,17 @@ import requests
 import json
 import os
 import pandas as pd
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from .models import Profile
-from .forms import ProfileForm
+# Importa o novo modelo Terreno e o novo formulário TerrenoForm
+from .models import Profile, Terreno
+from .forms import ProfileForm, TerrenoForm
 from .api_service import get_weather_data
 import unicodedata
 import re
 from django.db import IntegrityError
-# Adicionando imports de autenticação necessários para as funções abaixo
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
@@ -56,34 +56,43 @@ def get_agro_data():
                 return None, f"Arquivo '{file_name}' não encontrado."
 
             try:
+                # Tentativa com UTF-8
                 df = pd.read_csv(caminho_arquivo, sep=';', encoding='utf-8', skiprows=5)
                 product_names_header = pd.read_csv(caminho_arquivo, sep=';', encoding='utf-8', skiprows=4,
                                                    nrows=1).columns.tolist()
             except UnicodeDecodeError:
+                # Tentativa com Latin-1
                 df = pd.read_csv(caminho_arquivo, sep=';', encoding='latin1', skiprows=5)
                 product_names_header = pd.read_csv(caminho_arquivo, sep=';', encoding='latin1', skiprows=4,
                                                    nrows=1).columns.tolist()
 
+            # Lógica para identificar a coluna de município
             municipio_col = df.columns[0]
 
             if not municipio_col:
                 return None, f"Coluna de município não encontrada em '{file_name}'."
 
+            # Mapeamento para nomes originais dos produtos (headers)
             column_map = {}
             for i, normalized_col in enumerate(df.columns):
-                if i < len(product_names_header):
+                # A primeira coluna é a CIDADE, ignoramos no map de produtos
+                if i > 0 and i < len(product_names_header):
                     original_name = product_names_header[i]
                     column_map[normalized_col] = original_name
 
+            # O mapa é armazenado com o nome do arquivo (ex: Quantidade produzida_header_map)
             data_frames[f'{key}_header_map'] = column_map
 
+            # Renomeia a coluna principal para facilitar o filtro
             df = df.rename(columns={municipio_col: 'CIDADE'})
+            # Normaliza o nome da cidade para comparação
             df['CIDADE'] = df['CIDADE'].apply(normalize_text)
 
+            # Normaliza todas as colunas para o cache
             df.columns = [normalize_text(col) for col in df.columns]
 
             data_frames[key] = df
-            print(f"DEBUG: Colunas do arquivo '{file_name}' após processamento: {df.columns.tolist()}")
+            # print(f"DEBUG: Colunas do arquivo '{file_name}' após processamento: {df.columns.tolist()}")
 
         AGRO_DATA_CACHE = data_frames
         return AGRO_DATA_CACHE, "Sucesso"
@@ -99,10 +108,6 @@ def _calculate_best_crops_ranking(agro_data_cache, city_name):
     """
     Calcula o ranking dos melhores cultivos para a cidade fornecida,
     baseado na pontuação combinada de Rendimento Médio e Valor da Produção.
-
-    Args:
-        agro_data_cache (dict): Dicionário contendo os DataFrames do agro.
-        city_name (str): Nome da cidade do usuário.
     """
     if not agro_data_cache:
         return []
@@ -116,7 +121,7 @@ def _calculate_best_crops_ranking(agro_data_cache, city_name):
     product_map = agro_data_cache.get('Quantidade produzida_header_map', {})
 
     if df_rendimento is None or df_valor is None:
-        print("DEBUG: DataFrames de rendimento ou valor não encontrados no cache.")
+        # print("DEBUG: DataFrames de rendimento ou valor não encontrados no cache.")
         return []
 
     # 2. Filtrar dados para a cidade
@@ -124,7 +129,7 @@ def _calculate_best_crops_ranking(agro_data_cache, city_name):
     city_valor_row = df_valor[df_valor['CIDADE'] == normalized_city_name]
 
     if city_rendimento_row.empty or city_valor_row.empty:
-        print(f"DEBUG: Dados não encontrados para a cidade: {city_name}")
+        # print(f"DEBUG: Dados não encontrados para a cidade: {city_name}")
         return []
 
     # Linhas de dados filtradas (como Series)
@@ -132,8 +137,9 @@ def _calculate_best_crops_ranking(agro_data_cache, city_name):
     valor_series = city_valor_row.iloc[0]
 
     # 3. Preparar a lista de todos os produtos para iteração
+    # O 'CIDADE' e colunas auxiliares (se existirem) são ignorados
     product_cols = [col for col in df_rendimento.columns if
-                    col not in ['CIDADE', 'ANO X PRODUTO DAS LAVOURAS PERMANENTES', 'MUNICIPIO']]
+                    col not in ['CIDADE', 'ANO X PRODUTO DAS LAVOURAS PERMANENTES', 'MUNICIPIO', 'UF']]
 
     # Coleta de métricas
     data_points = []
@@ -165,12 +171,15 @@ def _calculate_best_crops_ranking(agro_data_cache, city_name):
 
         # Só considera produtos com dados válidos em ambas as métricas para a pontuação
         if rendimento_val > 0 and valor_val > 0:
-            data_points.append({
-                'id': col,
-                'name': product_map.get(col, col),  # Nome original
-                'rendimento': rendimento_val,
-                'valor': valor_val,
-            })
+            # Busca o nome original do produto, caindo no nome normalizado se não encontrar
+            product_name = product_map.get(col)
+            if product_name:
+                data_points.append({
+                    'id': col,
+                    'name': product_name,  # Nome original
+                    'rendimento': rendimento_val,
+                    'valor': valor_val,
+                })
 
     if not data_points:
         return []
@@ -206,7 +215,7 @@ def _calculate_best_crops_ranking(agro_data_cache, city_name):
     return ranked_crops[:20]
 
 
-# Funções de autenticação e view
+# Funções de autenticação e view (EXISTENTES)
 def home(request):
     return render(request, 'home.html')
 
@@ -290,16 +299,94 @@ def dashboard(request):
         # Chama a função de ranking.
         suggestions = _calculate_best_crops_ranking(agro_data_cache, city_name)
 
+    # 3. NOVO: Obter a lista de terrenos do usuário
+    terrenos = Terreno.objects.filter(user=request.user)
+    terreno_form = TerrenoForm()  # Formulário vazio para o modal/criação
+
     context = {
         'profile': user_profile,
         'state_name': state_name,
         'city_name': city_name,
         'weather_data': weather_data,
         'suggestions': suggestions,  # Adiciona as sugestões ao contexto
-        'agro_status': agro_status  # Adiciona o status do carregamento do agro para debug
+        'agro_status': agro_status,  # Adiciona o status do carregamento do agro para debug
+        # NOVO: Adiciona a lista de terrenos e o formulário
+        'terrenos': terrenos,
+        'terreno_form': terreno_form,
     }
     return render(request, 'dashboard.html', context)
 
+
+# ==============================================================================
+# NOVAS VIEWS PARA GERENCIAMENTO DE TERRENOS (CRUD)
+# ==============================================================================
+
+@login_required
+def create_terreno(request):
+    """
+    Cria um novo terreno associado ao usuário logado.
+    """
+    if request.method == 'POST':
+        form = TerrenoForm(request.POST)
+        if form.is_valid():
+            terreno = form.save(commit=False)
+            terreno.user = request.user  # Associa o terreno ao usuário logado
+            terreno.save()
+            # Redireciona de volta para o dashboard após salvar
+            return redirect('agro_app:dashboard')
+        # Se o formulário for inválido, ele redirecionará de volta para o dashboard
+        # onde o form_terreno com erros será reexibido
+
+    # Se for GET, apenas redireciona para o dashboard, pois o formulário é exibido lá.
+    return redirect('agro_app:dashboard')
+
+
+@login_required
+def edit_terreno(request, pk):
+    """
+    Edita um terreno existente do usuário logado.
+    O pk (primary key) identifica qual terreno será editado.
+    """
+    # Garante que só o usuário dono do terreno possa editá-lo.
+    terreno = get_object_or_404(Terreno, pk=pk, user=request.user)
+
+    if request.method == 'POST':
+        form = TerrenoForm(request.POST, instance=terreno)
+        if form.is_valid():
+            form.save()
+            # Redireciona de volta para o dashboard após salvar com sucesso
+            return redirect('agro_app:dashboard')
+    else:
+        # Para GET, retorna o formulário preenchido com os dados do terreno
+        form = TerrenoForm(instance=terreno)
+
+    # CORREÇÃO: Renderiza o template de edição em vez de redirecionar para a dashboard.
+    context = {
+        'form': form,
+        'terreno': terreno  # Passa o objeto terreno para o título/contexto do template
+    }
+    # NOTA: O template 'edit_terreno.html' precisa ser criado para exibir este formulário!
+    return render(request, 'edit_terreno.html', context)
+
+
+@login_required
+def delete_terreno(request, pk):
+    """
+    Exclui um terreno existente do usuário logado.
+    """
+    # Garante que só o usuário dono do terreno possa excluí-lo.
+    terreno = get_object_or_404(Terreno, pk=pk, user=request.user)
+
+    if request.method == 'POST':
+        terreno.delete()
+        # Após a exclusão, retorna para o dashboard.
+        return redirect('agro_app:dashboard')
+
+    # Para GET (pedindo confirmação), vamos redirecionar para o dashboard
+    return redirect('agro_app:dashboard')
+
+
+# VIEWS DE PERFIL E AJAX (EXISTENTES)
 
 @login_required
 def profile(request):
@@ -383,7 +470,7 @@ def get_cities(request, state_id):
 
 
 def get_products_by_city(request, city_name):
-    print("Nome da cidade recebido:", city_name)
+    # print("Nome da cidade recebido:", city_name)
 
     data_frames, status = get_agro_data()
 
@@ -391,14 +478,14 @@ def get_products_by_city(request, city_name):
         return JsonResponse({"error": status}, status=500)
 
     normalized_city_name = normalize_text(city_name)
-    print("Nome da cidade normalizado (IBGE):", normalized_city_name)
+    # print("Nome da cidade normalizado (IBGE):", normalized_city_name)
 
     products_for_city = []
 
     df_sample = data_frames['Quantidade produzida']
     product_map = data_frames['Quantidade produzida_header_map']
 
-    print("Nomes de cidades no DataFrame (CSV):", df_sample['CIDADE'].unique())
+    # print("Nomes de cidades no DataFrame (CSV):", df_sample['CIDADE'].unique())
 
     city_row = df_sample[df_sample['CIDADE'] == normalized_city_name]
 
@@ -406,20 +493,20 @@ def get_products_by_city(request, city_name):
         product_cols = [col for col in df_sample.columns if
                         col not in ['CIDADE', 'ANO X PRODUTO DAS LAVOURAS PERMANENTES', 'MUNICIPIO']]
         for col in product_cols:
-            value = city_row.iloc[0][col]
-            if value and normalize_text(str(value)) not in ['-', '...']:
+            value = city_row.iloc[0].get(col)
+            if value is not None and normalize_text(str(value)) not in ['-', '...']:
                 original_name = product_map.get(col)
                 if original_name:
                     products_for_city.append({'id': col, 'nome': original_name})
 
-    print("Conteúdo enviado para o dropdown:", products_for_city)
+    # print("Conteúdo enviado para o dropdown:", products_for_city)
 
     return JsonResponse(products_for_city, safe=False)
 
 
 # Nova função para obter o nome da cidade a partir do ID e depois os produtos
 def get_products_by_city_by_id(request, city_id):
-    print("ID da cidade recebido:", city_id)
+    # print("ID da cidade recebido:", city_id)
 
     try:
         city_url = f"https://servicodados.ibge.gov.br/api/v1/localidades/municipios/{city_id}"
@@ -467,7 +554,7 @@ def get_detailed_data_by_product_and_city(request, city_name, product_name):
                 unit = unit_map.get(key, '')
 
                 if normalize_text(str(value)) != normalize_text('Dado não disponível'):
-                    final_value = f"{normalize_text(str(value))} {unit}"
+                    final_value = f"{str(value).replace('.', '').replace(',', '.')} {unit}"
                 else:
                     final_value = 'Dado não disponível'
 
