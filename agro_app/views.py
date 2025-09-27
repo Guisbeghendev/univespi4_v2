@@ -12,6 +12,9 @@ from .api_service import get_weather_data
 import unicodedata
 import re
 from django.db import IntegrityError
+# Adicionando imports de autenticação necessários para as funções abaixo
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 # Dicionário global para armazenar os DataFrames, evitando o carregamento a cada requisição.
 # A chave será o nome simplificado do arquivo.
@@ -91,6 +94,118 @@ def get_agro_data():
         return None, f"Ocorreu um erro: {str(e)}"
 
 
+# --- Lógica de Ranking de Sugestões de Cultivo ---
+def _calculate_best_crops_ranking(agro_data_cache, city_name):
+    """
+    Calcula o ranking dos melhores cultivos para a cidade fornecida,
+    baseado na pontuação combinada de Rendimento Médio e Valor da Produção.
+
+    Args:
+        agro_data_cache (dict): Dicionário contendo os DataFrames do agro.
+        city_name (str): Nome da cidade do usuário.
+    """
+    if not agro_data_cache:
+        return []
+
+    normalized_city_name = normalize_text(city_name)
+    results = []
+
+    # 1. Carregar DataFrames e Mapas
+    df_rendimento = agro_data_cache.get('Rendimento médio')
+    df_valor = agro_data_cache.get('Valor da produção')
+    product_map = agro_data_cache.get('Quantidade produzida_header_map', {})
+
+    if df_rendimento is None or df_valor is None:
+        print("DEBUG: DataFrames de rendimento ou valor não encontrados no cache.")
+        return []
+
+    # 2. Filtrar dados para a cidade
+    city_rendimento_row = df_rendimento[df_rendimento['CIDADE'] == normalized_city_name]
+    city_valor_row = df_valor[df_valor['CIDADE'] == normalized_city_name]
+
+    if city_rendimento_row.empty or city_valor_row.empty:
+        print(f"DEBUG: Dados não encontrados para a cidade: {city_name}")
+        return []
+
+    # Linhas de dados filtradas (como Series)
+    rendimento_series = city_rendimento_row.iloc[0]
+    valor_series = city_valor_row.iloc[0]
+
+    # 3. Preparar a lista de todos os produtos para iteração
+    product_cols = [col for col in df_rendimento.columns if
+                    col not in ['CIDADE', 'ANO X PRODUTO DAS LAVOURAS PERMANENTES', 'MUNICIPIO']]
+
+    # Coleta de métricas
+    data_points = []
+
+    for col in product_cols:
+        rendimento = rendimento_series.get(col, None)
+        valor = valor_series.get(col, None)
+
+        rendimento_val = 0
+        valor_val = 0
+
+        # Reforça o tratamento de valores nulos, zero ou marcadores de ausência ('...', '-')
+        r_str = str(rendimento)
+        v_str = str(valor)
+
+        if not pd.isna(rendimento) and normalize_text(r_str) not in ['-', '...', '0']:
+            try:
+                # Converte o formato Brasileiro (ponto como milhar, vírgula como decimal)
+                rendimento_val = float(r_str.replace('.', '').replace(',', '.'))
+            except (ValueError, TypeError):
+                rendimento_val = 0
+
+        if not pd.isna(valor) and normalize_text(v_str) not in ['-', '...', '0']:
+            try:
+                # Converte o formato Brasileiro (ponto como milhar, vírgula como decimal)
+                valor_val = float(v_str.replace('.', '').replace(',', '.'))
+            except (ValueError, TypeError):
+                valor_val = 0
+
+        # Só considera produtos com dados válidos em ambas as métricas para a pontuação
+        if rendimento_val > 0 and valor_val > 0:
+            data_points.append({
+                'id': col,
+                'name': product_map.get(col, col),  # Nome original
+                'rendimento': rendimento_val,
+                'valor': valor_val,
+            })
+
+    if not data_points:
+        return []
+
+    # 4. Normalização (Min-Max) e Pontuação
+    all_rendimentos = [p['rendimento'] for p in data_points]
+    all_valores = [p['valor'] for p in data_points]
+
+    # Se houver apenas 1 produto, max será o próprio valor, resultando em score 100
+    max_rendimento = max(all_rendimentos) if all_rendimentos else 1
+    max_valor = max(all_valores) if all_valores else 1
+
+    if max_rendimento == 0: max_rendimento = 1
+    if max_valor == 0: max_valor = 1
+
+    # Calcular a pontuação
+    for p in data_points:
+        # Pontuação de 0 a 1
+        score_rendimento = p['rendimento'] / max_rendimento
+        score_valor = p['valor'] / max_valor
+
+        # Combina as pontuações (média simples)
+        combined_score = (score_rendimento + score_valor) / 2
+
+        # O resultado final deve ser um número inteiro de 0 a 100
+        p['score'] = round(combined_score * 100)
+
+    # 5. Classificação (Rank)
+    # Classifica por score em ordem decrescente, depois por rendimento
+    ranked_crops = sorted(data_points, key=lambda x: (x['score'], x['rendimento']), reverse=True)
+
+    # Limita aos top 20, para exibir o máximo de sugestões disponíveis de forma dinâmica.
+    return ranked_crops[:20]
+
+
 # Funções de autenticação e view
 def home(request):
     return render(request, 'home.html')
@@ -135,6 +250,9 @@ def logout_view(request):
 def dashboard(request):
     user_profile, created = Profile.objects.get_or_create(user=request.user)
 
+    # 1. Obter dados do AGRO e Cache
+    agro_data_cache, agro_status = get_agro_data()
+
     # Obtém o nome do estado a partir do ID
     state_name = user_profile.state
     if user_profile.state and user_profile.state.isdigit():
@@ -165,11 +283,20 @@ def dashboard(request):
     if city_name and not city_name.isdigit():  # Garante que só envia o nome da cidade para a API
         weather_data = get_weather_data(city_name)
 
+    # 2. Executar Lógica de Sugestões de Cultivo
+    suggestions = []
+    # Verifica se a cidade foi configurada no perfil e se os dados do agro estão disponíveis
+    if city_name and not city_name.isdigit() and agro_data_cache:
+        # Chama a função de ranking.
+        suggestions = _calculate_best_crops_ranking(agro_data_cache, city_name)
+
     context = {
         'profile': user_profile,
         'state_name': state_name,
-        'city_name': city_name,  # Adiciona o nome da cidade ao contexto
-        'weather_data': weather_data
+        'city_name': city_name,
+        'weather_data': weather_data,
+        'suggestions': suggestions,  # Adiciona as sugestões ao contexto
+        'agro_status': agro_status  # Adiciona o status do carregamento do agro para debug
     }
     return render(request, 'dashboard.html', context)
 

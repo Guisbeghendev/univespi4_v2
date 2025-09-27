@@ -172,12 +172,27 @@ button[type="submit"]:hover {
 }
 
 
+/* --- Estilos Específicos da Dashboard --- */
+
 /* Container para a grade da dashboard */
 .dashboard-grid {
     display: grid;
     gap: 20px;
     grid-template-columns: repeat(2, 1fr); /* 2 colunas em telas pequenas */
     margin: 20px 0;
+}
+
+/* Container para os cards de filtros e resultados (dentro da grid) */
+.filter-results-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .filter-results-container {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 /* Card que ocupa toda a largura da grid */
@@ -206,8 +221,6 @@ button[type="submit"]:hover {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    /* Linha abaixo foi removida: margin: 20px auto; */
-    /* Linha abaixo foi removida: max-width: 400px; */
 }
 
 
@@ -221,4 +234,36 @@ button[type="submit"]:hover {
     .dash-card-wide {
         grid-column: span 3;
     }
+}
+
+/* --- ESTILOS PARA O CARD DE SUGESTÕES (Card 6) --- */
+.suggestion-list {
+    list-style: none;
+    padding: 0;
+}
+.suggestion-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-left: 5px solid #4CAF50; /* Cor primária do AgroData */
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+.suggestion-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+/* Cores do ranking em tons de verde */
+.suggestion-item.rank-1 { border-color: #2e7d32; }
+.suggestion-item.rank-2 { border-color: #43a047; }
+.suggestion-item.rank-3 { border-color: #66bb6a; }
+
+.suggestion-score {
+    font-weight: bold;
+    color: #2e7d32;
+    font-size: 1.1rem;
 }

@@ -3,20 +3,6 @@
 
 {% block content %}
 
-<style>
-    .filter-results-container {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    @media (min-width: 768px) {
-        .filter-results-container {
-            grid-template-columns: 1fr 1fr;
-        }
-    }
-</style>
-
 <div class="dashboard-grid">
 
     {# inicio card1 #}
@@ -100,9 +86,29 @@
     </div>
 
     {# inicio card6 #}
-    <div class="dash-card">
-        <h4>Card 6</h4>
-        <p>Conteúdo do Card 6</p>
+    <div class="dash-card dash-card-wide">
+        <h4>⚙️ Sugestões de Plantio para {{ city_name|default:"sua Região" }}</h4>
+        <p>Baseado no histórico de **Maior Rendimento (kg/ha)** e **Maior Valor (R$)** na sua cidade.</p>
+
+        {% if suggestions %}
+            <ul class="suggestion-list">
+                {% for suggestion in suggestions %}
+                    <li class="suggestion-item rank-{{ forloop.counter }}">
+                        <span>
+                            **{{ forloop.counter }}º** - {{ suggestion.name }}
+                            <small>({{ suggestion.rendimento|floatformat:"0" }} kg/ha / R$ {{ suggestion.valor|floatformat:"0" }})</small>
+                        </span>
+                        <span class="suggestion-score">{{ suggestion.score }}%</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            {% if profile.city %}
+                <p>Não foi possível gerar sugestões com base nos dados históricos da sua cidade. Certifique-se de que a cidade cadastrada possui dados de produção ou tente outra localização.</p>
+            {% else %}
+                <p>Por favor, complete seu cadastro de localização para receber as sugestões.</p>
+            {% endif %}
+        {% endif %}
     </div>
     {# fim card6 #}
 
