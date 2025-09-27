@@ -30,7 +30,7 @@ class ProfileForm(forms.ModelForm):
         }
 
 # ==============================================================================
-# NOVO: Formulário de Terreno
+# NOVO: Formulário de Terreno (CORRIGIDO)
 # ==============================================================================
 class TerrenoForm(forms.ModelForm):
     """
@@ -38,14 +38,17 @@ class TerrenoForm(forms.ModelForm):
     """
     class Meta:
         model = Terreno
-        fields = ['name', 'size', 'unit']
+        # CORRIGIDO: 'size' mudado para 'area'
+        fields = ['name', 'area', 'unit']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Lote Fundos'}),
-            'size': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ex: 15.5'}),
+            # CORRIGIDO: 'size' mudado para 'area'
+            'area': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ex: 15.5'}),
             'unit': forms.Select(choices=UNIT_CHOICES, attrs={'class': 'form-control'}),
         }
         labels = {
             'name': 'Nome do Terreno',
-            'size': 'Tamanho',
+            # CORRIGIDO: 'size' mudado para 'area'
+            'area': 'Tamanho',
             'unit': 'Unidade',
         }

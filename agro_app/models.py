@@ -54,13 +54,13 @@ class DadosSensor(models.Model):
         return f"Dados de sensor para {self.plano_plantio.nome_plantacao} em {self.data_hora.strftime('%d/%m/%Y %H:%M')}"
 
 
-# Modelo de Profile (Incluindo os campos de localização e cultivo principal)
+# Modelo de Profile
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True, null=True, verbose_name="Cidade (IBGE ID ou Nome)") # Usado para busca de clima/agro
-    state = models.CharField(max_length=100, blank=True, null=True, verbose_name="Estado (IBGE ID ou Nome)") # Usado para busca de clima/agro
+    city = models.CharField(max_length=100, blank=True, null=True, verbose_name="Cidade (IBGE ID ou Nome)")
+    state = models.CharField(max_length=100, blank=True, null=True, verbose_name="Estado (IBGE ID ou Nome)")
     country = models.CharField(max_length=100, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
     contact = models.CharField(max_length=100, blank=True, null=True)
@@ -82,13 +82,12 @@ def save_user_profile(sender, instance, **kwargs):
 
 
 # ==============================================================================
-# NOVO MODELO: TERRENO (Para o Card 7)
+# MODELO TERRENO (CORRIGIDO: 'size' para 'area')
 # ==============================================================================
 
 class Terreno(models.Model):
     """
     Modelo para representar um terreno gerenciado pelo usuário.
-    Permite que cada usuário cadastre múltiplos terrenos com nome e tamanho.
     """
     # Relação: Um usuário pode ter muitos terrenos.
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='terrenos')
@@ -96,8 +95,8 @@ class Terreno(models.Model):
     # Nome para identificar o terreno
     name = models.CharField(max_length=255, verbose_name="Nome do Terreno")
 
-    # Tamanho do terreno
-    size = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Tamanho")
+    # CORREÇÃO: Renomeado de 'size' para 'area' para coincidir com o template.
+    area = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Área")
 
     # Unidade de medida do tamanho
     unit = models.CharField(
@@ -107,13 +106,11 @@ class Terreno(models.Model):
         verbose_name="Unidade de Medida"
     )
 
-    # Futuro: Campo para associar o produto a este terreno específico.
-    # cultivo_associado = models.CharField(max_length=100, blank=True, null=True)
-
     class Meta:
         verbose_name = "Terreno"
         verbose_name_plural = "Terrenos"
         ordering = ['name']
 
     def __str__(self):
-        return f'{self.name} ({self.size} {self.unit}) de {self.user.username}'
+        # Usando 'area' e 'unit'
+        return f'{self.name} ({self.area} {self.unit}) de {self.user.username}'
