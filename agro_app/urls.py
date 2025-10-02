@@ -22,8 +22,12 @@ urlpatterns = [
     path('terreno/delete/<int:pk>/', views.delete_terreno, name='delete_terreno'),
 
     # NOVAS Rotas para o Plano de Cultivo
-    #path('plano/create/', views.create_plano, name='create_plano'),
-    #path('plano/create/terreno/<int:terreno_id>/product/', views.select_product_plano, name='select_product_plano'),
-    #path('api/plano-data/<int:terreno_id>/<str:product_id>/', views.get_plano_data_details,
-    #     name='get_plano_data_details'),
+    path('plano/create/', views.create_plano, name='create_plano'),
+    path('plano/create/terreno/<int:terreno_id>/product/', views.select_product_plano, name='select_product_plano'),
+
+    # NOVA ROTA: Rota para salvar o plano de cultivo finalizado (POST)
+    path('plano/save/<int:terreno_id>/', views.save_plano, name='save_plano'),
+
+    path('api/plano-data/<int:terreno_id>/<str:product_id>/', views.get_plano_data_details,
+         name='get_plano_data_details'),
 ]

@@ -6,15 +6,16 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-# Importa o novo modelo Terreno e o novo formulário TerrenoForm
-from .models import Profile, Terreno
-from .forms import ProfileForm, TerrenoForm
+# Importa os modelos e formulários necessários (PlanoPlantio e PlanoPlantioForm Adicionados)
+from .models import Profile, Terreno, PlanoPlantio
+from .forms import ProfileForm, TerrenoForm, PlanoPlantioForm
 from .api_service import get_weather_data
 import unicodedata
 import re
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib import messages
 
 # Dicionário global para armazenar os DataFrames, evitando o carregamento a cada requisição.
 # A chave será o nome simplificado do arquivo.
@@ -382,6 +383,7 @@ def delete_terreno(request, pk):
         # Após a exclusão, retorna para o dashboard.
         return redirect('agro_app:dashboard')
 
+
     # Para GET (pedindo confirmação), vamos redirecionar para o dashboard
     return redirect('agro_app:dashboard')
 
@@ -563,3 +565,159 @@ def get_detailed_data_by_product_and_city(request, city_name, product_name):
                 results[key] = 'Dado não disponível'
 
     return JsonResponse(results)
+
+
+# ==============================================================================
+# VIEWS PARA PLANO DE PLANTIO
+# ==============================================================================
+
+@login_required
+def create_plano(request):
+    """
+    Primeira etapa: Exibe a lista de terrenos para seleção
+    ou permite a criação de um novo plano.
+    """
+    # Obtém a lista de terrenos do usuário para que ele possa associar um plano.
+    terrenos = Terreno.objects.filter(user=request.user)
+
+    context = {
+        'terrenos': terrenos,
+    }
+    # CORRIGIDO: O template 'plano_create_step1_product.html' será usado.
+    return render(request, 'plano_create_step1_product.html', context)
+
+
+@login_required
+def select_product_plano(request, terreno_id):
+    """
+    Segunda etapa: Exibe a lista de produtos sugeridos/disponíveis para o Terreno selecionado,
+    usando a cidade do perfil.
+    """
+    # 1. Valida o Terreno
+    terreno = get_object_or_404(Terreno, pk=terreno_id, user=request.user)
+
+    # 2. Obtém os dados da cidade do Profile
+    user_profile = get_object_or_404(Profile, user=request.user)
+    city_id = user_profile.city
+
+    suggestions = []
+    city_name = None
+    agro_status = "Aguardando dados agropecuários."
+
+    if city_id and city_id.isdigit():
+        try:
+            # Busca nome da cidade no IBGE
+            city_url = f"https://servicodados.ibge.gov.br/api/v1/localidades/municipios/{city_id}"
+            city_response = requests.get(city_url)
+            city_data = city_response.json()
+            city_name = city_data.get('nome', '')
+
+            # 3. Executar Lógica de Sugestões de Cultivo
+            agro_data_cache, agro_status = get_agro_data()
+
+            if city_name and agro_data_cache:
+                # Reutiliza a função de ranking que já está no seu views.py
+                suggestions = _calculate_best_crops_ranking(agro_data_cache, city_name)
+
+        except requests.exceptions.RequestException:
+            agro_status = "Erro ao buscar cidade no IBGE."
+        except Exception as e:
+            agro_status = f"Erro ao processar dados agro: {str(e)}"
+
+    # 4. Contexto e Renderização
+    context = {
+        'terreno': terreno,
+        'suggestions': suggestions,
+        # Usamos o nome da cidade se encontrado, senão o ID (se não for string)
+        'city_name': city_name if city_name else user_profile.city,
+        'agro_status': agro_status,
+        # NOVO: Adiciona o formulário de finalização (apenas para a etapa 2)
+        'plano_form': PlanoPlantioForm(initial={'terreno': terreno.pk, 'cultura': 'NOME_PRODUTO_PLACEHOLDER'}),
+    }
+    # O template 'plano_create_step2_product.html' será usado para esta view.
+    return render(request, 'plano_create_step2_product.html', context)
+
+
+@login_required
+def get_plano_data_details(request, terreno_id, product_id):
+    """
+    API para buscar os dados detalhados do produto e cidade de forma assíncrona.
+    Reaproveita a lógica da função get_detailed_data_by_product_and_city.
+    """
+    terreno = get_object_or_404(Terreno, pk=terreno_id, user=request.user)
+    user_profile = get_object_or_404(Profile, user=request.user)
+    city_id = user_profile.city
+
+    if not city_id or not city_id.isdigit():
+        return JsonResponse({"error": "Cidade não configurada no perfil."}, status=400)
+
+    try:
+        # Busca nome da cidade no IBGE
+        city_url = f"https://servicodados.ibge.gov.br/api/v1/localidades/municipios/{city_id}"
+        city_response = requests.get(city_url)
+        city_data = city_response.json()
+        city_name = city_data.get('nome', None)
+
+        if not city_name:
+            return JsonResponse({"error": "Nome da cidade não encontrado."}, status=404)
+
+    except requests.exceptions.RequestException:
+        return JsonResponse({"error": "Erro ao buscar dados da cidade no IBGE."}, status=500)
+
+    # CORREÇÃO INSERIDA AQUI: Adiciona try/except para capturar falhas na função intocável.
+    try:
+        # Reutiliza a função que já existe para buscar os detalhes do produto e cidade
+        return get_detailed_data_by_product_and_city(request, city_name, product_id)
+
+    except Exception as e:
+        # Retorna um JsonResponse de erro em caso de falha de processamento na função interna.
+        print(f"ERRO INTERNO na busca de detalhes do plano: {str(e)}")
+        return JsonResponse({"error": "Falha no processamento dos dados agropecuários."}, status=500)
+
+
+@login_required
+def save_plano(request, terreno_id):
+    """
+    Finaliza a criação do Plano de Plantio (POST) após a seleção do produto.
+    Esta view recebe os dados via formulário POST.
+    """
+    # 1. Valida o Terreno e o método
+    terreno = get_object_or_404(Terreno, pk=terreno_id, user=request.user)
+
+    if request.method == 'POST':
+        # Instancia o formulário com os dados do POST
+        form = PlanoPlantioForm(request.POST)
+
+        if form.is_valid():
+            try:
+                plano = form.save(commit=False)
+                plano.usuario = request.user
+                plano.terreno = terreno
+
+                # Preenche a localização e a área com dados do terreno
+                plano.localizacao = f"{terreno.name} (ID: {terreno.pk})"  # Usamos o nome do terreno como localização temp.
+                plano.area = terreno.area
+
+                # O campo 'cultura' (nome do produto) já veio do POST via campo hidden
+                plano.save()
+
+                # CORRIGIDO: Mensagem de sucesso ativada
+                messages.success(request, f"Plano de cultivo '{plano.nome_plantacao}' criado com sucesso.")
+                return redirect('agro_app:dashboard')
+
+            except Exception as e:
+                # CORRIGIDO: Mensagem de erro ativada
+                messages.error(request, f"Erro ao salvar o plano: {str(e)}")
+                print(f"ERRO: Falha ao salvar o plano: {str(e)}")
+
+        else:
+            # Se o form não for válido (ex: nome_plantacao vazio)
+            # CORRIGIDO: Mensagem de erro de validação ativada
+            messages.error(request, "Erro: O Nome do Plano de Cultivo é obrigatório.")
+            print(f"ERRO: Formulário inválido: {form.errors}")
+
+        # Se houver erro, redireciona de volta para a etapa 2 com o terreno_id
+        return redirect('agro_app:select_product_plano', terreno_id=terreno_id)
+
+    # Se for GET, redireciona para o início do fluxo
+    return redirect('agro_app:create_plano')

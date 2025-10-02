@@ -1,5 +1,6 @@
 from django import forms
-from .models import Profile, Terreno, UNIT_CHOICES # Importa o novo modelo Terreno e as escolhas de Unidade
+# ATUALIZAÇÃO: Adicionado PlanoPlantio
+from .models import Profile, Terreno, UNIT_CHOICES, PlanoPlantio
 
 
 class ProfileForm(forms.ModelForm):
@@ -29,13 +30,15 @@ class ProfileForm(forms.ModelForm):
             'birth_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
+
 # ==============================================================================
-# NOVO: Formulário de Terreno (CORRIGIDO)
+# Formulário de Terreno
 # ==============================================================================
 class TerrenoForm(forms.ModelForm):
     """
     Formulário para criar e editar o modelo Terreno.
     """
+
     class Meta:
         model = Terreno
         # CORRIGIDO: 'size' mudado para 'area'
@@ -53,13 +56,13 @@ class TerrenoForm(forms.ModelForm):
             'unit': 'Unidade',
         }
 
+
 # ==============================================================================
-# NOVO: Formulário de Seleção de Terreno para o Plano de Cultivo
+# Formulário de Seleção de Terreno para o Plano de Cultivo (Mantido, mas não usado diretamente no fluxo atual)
 # ==============================================================================
 class PlanoCultivoSelectTerrenoForm(forms.Form):
     """
     Formulário para a primeira etapa do Plano de Cultivo: selecionar um Terreno.
-    O campo 'terreno' será populado dinamicamente na view.
     """
     terreno = forms.ModelChoiceField(
         queryset=Terreno.objects.none(),  # Queryset inicial vazio
@@ -74,3 +77,43 @@ class PlanoCultivoSelectTerrenoForm(forms.Form):
         if user is not None:
             # Filtra os terrenos apenas para o usuário atual
             self.fields['terreno'].queryset = Terreno.objects.filter(user=user)
+
+
+# ==============================================================================
+# NOVO: Formulário para o Modelo PlanoPlantio
+# ==============================================================================
+class PlanoPlantioForm(forms.ModelForm):
+    """
+    Formulário para salvar o Plano de Cultivo final.
+    """
+    # Campo para receber o ID do produto, usado para fins de validação e rastreio.
+    cultivo_id = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    class Meta:
+        model = PlanoPlantio
+        fields = [
+            'nome_plantacao',
+            'cultura',  # Nome da cultura (original)
+            'terreno',
+            # 'localizacao' e 'area' são preenchidos pela view/modelo
+        ]
+
+        widgets = {
+            'nome_plantacao': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Safra Milho 2025'}),
+            # Escondidos, pois são preenchidos na view/POST
+            'terreno': forms.HiddenInput(),
+            'cultura': forms.HiddenInput(),
+        }
+
+        labels = {
+            'nome_plantacao': 'Nome do Plano de Cultivo',
+        }
+
+    # Remove os campos opcionais do modelo que não precisam ser exibidos no form
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # removemos os campos que serao preenchidos automaticamente na view
+        if 'localizacao' in self.fields:
+            del self.fields['localizacao']
+        if 'area' in self.fields:
+            del self.fields['area']

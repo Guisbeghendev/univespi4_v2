@@ -4,9 +4,12 @@
 
         {% if user.is_authenticated %}
             <li><a href="{% url 'agro_app:dashboard' %}">Dashboard</a></li>
-            {# NOVO: LINK PARA O PLANO DE CULTIVO (APARECERÁ APÓS IMPLEMENTARMOS A VIEW) #}
-            {# ALTERAÇÃO: Terrenos e Perfil ficam aqui, ou podemos deixar o Terrenos na Dashboard #}
-            <li><a href="{% url 'agro_app:dashboard' %}#terrenos">Terrenos</a></li>
+
+            {# NOVO: Link para o Plano de Cultivo (Inicia o fluxo de 2 etapas) #}
+            <li><a href="{% url 'agro_app:create_plano' %}">Plano de Cultivo</a></li>
+
+            {# REMOVIDO: O link 'Terrenos' direto foi retirado, pois é acessado pela Dashboard/Plano #}
+
             <li><a href="{% url 'agro_app:profile' %}">Perfil</a></li>
             <li>
                 <form action="{% url 'logout' %}" method="post" style="display:inline;">
