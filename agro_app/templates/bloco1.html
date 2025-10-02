@@ -1,0 +1,6 @@
+    <div class="dash-card dash-card-full">
+        <h2 class="sub-title">Bem-vindo à Dashboard do AgroData</h2>
+        <p>Olá, {{ request.user.username }}! Esta é a sua dashboard pessoal.</p>
+        <p>Você está em **{{ city_name|default:"-" }} / {{ state_name|default:"-" }}**</p>
+        <p id="current-date"></p>
+    </div>

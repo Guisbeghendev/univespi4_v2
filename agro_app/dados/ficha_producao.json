@@ -1,0 +1,506 @@
+[
+  {
+    "cultura_produto": "Abacate",
+    "ciclo": "Permanente",
+    "temperatura_c": "20 a 27",
+    "tipo_solo": "Profundo, bem drenado, textura média.",
+    "ph_ideal_h2o": "6,0 a 7,5",
+    "precipitacao_anual_mm": "1200 a 1600"
+  },
+  {
+    "cultura_produto": "Abacaxi",
+    "ciclo": "Permanente",
+    "temperatura_c": "22 a 32",
+    "tipo_solo": "Bem drenado, textura leve.",
+    "ph_ideal_h2o": "5,0 a 6,0",
+    "precipitacao_anual_mm": "1000 a 1500"
+  },
+  {
+    "cultura_produto": "Açaí",
+    "ciclo": "Permanente",
+    "temperatura_c": "24 a 30",
+    "tipo_solo": "Várzeas ou terras firmes, prefere solos ácidos.",
+    "ph_ideal_h2o": "4,5 a 6,0",
+    "precipitacao_anual_mm": "1300 a 3000 (Bem distribuída)"
+  },
+  {
+    "cultura_produto": "Algodão Arbóreo",
+    "ciclo": "Permanente",
+    "temperatura_c": "24 a 34",
+    "tipo_solo": "Profundos, com boa drenagem e aeração.",
+    "ph_ideal_h2o": "6,0 a 6,5",
+    "precipitacao_anual_mm": "500 a 1500"
+  },
+  {
+    "cultura_produto": "Azeitona",
+    "ciclo": "Permanente",
+    "temperatura_c": "18 a 22 (Para floração)",
+    "tipo_solo": "Bem drenados, profundos, leves.",
+    "ph_ideal_h2o": "6,0 a 7,5",
+    "precipitacao_anual_mm": "400 a 800 (Tolerante à seca)"
+  },
+  {
+    "cultura_produto": "Banana (cacho)",
+    "ciclo": "Permanente",
+    "temperatura_c": "26 a 28",
+    "tipo_solo": "Profundos, bem drenados, ricos em MO.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "1200 a 1800 (Bem distribuída)"
+  },
+  {
+    "cultura_produto": "Borracha (látex coagulado)",
+    "ciclo": "Permanente",
+    "temperatura_c": "25 a 30",
+    "tipo_solo": "Profundos, bem drenados, férteis.",
+    "ph_ideal_h2o": "4,5 a 6,5",
+    "precipitacao_anual_mm": "Acima de 1800 (Sem estiagem severa)"
+  },
+  {
+    "cultura_produto": "Cacau (em amêndoa)",
+    "ciclo": "Permanente",
+    "temperatura_c": "21 a 28",
+    "tipo_solo": "Profundos (>1,5m), bem drenados, ricos em húmus.",
+    "ph_ideal_h2o": "5,5 a 7,0",
+    "precipitacao_anual_mm": "1800 a 2500 (Mínimo de 1200)"
+  },
+  {
+    "cultura_produto": "Café Arábica (em grão)",
+    "ciclo": "Permanente",
+    "temperatura_c": "18 a 22",
+    "tipo_solo": "Profundos, bem drenados (altitude).",
+    "ph_ideal_h2o": "6,0 a 6,5",
+    "precipitacao_anual_mm": "1200 a 1500 (Com período seco para indução floral)"
+  },
+  {
+    "cultura_produto": "Café Canephora (em grão)",
+    "ciclo": "Permanente",
+    "temperatura_c": "22 a 26",
+    "tipo_solo": "Profundos, com boa retenção hídrica.",
+    "ph_ideal_h2o": "5,0 a 6,0",
+    "precipitacao_anual_mm": "1500 a 2000"
+  },
+  {
+    "cultura_produto": "Caqui",
+    "ciclo": "Permanente",
+    "temperatura_c": "15 a 17 (Média anual)",
+    "tipo_solo": "Profundos, bem drenados, boa retenção de água.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "1200 a 1800"
+  },
+  {
+    "cultura_produto": "Castanha-de-caju",
+    "ciclo": "Permanente",
+    "temperatura_c": "27 a 34",
+    "tipo_solo": "Leves, arenosos a franco-arenosos, profundos.",
+    "ph_ideal_h2o": "5,0 a 6,5",
+    "precipitacao_anual_mm": "800 a 1500 (5 a 7 meses de chuva)"
+  },
+  {
+    "cultura_produto": "Chá-da-Índia (folha verde)",
+    "ciclo": "Permanente",
+    "temperatura_c": "13 a 20",
+    "tipo_solo": "Solos ácidos, bem drenados, ricos em MO.",
+    "ph_ideal_h2o": "4,5 a 5,5",
+    "precipitacao_anual_mm": "1200 a 2500"
+  },
+  {
+    "cultura_produto": "Coco-da-baía",
+    "ciclo": "Permanente",
+    "temperatura_c": "Média anual de 27",
+    "tipo_solo": "Profundos, arejados, de fácil drenagem.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "1500 (Mensal mínimo de 130mm)"
+  },
+  {
+    "cultura_produto": "Dendê (cacho de coco)",
+    "ciclo": "Permanente",
+    "temperatura_c": "Média anual de 24 a 28",
+    "tipo_solo": "Profundos, permeáveis, bem drenados.",
+    "ph_ideal_h2o": "5,0 a 6,5",
+    "precipitacao_anual_mm": "1500 a 1800 (Bem distribuída)"
+  },
+  {
+    "cultura_produto": "Erva-mate (folha verde)",
+    "ciclo": "Permanente",
+    "temperatura_c": "15 a 25",
+    "tipo_solo": "Profundos, bem drenados, ricos em MO.",
+    "ph_ideal_h2o": "4,9 a 5,5",
+    "precipitacao_anual_mm": "1200 a 2500"
+  },
+  {
+    "cultura_produto": "Figo",
+    "ciclo": "Permanente",
+    "temperatura_c": "18 a 28",
+    "tipo_solo": "Profundos, argilo-arenosos, com boa drenagem.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "600 a 1500 (Prefere período seco no verão)"
+  },
+  {
+    "cultura_produto": "Goiaba",
+    "ciclo": "Permanente",
+    "temperatura_c": "20 a 30",
+    "tipo_solo": "Solos leves e profundos, boa drenagem.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "1000 a 1600"
+  },
+  {
+    "cultura_produto": "Guaraná (semente)",
+    "ciclo": "Permanente",
+    "temperatura_c": "22 a 28",
+    "tipo_solo": "Adapta-se a solos ácidos.",
+    "ph_ideal_h2o": "5,0 a 6,0",
+    "precipitacao_anual_mm": "1500 a 3000 (Com período seco para florescimento)"
+  },
+  {
+    "cultura_produto": "Laranja",
+    "ciclo": "Permanente",
+    "temperatura_c": "23 a 32",
+    "tipo_solo": "Profundos, bem drenados, férteis.",
+    "ph_ideal_h2o": "5,8 a 6,5",
+    "precipitacao_anual_mm": "1200 a 1700 (Bem distribuída)"
+  },
+  {
+    "cultura_produto": "Limão",
+    "ciclo": "Permanente",
+    "temperatura_c": "20 a 30",
+    "tipo_solo": "Profundos, bem drenados, textura leve a média.",
+    "ph_ideal_h2o": "5,5 a 7,0",
+    "precipitacao_anual_mm": "900 a 1500"
+  },
+  {
+    "cultura_produto": "Maçã",
+    "ciclo": "Permanente",
+    "temperatura_c": "15 a 22",
+    "tipo_solo": "Profundos, bem drenados, textura média.",
+    "ph_ideal_h2o": "6,0 a 6,5",
+    "precipitacao_anual_mm": "1200 a 1800 (Reduzida na colheita)"
+  },
+  {
+    "cultura_produto": "Mamão",
+    "ciclo": "Permanente",
+    "temperatura_c": "21 a 33",
+    "tipo_solo": "Profundos, bem drenados e arejados, textura leve.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "1800 a 2000 (Bem distribuída)"
+  },
+  {
+    "cultura_produto": "Manga",
+    "ciclo": "Permanente",
+    "temperatura_c": "24 a 27",
+    "tipo_solo": "Profundos, bem drenados, arenosos.",
+    "ph_ideal_h2o": "5,5 a 7,0",
+    "precipitacao_anual_mm": "800 a 1500 (Precisa de seca para floração)"
+  },
+  {
+    "cultura_produto": "Maracujá",
+    "ciclo": "Permanente",
+    "temperatura_c": "20 a 30",
+    "tipo_solo": "Solos leves, profundos, bem drenados.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "800 a 1500"
+  },
+  {
+    "cultura_produto": "Marmelo",
+    "ciclo": "Permanente",
+    "temperatura_c": "15 a 25",
+    "tipo_solo": "Argilosos ou franco-argilosos, profundos, férteis.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "800 a 1200"
+  },
+  {
+    "cultura_produto": "Noz (fruto seco)",
+    "ciclo": "Permanente",
+    "temperatura_c": "15 a 25",
+    "tipo_solo": "Profundos, bem drenados, ricos em MO.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "700 a 1500"
+  },
+  {
+    "cultura_produto": "Palmito",
+    "ciclo": "Permanente",
+    "temperatura_c": "20 a 28",
+    "tipo_solo": "Solos úmidos, ricos em MO, bem drenados.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "1500 a 2500"
+  },
+  {
+    "cultura_produto": "Pêra",
+    "ciclo": "Permanente",
+    "temperatura_c": "16 a 22",
+    "tipo_solo": "Profundos, bem drenados, férteis.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "700 a 1200"
+  },
+  {
+    "cultura_produto": "Pêssego",
+    "ciclo": "Permanente",
+    "temperatura_c": "18 a 25",
+    "tipo_solo": "Profundos, bem drenados, textura leve a média.",
+    "ph_ideal_h2o": "6,0 a 6,5",
+    "precipitacao_anual_mm": "700 a 1400"
+  },
+  {
+    "cultura_produto": "Pimenta-do-reino",
+    "ciclo": "Permanente",
+    "temperatura_c": "23 a 32",
+    "tipo_solo": "Profundos, leves, bem drenados, férteis.",
+    "ph_ideal_h2o": "5,5 a 7,0",
+    "precipitacao_anual_mm": "1500 a 2500"
+  },
+  {
+    "cultura_produto": "Sisal ou Agave (fibra)",
+    "ciclo": "Permanente",
+    "temperatura_c": "24 a 32",
+    "tipo_solo": "Baixa fertilidade, arenosos e pedregosos.",
+    "ph_ideal_h2o": "6,0 a 7,5",
+    "precipitacao_anual_mm": "400 a 800 (Tolerante a seca)"
+  },
+  {
+    "cultura_produto": "Uva",
+    "ciclo": "Permanente",
+    "temperatura_c": "15 a 28",
+    "tipo_solo": "Bem drenados, profundos, textura leve.",
+    "ph_ideal_h2o": "6,0 a 7,5",
+    "precipitacao_anual_mm": "400 a 1000 (Baixa umidade ideal na maturação)"
+  },
+  {
+    "cultura_produto": "Algodão Herbáceo",
+    "ciclo": "Temporário",
+    "temperatura_c": "24 a 34",
+    "tipo_solo": "Profundos, bem drenados, textura média a argilosa.",
+    "ph_ideal_h2o": "6,0 a 6,5",
+    "precipitacao_anual_mm": "600 a 1200 (200-300mm no ciclo)"
+  },
+  {
+    "cultura_produto": "Alho",
+    "ciclo": "Temporário",
+    "temperatura_c": "10 a 25",
+    "tipo_solo": "Leves, soltos, ricos em MO, boa drenagem.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "300 a 500 (Baixa na colheita)"
+  },
+  {
+    "cultura_produto": "Amendoim (em casca)",
+    "ciclo": "Temporário",
+    "temperatura_c": "22 a 28",
+    "tipo_solo": "Leves, arenosos a franco-arenosos, bem drenados.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "400 a 800 (Bem distribuída no ciclo)"
+  },
+  {
+    "cultura_produto": "Arroz (em casca)",
+    "ciclo": "Temporário",
+    "temperatura_c": "20 a 35",
+    "tipo_solo": "Sequeiro: 5,6. Irrigado: Varia.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "1200 a 2000"
+  },
+  {
+    "cultura_produto": "Aveia (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "20 a 25",
+    "tipo_solo": "Profundos, bem drenados, textura média a argilosa.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "350 a 600 (No ciclo)"
+  },
+  {
+    "cultura_produto": "Batata-doce",
+    "ciclo": "Temporário",
+    "temperatura_c": "25 a 30",
+    "tipo_solo": "Solos leves, profundos, bem drenados.",
+    "ph_ideal_h2o": "5,0 a 6,5",
+    "precipitacao_anual_mm": "800 a 1500"
+  },
+  {
+    "cultura_produto": "Batata-inglesa",
+    "ciclo": "Temporário",
+    "temperatura_c": "18 a 22",
+    "tipo_solo": "Profundos, estruturados, bem drenados, arejados.",
+    "ph_ideal_h2o": "5,5 a 6,0",
+    "precipitacao_anual_mm": "500 a 700 (No ciclo, uniforme)"
+  },
+  {
+    "cultura_produto": "Cana-de-açúcar",
+    "ciclo": "Temporário",
+    "temperatura_c": "21 a 34",
+    "tipo_solo": "Profundo, boa drenagem e retenção de água.",
+    "ph_ideal_h2o": "5,7 a 6,5",
+    "precipitacao_anual_mm": "1200 a 1500 (Seca na maturação é ideal)"
+  },
+  {
+    "cultura_produto": "Cebola",
+    "ciclo": "Temporário",
+    "temperatura_c": "20 a 25",
+    "tipo_solo": "Leves, profundos, ricos em MO, boa drenagem.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "400 a 700 (No ciclo)"
+  },
+  {
+    "cultura_produto": "Centeio (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "25 a 31",
+    "tipo_solo": "Baixa fertilidade, arenosos, ácidos.",
+    "ph_ideal_h2o": "5,0 a 6,5",
+    "precipitacao_anual_mm": "300 a 500"
+  },
+  {
+    "cultura_produto": "Cevada (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "15 a 22",
+    "tipo_solo": "Férteis, bem drenados, textura média.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "400 a 600"
+  },
+  {
+    "cultura_produto": "Ervilha (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "15 a 20",
+    "tipo_solo": "Leves, bem drenados, profundos, ricos em MO.",
+    "ph_ideal_h2o": "6,0 a 7,5",
+    "precipitacao_anual_mm": "350 a 500 (No ciclo)"
+  },
+  {
+    "cultura_produto": "Fava (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "18 a 25",
+    "tipo_solo": "Franco-argilosos ou franco-arenosos, boa drenagem.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "500 a 800"
+  },
+  {
+    "cultura_produto": "Feijão (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "18 a 29",
+    "tipo_solo": "Férteis, bem drenados, textura média.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "300 a 600 (No ciclo, crítica na floração)"
+  },
+  {
+    "cultura_produto": "Fumo (em folha)",
+    "ciclo": "Temporário",
+    "temperatura_c": "20 a 27",
+    "tipo_solo": "Leves, profundos, bem drenados, boa aeração.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "800 a 1200"
+  },
+  {
+    "cultura_produto": "Girassol (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "22 a 28",
+    "tipo_solo": "Profundos, boa drenagem e aeração.",
+    "ph_ideal_h2o": "6,0 a 7,5",
+    "precipitacao_anual_mm": "600 a 800"
+  },
+  {
+    "cultura_produto": "Juta (fibra)",
+    "ciclo": "Temporário",
+    "temperatura_c": "24 a 30",
+    "tipo_solo": "Várzea ou aluviões, ricos em MO.",
+    "ph_ideal_h2o": "5,5 a 7,0",
+    "precipitacao_anual_mm": "1500 a 2500"
+  },
+  {
+    "cultura_produto": "Linho (semente)",
+    "ciclo": "Temporário",
+    "temperatura_c": "15 a 25",
+    "tipo_solo": "Profundos, férteis, bem drenados.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "400 a 700"
+  },
+  {
+    "cultura_produto": "Malva (fibra)",
+    "ciclo": "Temporário",
+    "temperatura_c": "20 a 30",
+    "tipo_solo": "Férteis, ricos em MO.",
+    "ph_ideal_h2o": "5,5 a 7,0",
+    "precipitacao_anual_mm": "1000 a 1500"
+  },
+  {
+    "cultura_produto": "Mamona (baga)",
+    "ciclo": "Temporário",
+    "temperatura_c": "20 a 30",
+    "tipo_solo": "Profundos, bem drenados, textura média.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "600 a 1200"
+  },
+  {
+    "cultura_produto": "Mandioca",
+    "ciclo": "Temporário",
+    "temperatura_c": "20 a 27",
+    "tipo_solo": "Leves, profundos, bem drenados, boa aeração.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "600 a 3000 (Adaptável, mas sensível a encharcamento)"
+  },
+  {
+    "cultura_produto": "Melancia",
+    "ciclo": "Temporário",
+    "temperatura_c": "22 a 30",
+    "tipo_solo": "Arenosos ou franco-arenosos, profundos, bem drenados.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "400 a 600 (No ciclo)"
+  },
+  {
+    "cultura_produto": "Melão",
+    "ciclo": "Temporário",
+    "temperatura_c": "24 a 30",
+    "tipo_solo": "Leves, bem drenados, boa aeração.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "350 a 450 (No ciclo)"
+  },
+  {
+    "cultura_produto": "Milho (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "24 a 30",
+    "tipo_solo": "Profundos, boa drenagem e alta retenção de água, férteis.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "450 a 800 (No ciclo, crítico no florescimento/enchimento)"
+  },
+  {
+    "cultura_produto": "Rami (fibra)",
+    "ciclo": "Temporário",
+    "temperatura_c": "20 a 28",
+    "tipo_solo": "Profundos, férteis, ricos em MO.",
+    "ph_ideal_h2o": "5,5 a 6,5",
+    "precipitacao_anual_mm": "1200 a 2000"
+  },
+  {
+    "cultura_produto": "Soja (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "20 a 30",
+    "tipo_solo": "Profundos, bem drenados, boa fertilidade.",
+    "ph_ideal_h2o": "6,0 a 7,0",
+    "precipitacao_anual_mm": "450 a 800 (No ciclo, crítico no florescimento/enchimento)"
+  },
+  {
+    "cultura_produto": "Sorgo Granífero (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "26 a 34",
+    "tipo_solo": "Profundos, boa drenagem, adaptável a solos mais pobres.",
+    "ph_ideal_h2o": "5,5 a 7,0",
+    "precipitacao_anual_mm": "350 a 600 (Tolerante à seca)"
+  },
+  {
+    "cultura_produto": "Tomate",
+    "ciclo": "Temporário",
+    "temperatura_c": "21 a 26",
+    "tipo_solo": "Leves, bem drenados, profundos, alta fertilidade.",
+    "ph_ideal_h2o": "5,5 a 7,0",
+    "precipitacao_anual_mm": "600 a 1200"
+  },
+  {
+    "cultura_produto": "Trigo (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "15 a 25",
+    "tipo_solo": "Férteis, bem drenados, textura média.",
+    "ph_ideal_h2o": "5,5 a 7,0",
+    "precipitacao_anual_mm": "350 a 600 (No ciclo, baixa na maturação)"
+  },
+  {
+    "cultura_produto": "Triticale (em grão)",
+    "ciclo": "Temporário",
+    "temperatura_c": "18 a 25",
+    "tipo_solo": "Férteis, bem drenados.",
+    "ph_ideal_h2o": "5,5 a 7,0",
+    "precipitacao_anual_mm": "400 a 600"
+  }
+]

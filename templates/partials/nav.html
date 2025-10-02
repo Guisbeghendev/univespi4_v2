@@ -4,6 +4,9 @@
 
         {% if user.is_authenticated %}
             <li><a href="{% url 'agro_app:dashboard' %}">Dashboard</a></li>
+            {# NOVO: LINK PARA O PLANO DE CULTIVO (APARECERÁ APÓS IMPLEMENTARMOS A VIEW) #}
+            {# ALTERAÇÃO: Terrenos e Perfil ficam aqui, ou podemos deixar o Terrenos na Dashboard #}
+            <li><a href="{% url 'agro_app:dashboard' %}#terrenos">Terrenos</a></li>
             <li><a href="{% url 'agro_app:profile' %}">Perfil</a></li>
             <li>
                 <form action="{% url 'logout' %}" method="post" style="display:inline;">

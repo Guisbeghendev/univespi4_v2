@@ -1,0 +1,1262 @@
+[
+  {
+    "produto": "Abacate",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 3.95,
+    "precos_2025_rs": {
+      "Jan": 3.95,
+      "Fev": 3.95,
+      "Mar": 3.95,
+      "Abr": 3.95,
+      "Mai": 3.95,
+      "Jun": 3.95,
+      "Jul": 3.95,
+      "Ago": 3.95,
+      "Set": 3.95,
+      "Out": 3.95,
+      "Nov": 3.95,
+      "Dez": 3.95
+    }
+  },
+  {
+    "produto": "Abacaxi",
+    "unidade_medida": "Unidade",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 2.80,
+    "precos_2025_rs": {
+      "Jan": 2.80,
+      "Fev": 2.80,
+      "Mar": 2.80,
+      "Abr": 2.80,
+      "Mai": 2.80,
+      "Jun": 2.80,
+      "Jul": 2.80,
+      "Ago": 2.80,
+      "Set": 2.80,
+      "Out": 2.80,
+      "Nov": 2.80,
+      "Dez": 2.80
+    }
+  },
+  {
+    "produto": "Açaí",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 4.75,
+    "precos_2025_rs": {
+      "Jan": 4.75,
+      "Fev": 4.75,
+      "Mar": 4.75,
+      "Abr": 4.75,
+      "Mai": 4.75,
+      "Jun": 4.75,
+      "Jul": 4.75,
+      "Ago": 4.75,
+      "Set": 4.75,
+      "Out": 4.75,
+      "Nov": 4.75,
+      "Dez": 4.75
+    }
+  },
+  {
+    "produto": "Algodão (Arbóreo, em caroço)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1850.00,
+    "precos_2025_rs": {
+      "Jan": 1850.00,
+      "Fev": 1850.00,
+      "Mar": 1850.00,
+      "Abr": 1850.00,
+      "Mai": 1850.00,
+      "Jun": 1850.00,
+      "Jul": 1850.00,
+      "Ago": 1850.00,
+      "Set": 1850.00,
+      "Out": 1850.00,
+      "Nov": 1850.00,
+      "Dez": 1850.00
+    }
+  },
+  {
+    "produto": "Algodão (Herbáceo, em caroço)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 2150.00,
+    "precos_2025_rs": {
+      "Jan": 2150.00,
+      "Fev": 2150.00,
+      "Mar": 2150.00,
+      "Abr": 2150.00,
+      "Mai": 2150.00,
+      "Jun": 2150.00,
+      "Jul": 2150.00,
+      "Ago": 2150.00,
+      "Set": 2150.00,
+      "Out": 2150.00,
+      "Nov": 2150.00,
+      "Dez": 2150.00
+    }
+  },
+  {
+    "produto": "Alho",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 10.50,
+    "precos_2025_rs": {
+      "Jan": 10.50,
+      "Fev": 10.50,
+      "Mar": 10.50,
+      "Abr": 10.50,
+      "Mai": 10.50,
+      "Jun": 10.50,
+      "Jul": 10.50,
+      "Ago": 10.50,
+      "Set": 10.50,
+      "Out": 10.50,
+      "Nov": 10.50,
+      "Dez": 10.50
+    }
+  },
+  {
+    "produto": "Amendoim (em casca)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 3800.00,
+    "precos_2025_rs": {
+      "Jan": 3800.00,
+      "Fev": 3800.00,
+      "Mar": 3800.00,
+      "Abr": 3800.00,
+      "Mai": 3800.00,
+      "Jun": 3800.00,
+      "Jul": 3800.00,
+      "Ago": 3800.00,
+      "Set": 3800.00,
+      "Out": 3800.00,
+      "Nov": 3800.00,
+      "Dez": 3800.00
+    }
+  },
+  {
+    "produto": "Arroz (em casca)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1200.00,
+    "precos_2025_rs": {
+      "Jan": 1200.00,
+      "Fev": 1200.00,
+      "Mar": 1200.00,
+      "Abr": 1200.00,
+      "Mai": 1200.00,
+      "Jun": 1200.00,
+      "Jul": 1200.00,
+      "Ago": 1200.00,
+      "Set": 1200.00,
+      "Out": 1200.00,
+      "Nov": 1200.00,
+      "Dez": 1200.00
+    }
+  },
+  {
+    "produto": "Aveia (em grão)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 950.00,
+    "precos_2025_rs": {
+      "Jan": 950.00,
+      "Fev": 950.00,
+      "Mar": 950.00,
+      "Abr": 950.00,
+      "Mai": 950.00,
+      "Jun": 950.00,
+      "Jul": 950.00,
+      "Ago": 950.00,
+      "Set": 950.00,
+      "Out": 950.00,
+      "Nov": 950.00,
+      "Dez": 950.00
+    }
+  },
+  {
+    "produto": "Banana (cacho)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1350.00,
+    "precos_2025_rs": {
+      "Jan": 1350.00,
+      "Fev": 1350.00,
+      "Mar": 1350.00,
+      "Abr": 1350.00,
+      "Mai": 1350.00,
+      "Jun": 1350.00,
+      "Jul": 1350.00,
+      "Ago": 1350.00,
+      "Set": 1350.00,
+      "Out": 1350.00,
+      "Nov": 1350.00,
+      "Dez": 1350.00
+    }
+  },
+  {
+    "produto": "Batata-doce",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1.85,
+    "precos_2025_rs": {
+      "Jan": 1.85,
+      "Fev": 1.85,
+      "Mar": 1.85,
+      "Abr": 1.85,
+      "Mai": 1.85,
+      "Jun": 1.85,
+      "Jul": 1.85,
+      "Ago": 1.85,
+      "Set": 1.85,
+      "Out": 1.85,
+      "Nov": 1.85,
+      "Dez": 1.85
+    }
+  },
+  {
+    "produto": "Batata-inglesa",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 3.50,
+    "precos_2025_rs": {
+      "Jan": 3.50,
+      "Fev": 3.50,
+      "Mar": 3.50,
+      "Abr": 3.50,
+      "Mai": 3.50,
+      "Jun": 3.50,
+      "Jul": 3.50,
+      "Ago": 3.50,
+      "Set": 3.50,
+      "Out": 3.50,
+      "Nov": 3.50,
+      "Dez": 3.50
+    }
+  },
+  {
+    "produto": "Borracha (látex coagulado)",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 5.10,
+    "precos_2025_rs": {
+      "Jan": 5.10,
+      "Fev": 5.10,
+      "Mar": 5.10,
+      "Abr": 5.10,
+      "Mai": 5.10,
+      "Jun": 5.10,
+      "Jul": 5.10,
+      "Ago": 5.10,
+      "Set": 5.10,
+      "Out": 5.10,
+      "Nov": 5.10,
+      "Dez": 5.10
+    }
+  },
+  {
+    "produto": "Cacau (em amêndoa)",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 28.00,
+    "precos_2025_rs": {
+      "Jan": 28.00,
+      "Fev": 28.00,
+      "Mar": 28.00,
+      "Abr": 28.00,
+      "Mai": 28.00,
+      "Jun": 28.00,
+      "Jul": 28.00,
+      "Ago": 28.00,
+      "Set": 28.00,
+      "Out": 28.00,
+      "Nov": 28.00,
+      "Dez": 28.00
+    }
+  },
+  {
+    "produto": "Café Arábica (em grão)",
+    "unidade_medida": "Saca 60kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 980.00,
+    "precos_2025_rs": {
+      "Jan": 980.00,
+      "Fev": 980.00,
+      "Mar": 980.00,
+      "Abr": 980.00,
+      "Mai": 980.00,
+      "Jun": 980.00,
+      "Jul": 980.00,
+      "Ago": 980.00,
+      "Set": 980.00,
+      "Out": 980.00,
+      "Nov": 980.00,
+      "Dez": 980.00
+    }
+  },
+  {
+    "produto": "Café Canephora (em grão)",
+    "unidade_medida": "Saca 60kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 710.00,
+    "precos_2025_rs": {
+      "Jan": 710.00,
+      "Fev": 710.00,
+      "Mar": 710.00,
+      "Abr": 710.00,
+      "Mai": 710.00,
+      "Jun": 710.00,
+      "Jul": 710.00,
+      "Ago": 710.00,
+      "Set": 710.00,
+      "Out": 710.00,
+      "Nov": 710.00,
+      "Dez": 710.00
+    }
+  },
+  {
+    "produto": "Cana-de-açúcar",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 120.00,
+    "precos_2025_rs": {
+      "Jan": 120.00,
+      "Fev": 120.00,
+      "Mar": 120.00,
+      "Abr": 120.00,
+      "Mai": 120.00,
+      "Jun": 120.00,
+      "Jul": 120.00,
+      "Ago": 120.00,
+      "Set": 120.00,
+      "Out": 120.00,
+      "Nov": 120.00,
+      "Dez": 120.00
+    }
+  },
+  {
+    "produto": "Caqui",
+    "unidade_medida": "Unidade",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1.90,
+    "precos_2025_rs": {
+      "Jan": 1.90,
+      "Fev": 1.90,
+      "Mar": 1.90,
+      "Abr": 1.90,
+      "Mai": 1.90,
+      "Jun": 1.90,
+      "Jul": 1.90,
+      "Ago": 1.90,
+      "Set": 1.90,
+      "Out": 1.90,
+      "Nov": 1.90,
+      "Dez": 1.90
+    }
+  },
+  {
+    "produto": "Castanha-de-caju",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 4.50,
+    "precos_2025_rs": {
+      "Jan": 4.50,
+      "Fev": 4.50,
+      "Mar": 4.50,
+      "Abr": 4.50,
+      "Mai": 4.50,
+      "Jun": 4.50,
+      "Jul": 4.50,
+      "Ago": 4.50,
+      "Set": 4.50,
+      "Out": 4.50,
+      "Nov": 4.50,
+      "Dez": 4.50
+    }
+  },
+  {
+    "produto": "Cebola",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 2.50,
+    "precos_2025_rs": {
+      "Jan": 2.50,
+      "Fev": 2.50,
+      "Mar": 2.50,
+      "Abr": 2.50,
+      "Mai": 2.50,
+      "Jun": 2.50,
+      "Jul": 2.50,
+      "Ago": 2.50,
+      "Set": 2.50,
+      "Out": 2.50,
+      "Nov": 2.50,
+      "Dez": 2.50
+    }
+  },
+  {
+    "produto": "Centeio (em grão)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 900.00,
+    "precos_2025_rs": {
+      "Jan": 900.00,
+      "Fev": 900.00,
+      "Mar": 900.00,
+      "Abr": 900.00,
+      "Mai": 900.00,
+      "Jun": 900.00,
+      "Jul": 900.00,
+      "Ago": 900.00,
+      "Set": 900.00,
+      "Out": 900.00,
+      "Nov": 900.00,
+      "Dez": 900.00
+    }
+  },
+  {
+    "produto": "Cevada (em grão)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1100.00,
+    "precos_2025_rs": {
+      "Jan": 1100.00,
+      "Fev": 1100.00,
+      "Mar": 1100.00,
+      "Abr": 1100.00,
+      "Mai": 1100.00,
+      "Jun": 1100.00,
+      "Jul": 1100.00,
+      "Ago": 1100.00,
+      "Set": 1100.00,
+      "Out": 1100.00,
+      "Nov": 1100.00,
+      "Dez": 1100.00
+    }
+  },
+  {
+    "produto": "Chá-da-Índia (folha verde)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1800.00,
+    "precos_2025_rs": {
+      "Jan": 1800.00,
+      "Fev": 1800.00,
+      "Mar": 1800.00,
+      "Abr": 1800.00,
+      "Mai": 1800.00,
+      "Jun": 1800.00,
+      "Jul": 1800.00,
+      "Ago": 1800.00,
+      "Set": 1800.00,
+      "Out": 1800.00,
+      "Nov": 1800.00,
+      "Dez": 1800.00
+    }
+  },
+  {
+    "produto": "Coco-da-baía",
+    "unidade_medida": "Unidade",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1.50,
+    "precos_2025_rs": {
+      "Jan": 1.50,
+      "Fev": 1.50,
+      "Mar": 1.50,
+      "Abr": 1.50,
+      "Mai": 1.50,
+      "Jun": 1.50,
+      "Jul": 1.50,
+      "Ago": 1.50,
+      "Set": 1.50,
+      "Out": 1.50,
+      "Nov": 1.50,
+      "Dez": 1.50
+    }
+  },
+  {
+    "produto": "Dendê (cacho de coco)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 750.00,
+    "precos_2025_rs": {
+      "Jan": 750.00,
+      "Fev": 750.00,
+      "Mar": 750.00,
+      "Abr": 750.00,
+      "Mai": 750.00,
+      "Jun": 750.00,
+      "Jul": 750.00,
+      "Ago": 750.00,
+      "Set": 750.00,
+      "Out": 750.00,
+      "Nov": 750.00,
+      "Dez": 750.00
+    }
+  },
+  {
+    "produto": "Erva-mate (folha verde)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 900.00,
+    "precos_2025_rs": {
+      "Jan": 900.00,
+      "Fev": 900.00,
+      "Mar": 900.00,
+      "Abr": 900.00,
+      "Mai": 900.00,
+      "Jun": 900.00,
+      "Jul": 900.00,
+      "Ago": 900.00,
+      "Set": 900.00,
+      "Out": 900.00,
+      "Nov": 900.00,
+      "Dez": 900.00
+    }
+  },
+  {
+    "produto": "Ervilha (em grão)",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 5.50,
+    "precos_2025_rs": {
+      "Jan": 5.50,
+      "Fev": 5.50,
+      "Mar": 5.50,
+      "Abr": 5.50,
+      "Mai": 5.50,
+      "Jun": 5.50,
+      "Jul": 5.50,
+      "Ago": 5.50,
+      "Set": 5.50,
+      "Out": 5.50,
+      "Nov": 5.50,
+      "Dez": 5.50
+    }
+  },
+  {
+    "produto": "Fava (em grão)",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 4.20,
+    "precos_2025_rs": {
+      "Jan": 4.20,
+      "Fev": 4.20,
+      "Mar": 4.20,
+      "Abr": 4.20,
+      "Mai": 4.20,
+      "Jun": 4.20,
+      "Jul": 4.20,
+      "Ago": 4.20,
+      "Set": 4.20,
+      "Out": 4.20,
+      "Nov": 4.20,
+      "Dez": 4.20
+    }
+  },
+  {
+    "produto": "Feijão (em grão)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 3200.00,
+    "precos_2025_rs": {
+      "Jan": 3200.00,
+      "Fev": 3200.00,
+      "Mar": 3200.00,
+      "Abr": 3200.00,
+      "Mai": 3200.00,
+      "Jun": 3200.00,
+      "Jul": 3200.00,
+      "Ago": 3200.00,
+      "Set": 3200.00,
+      "Out": 3200.00,
+      "Nov": 3200.00,
+      "Dez": 3200.00
+    }
+  },
+  {
+    "produto": "Figo",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 5.80,
+    "precos_2025_rs": {
+      "Jan": 5.80,
+      "Fev": 5.80,
+      "Mar": 5.80,
+      "Abr": 5.80,
+      "Mai": 5.80,
+      "Jun": 5.80,
+      "Jul": 5.80,
+      "Ago": 5.80,
+      "Set": 5.80,
+      "Out": 5.80,
+      "Nov": 5.80,
+      "Dez": 5.80
+    }
+  },
+  {
+    "produto": "Fumo (em folha)",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 8.50,
+    "precos_2025_rs": {
+      "Jan": 8.50,
+      "Fev": 8.50,
+      "Mar": 8.50,
+      "Abr": 8.50,
+      "Mai": 8.50,
+      "Jun": 8.50,
+      "Jul": 8.50,
+      "Ago": 8.50,
+      "Set": 8.50,
+      "Out": 8.50,
+      "Nov": 8.50,
+      "Dez": 8.50
+    }
+  },
+  {
+    "produto": "Girassol (em grão)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 2200.00,
+    "precos_2025_rs": {
+      "Jan": 2200.00,
+      "Fev": 2200.00,
+      "Mar": 2200.00,
+      "Abr": 2200.00,
+      "Mai": 2200.00,
+      "Jun": 2200.00,
+      "Jul": 2200.00,
+      "Ago": 2200.00,
+      "Set": 2200.00,
+      "Out": 2200.00,
+      "Nov": 2200.00,
+      "Dez": 2200.00
+    }
+  },
+  {
+    "produto": "Goiaba",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 2.40,
+    "precos_2025_rs": {
+      "Jan": 2.40,
+      "Fev": 2.40,
+      "Mar": 2.40,
+      "Abr": 2.40,
+      "Mai": 2.40,
+      "Jun": 2.40,
+      "Jul": 2.40,
+      "Ago": 2.40,
+      "Set": 2.40,
+      "Out": 2.40,
+      "Nov": 2.40,
+      "Dez": 2.40
+    }
+  },
+  {
+    "produto": "Guaraná (semente)",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 16.50,
+    "precos_2025_rs": {
+      "Jan": 16.50,
+      "Fev": 16.50,
+      "Mar": 16.50,
+      "Abr": 16.50,
+      "Mai": 16.50,
+      "Jun": 16.50,
+      "Jul": 16.50,
+      "Ago": 16.50,
+      "Set": 16.50,
+      "Out": 16.50,
+      "Nov": 16.50,
+      "Dez": 16.50
+    }
+  },
+  {
+    "produto": "Juta (fibra)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 6500.00,
+    "precos_2025_rs": {
+      "Jan": 6500.00,
+      "Fev": 6500.00,
+      "Mar": 6500.00,
+      "Abr": 6500.00,
+      "Mai": 6500.00,
+      "Jun": 6500.00,
+      "Jul": 6500.00,
+      "Ago": 6500.00,
+      "Set": 6500.00,
+      "Out": 6500.00,
+      "Nov": 6500.00,
+      "Dez": 6500.00
+    }
+  },
+  {
+    "produto": "Laranja",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 650.00,
+    "precos_2025_rs": {
+      "Jan": 650.00,
+      "Fev": 650.00,
+      "Mar": 650.00,
+      "Abr": 650.00,
+      "Mai": 650.00,
+      "Jun": 650.00,
+      "Jul": 650.00,
+      "Ago": 650.00,
+      "Set": 650.00,
+      "Out": 650.00,
+      "Nov": 650.00,
+      "Dez": 650.00
+    }
+  },
+  {
+    "produto": "Limão",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1200.00,
+    "precos_2025_rs": {
+      "Jan": 1200.00,
+      "Fev": 1200.00,
+      "Mar": 1200.00,
+      "Abr": 1200.00,
+      "Mai": 1200.00,
+      "Jun": 1200.00,
+      "Jul": 1200.00,
+      "Ago": 1200.00,
+      "Set": 1200.00,
+      "Out": 1200.00,
+      "Nov": 1200.00,
+      "Dez": 1200.00
+    }
+  },
+  {
+    "produto": "Linho (semente)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 2500.00,
+    "precos_2025_rs": {
+      "Jan": 2500.00,
+      "Fev": 2500.00,
+      "Mar": 2500.00,
+      "Abr": 2500.00,
+      "Mai": 2500.00,
+      "Jun": 2500.00,
+      "Jul": 2500.00,
+      "Ago": 2500.00,
+      "Set": 2500.00,
+      "Out": 2500.00,
+      "Nov": 2500.00,
+      "Dez": 2500.00
+    }
+  },
+  {
+    "produto": "Maçã",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 4.10,
+    "precos_2025_rs": {
+      "Jan": 4.10,
+      "Fev": 4.10,
+      "Mar": 4.10,
+      "Abr": 4.10,
+      "Mai": 4.10,
+      "Jun": 4.10,
+      "Jul": 4.10,
+      "Ago": 4.10,
+      "Set": 4.10,
+      "Out": 4.10,
+      "Nov": 4.10,
+      "Dez": 4.10
+    }
+  },
+  {
+    "produto": "Malva (fibra)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 2800.00,
+    "precos_2025_rs": {
+      "Jan": 2800.00,
+      "Fev": 2800.00,
+      "Mar": 2800.00,
+      "Abr": 2800.00,
+      "Mai": 2800.00,
+      "Jun": 2800.00,
+      "Jul": 2800.00,
+      "Ago": 2800.00,
+      "Set": 2800.00,
+      "Out": 2800.00,
+      "Nov": 2800.00,
+      "Dez": 2800.00
+    }
+  },
+  {
+    "produto": "Mamão",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 2.70,
+    "precos_2025_rs": {
+      "Jan": 2.70,
+      "Fev": 2.70,
+      "Mar": 2.70,
+      "Abr": 2.70,
+      "Mai": 2.70,
+      "Jun": 2.70,
+      "Jul": 2.70,
+      "Ago": 2.70,
+      "Set": 2.70,
+      "Out": 2.70,
+      "Nov": 2.70,
+      "Dez": 2.70
+    }
+  },
+  {
+    "produto": "Mamona (baga)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1800.00,
+    "precos_2025_rs": {
+      "Jan": 1800.00,
+      "Fev": 1800.00,
+      "Mar": 1800.00,
+      "Abr": 1800.00,
+      "Mai": 1800.00,
+      "Jun": 1800.00,
+      "Jul": 1800.00,
+      "Ago": 1800.00,
+      "Set": 1800.00,
+      "Out": 1800.00,
+      "Nov": 1800.00,
+      "Dez": 1800.00
+    }
+  },
+  {
+    "produto": "Mandioca",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 550.00,
+    "precos_2025_rs": {
+      "Jan": 550.00,
+      "Fev": 550.00,
+      "Mar": 550.00,
+      "Abr": 550.00,
+      "Mai": 550.00,
+      "Jun": 550.00,
+      "Jul": 550.00,
+      "Ago": 550.00,
+      "Set": 550.00,
+      "Out": 550.00,
+      "Nov": 550.00,
+      "Dez": 550.00
+    }
+  },
+  {
+    "produto": "Manga",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 2.10,
+    "precos_2025_rs": {
+      "Jan": 2.10,
+      "Fev": 2.10,
+      "Mar": 2.10,
+      "Abr": 2.10,
+      "Mai": 2.10,
+      "Jun": 2.10,
+      "Jul": 2.10,
+      "Ago": 2.10,
+      "Set": 2.10,
+      "Out": 2.10,
+      "Nov": 2.10,
+      "Dez": 2.10
+    }
+  },
+  {
+    "produto": "Maracujá",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 3.20,
+    "precos_2025_rs": {
+      "Jan": 3.20,
+      "Fev": 3.20,
+      "Mar": 3.20,
+      "Abr": 3.20,
+      "Mai": 3.20,
+      "Jun": 3.20,
+      "Jul": 3.20,
+      "Ago": 3.20,
+      "Set": 3.20,
+      "Out": 3.20,
+      "Nov": 3.20,
+      "Dez": 3.20
+    }
+  },
+  {
+    "produto": "Marmelo",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 3.50,
+    "precos_2025_rs": {
+      "Jan": 3.50,
+      "Fev": 3.50,
+      "Mar": 3.50,
+      "Abr": 3.50,
+      "Mai": 3.50,
+      "Jun": 3.50,
+      "Jul": 3.50,
+      "Ago": 3.50,
+      "Set": 3.50,
+      "Out": 3.50,
+      "Nov": 3.50,
+      "Dez": 3.50
+    }
+  },
+  {
+    "produto": "Melancia",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1.50,
+    "precos_2025_rs": {
+      "Jan": 1.50,
+      "Fev": 1.50,
+      "Mar": 1.50,
+      "Abr": 1.50,
+      "Mai": 1.50,
+      "Jun": 1.50,
+      "Jul": 1.50,
+      "Ago": 1.50,
+      "Set": 1.50,
+      "Out": 1.50,
+      "Nov": 1.50,
+      "Dez": 1.50
+    }
+  },
+  {
+    "produto": "Melão",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1.90,
+    "precos_2025_rs": {
+      "Jan": 1.90,
+      "Fev": 1.90,
+      "Mar": 1.90,
+      "Abr": 1.90,
+      "Mai": 1.90,
+      "Jun": 1.90,
+      "Jul": 1.90,
+      "Ago": 1.90,
+      "Set": 1.90,
+      "Out": 1.90,
+      "Nov": 1.90,
+      "Dez": 1.90
+    }
+  },
+  {
+    "produto": "Milho (em grão)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 850.00,
+    "precos_2025_rs": {
+      "Jan": 850.00,
+      "Fev": 850.00,
+      "Mar": 850.00,
+      "Abr": 850.00,
+      "Mai": 850.00,
+      "Jun": 850.00,
+      "Jul": 850.00,
+      "Ago": 850.00,
+      "Set": 850.00,
+      "Out": 850.00,
+      "Nov": 850.00,
+      "Dez": 850.00
+    }
+  },
+  {
+    "produto": "Noz (fruto seco)",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 15.00,
+    "precos_2025_rs": {
+      "Jan": 15.00,
+      "Fev": 15.00,
+      "Mar": 15.00,
+      "Abr": 15.00,
+      "Mai": 15.00,
+      "Jun": 15.00,
+      "Jul": 15.00,
+      "Ago": 15.00,
+      "Set": 15.00,
+      "Out": 15.00,
+      "Nov": 15.00,
+      "Dez": 15.00
+    }
+  },
+  {
+    "produto": "Palmito",
+    "unidade_medida": "Unidade",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 4.80,
+    "precos_2025_rs": {
+      "Jan": 4.80,
+      "Fev": 4.80,
+      "Mar": 4.80,
+      "Abr": 4.80,
+      "Mai": 4.80,
+      "Jun": 4.80,
+      "Jul": 4.80,
+      "Ago": 4.80,
+      "Set": 4.80,
+      "Out": 4.80,
+      "Nov": 4.80,
+      "Dez": 4.80
+    }
+  },
+  {
+    "produto": "Pêra",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 6.20,
+    "precos_2025_rs": {
+      "Jan": 6.20,
+      "Fev": 6.20,
+      "Mar": 6.20,
+      "Abr": 6.20,
+      "Mai": 6.20,
+      "Jun": 6.20,
+      "Jul": 6.20,
+      "Ago": 6.20,
+      "Set": 6.20,
+      "Out": 6.20,
+      "Nov": 6.20,
+      "Dez": 6.20
+    }
+  },
+  {
+    "produto": "Pêssego",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 3.80,
+    "precos_2025_rs": {
+      "Jan": 3.80,
+      "Fev": 3.80,
+      "Mar": 3.80,
+      "Abr": 3.80,
+      "Mai": 3.80,
+      "Jun": 3.80,
+      "Jul": 3.80,
+      "Ago": 3.80,
+      "Set": 3.80,
+      "Out": 3.80,
+      "Nov": 3.80,
+      "Dez": 3.80
+    }
+  },
+  {
+    "produto": "Pimenta-do-reino",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 14.50,
+    "precos_2025_rs": {
+      "Jan": 14.50,
+      "Fev": 14.50,
+      "Mar": 14.50,
+      "Abr": 14.50,
+      "Mai": 14.50,
+      "Jun": 14.50,
+      "Jul": 14.50,
+      "Ago": 14.50,
+      "Set": 14.50,
+      "Out": 14.50,
+      "Nov": 14.50,
+      "Dez": 14.50
+    }
+  },
+  {
+    "produto": "Rami (fibra)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 3500.00,
+    "precos_2025_rs": {
+      "Jan": 3500.00,
+      "Fev": 3500.00,
+      "Mar": 3500.00,
+      "Abr": 3500.00,
+      "Mai": 3500.00,
+      "Jun": 3500.00,
+      "Jul": 3500.00,
+      "Ago": 3500.00,
+      "Set": 3500.00,
+      "Out": 3500.00,
+      "Nov": 3500.00,
+      "Dez": 3500.00
+    }
+  },
+  {
+    "produto": "Sisal ou Agave (fibra)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 2600.00,
+    "precos_2025_rs": {
+      "Jan": 2600.00,
+      "Fev": 2600.00,
+      "Mar": 2600.00,
+      "Abr": 2600.00,
+      "Mai": 2600.00,
+      "Jun": 2600.00,
+      "Jul": 2600.00,
+      "Ago": 2600.00,
+      "Set": 2600.00,
+      "Out": 2600.00,
+      "Nov": 2600.00,
+      "Dez": 2600.00
+    }
+  },
+  {
+    "produto": "Soja (em grão)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1800.00,
+    "precos_2025_rs": {
+      "Jan": 1800.00,
+      "Fev": 1800.00,
+      "Mar": 1800.00,
+      "Abr": 1800.00,
+      "Mai": 1800.00,
+      "Jun": 1800.00,
+      "Jul": 1800.00,
+      "Ago": 1800.00,
+      "Set": 1800.00,
+      "Out": 1800.00,
+      "Nov": 1800.00,
+      "Dez": 1800.00
+    }
+  },
+  {
+    "produto": "Sorgo Granífero (em grão)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 780.00,
+    "precos_2025_rs": {
+      "Jan": 780.00,
+      "Fev": 780.00,
+      "Mar": 780.00,
+      "Abr": 780.00,
+      "Mai": 780.00,
+      "Jun": 780.00,
+      "Jul": 780.00,
+      "Ago": 780.00,
+      "Set": 780.00,
+      "Out": 780.00,
+      "Nov": 780.00,
+      "Dez": 780.00
+    }
+  },
+  {
+    "produto": "Tomate",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 3.10,
+    "precos_2025_rs": {
+      "Jan": 3.10,
+      "Fev": 3.10,
+      "Mar": 3.10,
+      "Abr": 3.10,
+      "Mai": 3.10,
+      "Jun": 3.10,
+      "Jul": 3.10,
+      "Ago": 3.10,
+      "Set": 3.10,
+      "Out": 3.10,
+      "Nov": 3.10,
+      "Dez": 3.10
+    }
+  },
+  {
+    "produto": "Trigo (em grão)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1350.00,
+    "precos_2025_rs": {
+      "Jan": 1350.00,
+      "Fev": 1350.00,
+      "Mar": 1350.00,
+      "Abr": 1350.00,
+      "Mai": 1350.00,
+      "Jun": 1350.00,
+      "Jul": 1350.00,
+      "Ago": 1350.00,
+      "Set": 1350.00,
+      "Out": 1350.00,
+      "Nov": 1350.00,
+      "Dez": 1350.00
+    }
+  },
+  {
+    "produto": "Triticale (em grão)",
+    "unidade_medida": "Tonelada",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 1150.00,
+    "precos_2025_rs": {
+      "Jan": 1150.00,
+      "Fev": 1150.00,
+      "Mar": 1150.00,
+      "Abr": 1150.00,
+      "Mai": 1150.00,
+      "Jun": 1150.00,
+      "Jul": 1150.00,
+      "Ago": 1150.00,
+      "Set": 1150.00,
+      "Out": 1150.00,
+      "Nov": 1150.00,
+      "Dez": 1150.00
+    }
+  },
+  {
+    "produto": "Uva",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 3.30,
+    "precos_2025_rs": {
+      "Jan": 3.30,
+      "Fev": 3.30,
+      "Mar": 3.30,
+      "Abr": 3.30,
+      "Mai": 3.30,
+      "Jun": 3.30,
+      "Jul": 3.30,
+      "Ago": 3.30,
+      "Set": 3.30,
+      "Out": 3.30,
+      "Nov": 3.30,
+      "Dez": 3.30
+    }
+  },
+  {
+    "produto": "Azeitona",
+    "unidade_medida": "Kg",
+    "fonte_referencia": "IBGE/CONAB PMA 2024",
+    "pma_2024_rs": 8.00,
+    "precos_2025_rs": {
+      "Jan": 8.00,
+      "Fev": 8.00,
+      "Mar": 8.00,
+      "Abr": 8.00,
+      "Mai": 8.00,
+      "Jun": 8.00,
+      "Jul": 8.00,
+      "Ago": 8.00,
+      "Set": 8.00,
+      "Out": 8.00,
+      "Nov": 8.00,
+      "Dez": 8.00
+    }
+  }
+]

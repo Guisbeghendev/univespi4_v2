@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-
 # Opções de Unidade de Medida para o Terreno
 UNIT_CHOICES = (
     ('HA', 'Hectare (ha)'),
@@ -15,18 +14,32 @@ UNIT_CHOICES = (
 # Modelos Existentes
 # ==============================================================================
 
-# Modelo para o Plano de Plantio
+# Modelo para o Plano de Plantio (ATUALIZADO)
 class PlanoPlantio(models.Model):
     # Relaciona o plano de plantio com um usuário
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    nome_plantacao = models.CharField(max_length=200)
-    cultura = models.CharField(max_length=100)
-    localizacao = models.CharField(max_length=200)
-    area = models.DecimalField(max_digits=10, decimal_places=2, help_text="Área em hectares")
+
+    # ALTERAÇÃO CRÍTICA: Relaciona o plano de plantio com um terreno específico
+    terreno = models.ForeignKey('Terreno', on_delete=models.CASCADE, verbose_name="Terreno Selecionado")
+
+    nome_plantacao = models.CharField(max_length=200, verbose_name="Nome do Plano")
+    cultura = models.CharField(max_length=100, verbose_name="Cultura Escolhida (Nome Normalizado do Produto)")
+
+    # Campos originais ajustados: tornados opcionais (blank/null) pois a localização
+    # e a área serão primariamente derivadas do Terreno, mas mantidos para compatibilidade.
+    localizacao = models.CharField(max_length=200, blank=True, null=True, verbose_name="Localização (Cidade/Estado)")
+    area = models.DecimalField(max_digits=10, decimal_places=2, help_text="Área em hectares", blank=True, null=True)
+
     data_criacao = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = "Plano de Cultivo"
+        verbose_name_plural = "Planos de Cultivo"
+
     def __str__(self):
-        return f"{self.nome_plantacao} de {self.cultura}"
+        # String de representação atualizada para incluir o Terreno
+        return f"{self.nome_plantacao} de {self.cultura} no Terreno: {self.terreno.name}"
+
 
 # Modelo para os Dados Climáticos (importados de APIs)
 class DadosClimaticos(models.Model):
@@ -41,6 +54,7 @@ class DadosClimaticos(models.Model):
 
     def __str__(self):
         return f"Dados de clima para {self.plano_plantio.nome_plantacao} em {self.data_hora.strftime('%d/%m/%Y %H:%M')}"
+
 
 # Modelo para os Dados Simulados dos Sensores
 class DadosSensor(models.Model):
@@ -64,16 +78,19 @@ class Profile(models.Model):
     country = models.CharField(max_length=100, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
     contact = models.CharField(max_length=100, blank=True, null=True)
-    cultivo_principal = models.CharField(max_length=100, blank=True, null=True, verbose_name="Cultivo Principal (Nome Normalizado)")
+    cultivo_principal = models.CharField(max_length=100, blank=True, null=True,
+                                         verbose_name="Cultivo Principal (Nome Normalizado)")
 
     def __str__(self):
         return f"Perfil de {self.user.username if self.user else 'Usuário sem link'}"
+
 
 # Signals para garantir que um perfil é criado sempre que um novo usuário é criado
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

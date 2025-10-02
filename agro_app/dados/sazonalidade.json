@@ -1,0 +1,380 @@
+[
+  {
+    "produto": "Abacate",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo (picos variáveis)"
+  },
+  {
+    "produto": "Abacaxi",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo (picos variáveis)"
+  },
+  {
+    "produto": "Açaí",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo (picos variáveis)"
+  },
+  {
+    "produto": "Algodão Arbóreo (em caroço)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Varia (ciclos mais longos)"
+  },
+  {
+    "produto": "Azeitona",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Varia"
+  },
+  {
+    "produto": "Banana (cacho)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo"
+  },
+  {
+    "produto": "Borracha (látex coagulado)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo"
+  },
+  {
+    "produto": "Cacau (em amêndoa)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo (picos de safra)"
+  },
+  {
+    "produto": "Café Arábica (em grão)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Mai - Set"
+  },
+  {
+    "produto": "Café Canephora (em grão)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Mai - Set"
+  },
+  {
+    "produto": "Caqui",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Fev - Mai"
+  },
+  {
+    "produto": "Castanha-de-caju",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Set - Jan"
+  },
+  {
+    "produto": "Chá-da-Índia (folha verde)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo"
+  },
+  {
+    "produto": "Coco-da-baía",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo"
+  },
+  {
+    "produto": "Dendê (cacho de coco)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo"
+  },
+  {
+    "produto": "Erva-mate (folha verde)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Abr - Set"
+  },
+  {
+    "produto": "Figo",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Dez - Abr"
+  },
+  {
+    "produto": "Goiaba",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo (picos variáveis)"
+  },
+  {
+    "produto": "Guaraná (semente)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ago - Out"
+  },
+  {
+    "produto": "Laranja",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo (picos de safra)"
+  },
+  {
+    "produto": "Limão",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo (picos de safra)"
+  },
+  {
+    "produto": "Maçã",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Dez - Abr"
+  },
+  {
+    "produto": "Mamão",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo"
+  },
+  {
+    "produto": "Manga",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ago - Mar (picos)"
+  },
+  {
+    "produto": "Maracujá",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo"
+  },
+  {
+    "produto": "Marmelo",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Fev - Abr"
+  },
+  {
+    "produto": "Noz (fruto seco)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Varia"
+  },
+  {
+    "produto": "Palmito",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo"
+  },
+  {
+    "produto": "Pêra",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Jan - Mai"
+  },
+  {
+    "produto": "Pêssego",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Out - Fev"
+  },
+  {
+    "produto": "Pimenta-do-reino",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo (picos)"
+  },
+  {
+    "produto": "Sisal ou Agave (fibra)",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Ano todo"
+  },
+  {
+    "produto": "Uva",
+    "tipo": "Permanente",
+    "plantio": "Não se aplica",
+    "colheita": "Dez - Mar (mesa); Mai - Ago (vinho)"
+  },
+  {
+    "produto": "Algodão Herbáceo (em caroço)",
+    "tipo": "Temporário",
+    "plantio": "Out - Dez",
+    "colheita": "Mar - Mai"
+  },
+  {
+    "produto": "Alho",
+    "tipo": "Temporário",
+    "plantio": "Mar - Mai",
+    "colheita": "Ago - Out"
+  },
+  {
+    "produto": "Amendoim (em casca)",
+    "tipo": "Temporário",
+    "plantio": "Out - Nov",
+    "colheita": "Fev - Abr"
+  },
+  {
+    "produto": "Arroz (em casca)",
+    "tipo": "Temporário",
+    "plantio": "Out - Dez",
+    "colheita": "Fev - Mai"
+  },
+  {
+    "produto": "Aveia (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Abr - Jun",
+    "colheita": "Set - Dez"
+  },
+  {
+    "produto": "Batata-doce",
+    "tipo": "Temporário",
+    "plantio": "Set - Nov",
+    "colheita": "Mar - Mai"
+  },
+  {
+    "produto": "Batata-inglesa",
+    "tipo": "Temporário",
+    "plantio": "Ago - Set / Jan - Mar",
+    "colheita": "Nov - Dez / Mai - Jul"
+  },
+  {
+    "produto": "Cana-de-açúcar",
+    "tipo": "Temporário",
+    "plantio": "Jan - Mar / Out - Dez",
+    "colheita": "Ano todo (período de safra)"
+  },
+  {
+    "produto": "Cebola",
+    "tipo": "Temporário",
+    "plantio": "Mar - Mai / Jul - Set",
+    "colheita": "Jul - Set / Out - Dez"
+  },
+  {
+    "produto": "Centeio (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Abr - Jun",
+    "colheita": "Set - Nov"
+  },
+  {
+    "produto": "Cevada (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Abr - Jun",
+    "colheita": "Set - Nov"
+  },
+  {
+    "produto": "Ervilha (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Fev - Abr / Ago - Set",
+    "colheita": "Mai - Jun / Nov - Dez"
+  },
+  {
+    "produto": "Fava (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Set - Mar (Varia por região)",
+    "colheita": "Varia (Ciclo de estação fresca)"
+  },
+  {
+    "produto": "Feijão (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Out - Jun (3 safras anuais)",
+    "colheita": "Jan - Set (Varia, ciclo 60 a 100+ dias)"
+  },
+  {
+    "produto": "Fumo (em folha)",
+    "tipo": "Temporário",
+    "plantio": "Jun - Set (Transplante)",
+    "colheita": "Ago em diante (Início da colheita)"
+  },
+  {
+    "produto": "Girassol (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Set - Mar (Verão/Safrinha)",
+    "colheita": "Jan - Jun"
+  },
+  {
+    "produto": "Juta (fibra)",
+    "tipo": "Temporário",
+    "plantio": "Dez - Mar (Início das chuvas)",
+    "colheita": "Jul - Set (Época de calor)"
+  },
+  {
+    "produto": "Linho (semente)",
+    "tipo": "Temporário",
+    "plantio": "Abr - Jun (Outono)",
+    "colheita": "Nov - Dez (Primavera/Verão)"
+  },
+  {
+    "produto": "Malva (fibra)",
+    "tipo": "Temporário",
+    "plantio": "Dez - Mar (Ciclo úmido/quente)",
+    "colheita": "Jul - Set (Época de calor)"
+  },
+  {
+    "produto": "Mamona (baga)",
+    "tipo": "Temporário",
+    "plantio": "Out - Nov (Período ótimo)",
+    "colheita": "Ano todo (cortes)"
+  },
+  {
+    "produto": "Mandioca",
+    "tipo": "Temporário",
+    "plantio": "Set - Nov (Período principal)",
+    "colheita": "Ano todo (7 a 24 meses após plantio)"
+  },
+  {
+    "produto": "Melancia",
+    "tipo": "Temporário",
+    "plantio": "Ano todo (Evitar frio)",
+    "colheita": "Ano todo (3 a 4 meses após plantio)"
+  },
+  {
+    "produto": "Melão",
+    "tipo": "Temporário",
+    "plantio": "Ano todo (Evitar frio/chuva intensa)",
+    "colheita": "Ano todo (2 a 4 meses após plantio)"
+  },
+  {
+    "produto": "Milho (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Set - Mar (2 safras)",
+    "colheita": "Jan - Set (2 safras)"
+  },
+  {
+    "produto": "Rami (fibra)",
+    "tipo": "Temporário",
+    "plantio": "Set - Nov (Primavera/Verão)",
+    "colheita": "Nov - Jun (Múltiplos cortes)"
+  },
+  {
+    "produto": "Soja (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Set - Dez",
+    "colheita": "Jan - Mai"
+  },
+  {
+    "produto": "Sorgo Granífero (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Set - Mar (2 safras)",
+    "colheita": "Jan - Ago (2 safras)"
+  },
+  {
+    "produto": "Tomate",
+    "tipo": "Temporário",
+    "plantio": "Mar - Out (Varia por região)",
+    "colheita": "Ano todo (3 a 5 meses após transplante)"
+  },
+  {
+    "produto": "Trigo (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Mar - Jun (Cultura de inverno)",
+    "colheita": "Ago - Nov"
+  },
+  {
+    "produto": "Triticale (em grão)",
+    "tipo": "Temporário",
+    "plantio": "Mar - Jun (Cultura de inverno)",
+    "colheita": "Ago - Nov"
+  }
+]

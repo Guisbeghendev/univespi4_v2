@@ -5,25 +5,182 @@
 
 <div class="dashboard-grid">
 
-    {# inserir bloco1 #}
-    {% include 'bloco1.html' %}
+    {# inicio card1 #}
+    <div class="dash-card dash-card-full">
+        <h2 class="sub-title">Bem-vindo à Dashboard do AgroData</h2>
+        <p>Olá, {{ request.user.username }}! Esta é a sua dashboard pessoal.</p>
+        <p>Você está em **{{ city_name|default:"-" }} / {{ state_name|default:"-" }}**</p>
+        <p id="current-date"></p>
+    </div>
+    {# fim card1 #}
 
-    {# inserir bloco2 #}
-    {% include 'bloco2.html' %}
+    {# inicio card2 #}
+    <div class="dash-card">
+        <h4>Detalhes do Clima em {{ city_name|default:"-" }}</h4>
+        {% if weather_data %}
+            <p><strong>Umidade:</strong> {{ weather_data.main.humidity|default:"-" }}%</p>
+            <p><strong>Vento:</strong> {{ weather_data.wind.speed|default:"-" }} m/s</p>
+            <p><strong>Pressão:</strong> {{ weather_data.main.pressure|default:"-" }} hPa</p>
+        {% else %}
+            <p>Dados de clima não disponíveis.</p>
+        {% endif %}
+    </div>
+    {# fim card2 #}
+
+    {# inicio card3 #}
+    <div class="dash-card">
+        <h4>Condição do Tempo em {{ city_name|default:"-" }}</h4>
+        {% if weather_data %}
+            <p>**{{ weather_data.weather.0.description|default:"-"|title }}**</p>
+        {% else %}
+            <p>Dados de clima não disponíveis.</p>
+        {% endif %}
+    </div>
+    {# fim card3 #}
+
+    {# inicio card4 - este card vai ocupar 2 espacos #}
+    <div class="dash-card dash-card-wide">
+    <h4>Temperatura em {{ city_name|default:"-" }}</h4>
+    {% if weather_data %}
+        <p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ weather_data.main.temp|floatformat:"0" }}°C</p>
+        <p>Sensação térmica: {{ weather_data.main.feels_like|floatformat:"0" }}°C</p>
+        <p>Mínima: {{ weather_data.main.temp_min|floatformat:"0" }}°C / Máxima: {{ weather_data.main.temp_max|floatformat:"0" }}°C</p>
+    {% else %}
+        <p>Dados de temperatura não disponíveis.</p>
+    {% endif %}
+    </div>
+    {# fim card4 #}
 
     <div class="filter-results-container dash-card-full">
-        {# inserir bloco3 #}
-        {% include 'bloco3.html' %}
+        {# inicio card5 - Filtros #}
+        <div class="dash-card">
+            <h4>Filtros de Agropecuária</h4>
+            <p>Selecione um produto para começar:</p>
+
+            <p>1. Selecione o Estado:</p>
+            <select id="state-select" class="form-field">
+                <option value="">Carregando estados...</option>
+            </select>
+
+            <p>2. Selecione a Cidade:</p>
+            <select id="city-select" class="form-field">
+                <option value="">Selecione um estado primeiro</option>
+            </select>
+
+            <p>3. Selecione o Tipo de Cultivo:</p>
+            <select id="produto-select" class="form-field">
+                <option value="">Selecione uma cidade primeiro</option>
+            </select>
+            <div id="produto-error-message" style="color: red; margin-top: 5px; display: none;"></div>
+        </div>
+        {# fim card5 #}
+
+        {# inicio card de Resultados - Nova Linha #}
+        <div class="dash-card">
+            <h4>Dados Detalhados</h4>
+            <div id="results-display">
+                <p>Selecione um estado, cidade e cultivo para ver os dados.</p>
+            </div>
+        </div>
+        {# fim card de Resultados #}
     </div>
 
-    {# inserir bloco4 #}
-    {% include 'bloco4.html' %}
+    {# inicio card6 #}
+    <div class="dash-card dash-card-responsive-half">
+        <h4>⚙️ Sugestões de Plantio para {{ city_name|default:"sua Região" }}</h4>
+        <p>Baseado no histórico de **Maior Rendimento (kg/ha)** e **Maior Valor (R$)** na sua cidade.</p>
 
-    {# inserir bloco5 #}
-    {% include 'bloco5.html' %}
+        {% if suggestions %}
+            <ul class="suggestion-list">
+                {% for suggestion in suggestions %}
+                    <li class="suggestion-item rank-{{ forloop.counter }}">
+                        <span>
+                            **{{ forloop.counter }}º** - {{ suggestion.name }}
+                            <small>({{ suggestion.rendimento|floatformat:"0" }} kg/ha / R$ {{ suggestion.valor|floatformat:"0" }})</small>
+                        </span>
+                        <span class="suggestion-score">{{ suggestion.score }}%</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            {% if profile.city %}
+                <p>Não foi possível gerar sugestões com base nos dados históricos da sua cidade. Certifique-se de que a cidade cadastrada possui dados de produção ou tente outra localização.</p>
+            {% else %}
+                <p>Por favor, complete seu cadastro de localização para receber as sugestões.</p>
+            {% endif %}
+        {% endif %}
+    </div>
+    {# fim card6 #}
 
-    {# inserir bloco6 #}
-    {% include 'bloco6.html' %}
+    {# inicio card7 - Gerenciamento de Terrenos #}
+    <div class="dash-card dash-card-responsive-half">
+        <h4>🌱 Gerenciamento de Terrenos</h4>
+        <p>Cadastre e acompanhe os seus terrenos e o cultivo principal em cada um.</p>
+
+        <!-- Formulário de Criação de Terreno -->
+        <div class="terreno-form-container" id="terreno-create-form">
+            <h5>Cadastrar Novo Terreno</h5>
+            <form method="post" action="{% url 'agro_app:create_terreno' %}">
+                {% csrf_token %}
+                <!-- Renderiza os campos do formulário -->
+                {% for field in terreno_form %}
+                    <p>
+                        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <ul style="color: red; list-style: none; padding: 0; font-size: 0.9em;">
+                                {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </p>
+                {% endfor %}
+                <button type="submit" class="edit-btn" style="width: 100%; margin-top: 10px;">Salvar Terreno</button>
+            </form>
+        </div>
+
+        <h5 style="margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Seus Terrenos Atuais ({{ terrenos|length }})</h5>
+
+        {% if terrenos %}
+            <ul class="terreno-list">
+                {% for terreno in terrenos %}
+                    <li class="terreno-item">
+                        <div class="terreno-details">
+                            <strong>{{ terreno.name }}</strong>
+                            {# CORREÇÃO DA ÁREA (feito antes, mas mantido para estabilidade) #}
+                            <small>| Área: **{{ terreno.area|default:"0"|floatformat:"0" }} ha** | Cultivo: {{ terreno.cultivo_principal|default:"Não definido" }}</small>
+                        </div>
+                        <div class="terreno-actions">
+                            <!-- Botão de Edição AGORA É UM LINK PARA O NOVO TEMPLATE -->
+                            <a href="{% url 'agro_app:edit_terreno' pk=terreno.pk %}" class="edit-btn">
+                                Editar
+                            </a>
+                            <!-- Formulário de Exclusão com confirmação JS -->
+                            <form method="post" action="{% url 'agro_app:delete_terreno' pk=terreno.pk %}" style="display:inline;" onsubmit="return confirmDelete(event, '{{ terreno.name|escapejs }}')">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn">Excluir</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="margin-top: 10px;">Você ainda não tem terrenos cadastrados. Use o formulário acima para adicionar o seu primeiro.</p>
+        {% endif %}
+    </div>
+    {# fim card7 #}
+
+
+    {# inicio card8 #}
+    <div class="dash-card dash-card-responsive-half">
+        <h4>Cotações</h4>
+        <p>Fonte: CEPEA</p>
+
+        <!-- Widgets Produtos Cepea - www.cepea.esalq.com.br/br/widget.aspx -->
+        <script type="text/javascript" src="https://www.cepea.org.br/br/widgetproduto.js.php?fonte=arial&tamanho=10&largura=400px&corfundo=dbd6b2&cortexto=333333&corlinha=ede7bf&id_indicador%5B%5D=54&id_indicador%5B%5D=91&id_indicador%5B%5D=53&id_indicador%5B%5D=23&id_indicador%5B%5D=24&id_indicador%5B%5D=381-1&id_indicador%5B%5D=380-1&id_indicador%5B%5D=378-420&id_indicador%5B%5D=72&id_indicador%5B%5D=77&id_indicador%5B%5D=12&id_indicador%5B%5D=179"></script>
+
+    </div>
+    {# fim card8 #}
+
 
 </div>
 
@@ -46,13 +203,7 @@
     const GET_STATES_URL = "{% url 'agro_app:get_states' %}";
     // Usamos um placeholder '0' ou 'placeholder' que será substituído no JS
     const GET_CITIES_URL_TEMPLATE = "{% url 'agro_app:get_cities' 0 %}";
-
-    // CORREÇÃO: Nova template para usar a view que espera o ID da cidade
-    const GET_PRODUCTS_BY_CITY_ID_URL_TEMPLATE = "{% url 'agro_app:get_products_by_city_by_id' 0 %}";
-
-    // MANTIDA, mas não usada pela populateProductsDropdown
     const GET_PRODUCTS_BY_CITY_URL_TEMPLATE = "{% url 'agro_app:get_products_by_city' 'placeholder' %}";
-
     const GET_DETAILED_DATA_URL_TEMPLATE = "{% url 'agro_app:get_detailed_data' 'placeholder1' 'placeholder2' %}";
 
     // ** Funções de Lógica da Dashboard (Existentes) **
@@ -129,7 +280,6 @@
             }
         }
 
-        // FUNÇÃO CORRIGIDA: Usa o ID da cidade para chamar a view correta no Django.
         async function populateProductsDropdown(cityId) {
             produtoErrorMessageDiv.style.display = 'none';
             produtoSelect.disabled = true;
@@ -139,9 +289,15 @@
             }
             produtoSelect.innerHTML = '<option value="">Carregando produtos...</option>';
             try {
-                // CORREÇÃO APLICADA: Usa a template que chama a view get_products_by_city_by_id
-                const url = GET_PRODUCTS_BY_CITY_ID_URL_TEMPLATE.replace('0', cityId);
+                const cityResponse = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/municipios/${cityId}`);
+                if (!cityResponse.ok) {
+                    throw new Error('Erro ao carregar dados da cidade.');
+                }
+                const cityData = await cityResponse.json();
+                const cityName = cityData.nome;
 
+                // GERA A URL COM O NOME DA CIDADE
+                const url = GET_PRODUCTS_BY_CITY_URL_TEMPLATE.replace('placeholder', cityName);
                 const productsResponse = await fetch(url);
                 if (!productsResponse.ok) {
                     throw new Error('Erro ao carregar os produtos. URL: ' + url);
@@ -170,7 +326,7 @@
             }
         }
 
-        // Função para exibir os dados detalhados (MANTIDA)
+        // Função para exibir os dados detalhados
         async function displayDetailedData() {
             const selectedCityId = citySelect.value;
             const selectedProductId = produtoSelect.value;
@@ -183,7 +339,6 @@
             resultsDisplayDiv.innerHTML = '<p>Carregando dados...</p>';
 
             try {
-                // A LÓGICA DE BUSCAR O NOME DA CIDADE AQUI FOI MANTIDA, POIS A VIEW get_detailed_data AINDA ESPERA O NOME.
                 const cityResponse = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/municipios/${selectedCityId}`);
                 const cityData = await cityResponse.json();
                 const cityName = cityData.nome;
