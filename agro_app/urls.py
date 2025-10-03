@@ -13,8 +13,6 @@ urlpatterns = [
     path('api/get-products-by-city/<str:city_name>/', views.get_products_by_city, name='get_products_by_city'),
     path('api/get-products-by-city-by-id/<int:city_id>/', views.get_products_by_city_by_id,
          name='get_products_by_city_by_id'),
-    path('api/get-detailed-data/<str:city_name>/<str:product_name>/', views.get_detailed_data_by_product_and_city,
-         name='get_detailed_data'),
 
     # NOVAS Rotas de Gerenciamento de Terrenos
     path('terreno/create/', views.create_terreno, name='create_terreno'),
@@ -28,6 +26,11 @@ urlpatterns = [
     # NOVA ROTA: Rota para salvar o plano de cultivo finalizado (POST)
     path('plano/save/<int:terreno_id>/', views.save_plano, name='save_plano'),
 
-    path('api/plano-data/<int:terreno_id>/<str:product_id>/', views.get_plano_data_details,
+    # ROTA CORRIGIDA (POSIÇÃO): Esta rota específica precisa vir antes da genérica de detalhe.
+    path('api/plano-data/<int:terreno_id>/<str:product_id>', views.get_plano_data_details,
          name='get_plano_data_details'),
+
+    # Rota Genérica de Detalhe (AGORA DEPOIS): Mantida com <str> para ser mais ampla.
+    path('api/get-detailed-data/<str:city_name>/<str:product_name>/', views.get_detailed_data_by_product_and_city,
+         name='get_detailed_data'),
 ]

@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{# REMOVIDO: {% load crispy_forms_tags %} #}
 
 {% block title %}Novo Plano de Cultivo - Etapa 2{% endblock %}
 
@@ -25,16 +24,21 @@
 
             {% for suggestion in suggestions %}
             <div class="product-card" data-product-id="{{ suggestion.id }}" data-product-name="{{ suggestion.name }}"
-                 style="border: 1px solid #ddd; border-left: 5px solid #38761d; padding: 15px; border-radius: 6px; cursor: pointer; transition: all 0.3s; background-color: #fcfcfc;">
+                 style="border: 1px solid #ddd; border-left: 5px solid #38761d; padding: 15px; border-radius: 6px; **height: 280px;** transition: all 0.3s; background-color: #fcfcfc; overflow: hidden;">
 
                 <h4 style="margin-top: 0; color: #333;">{{ suggestion.name }}</h4>
                 <p style="font-size: 0.9em; color: #666;">
                     Pontuação Agro: <strong style="color: {% if suggestion.score >= 75 %}#38761d{% elif suggestion.score >= 50 %}#ff9900{% else %}#e06666{% endif %};">{{ suggestion.score }}%</strong>
                 </p>
-                <div id="details-{{ suggestion.id }}" style="margin-top: 10px; font-size: 0.85em; color: #777;">
-                    <p>Clique para ver detalhes e finalizar o Plano...</p>
+
+                <div id="details-{{ suggestion.id }}" style="margin-top: 10px; font-size: 0.85em; color: #777; **height: 120px; overflow-y: auto;**">
+                    <p>Clique no botão para ver detalhes...</p>
                 </div>
 
+                <button type="button" class="btn btn-sm select-product-btn" data-product-id="{{ suggestion.id }}"
+                        style="display: block; width: 100%; margin-top: 10px; background-color: #5cb85c; color: white; border: none;">
+                    Selecionar e Ver Detalhes
+                </button>
             </div>
             {% endfor %}
 
@@ -78,7 +82,7 @@
 
 <script>
     const TERRENO_ID = "{{ terreno.pk }}";
-    const API_URL_TEMPLATE = "/api/plano-data/PLACEHOLDER_T/PLACEHOLDER_P/";
+    const API_URL_TEMPLATE = "/dashboard/api/plano-data/PLACEHOLDER_T/PLACEHOLDER_P";
     const finalFormContainer = document.getElementById('final-plano-form-container');
     const selectedProductDisplay = document.getElementById('selected-product-display');
 
@@ -86,18 +90,33 @@
     const inputCultura = document.getElementById('id_cultura');
     const inputTerreno = document.getElementById('id_terreno');
 
+    // NOVA FUNÇÃO: Converte texto (productName) em um slug URL-friendly
+    function slugify(text) {
+        return text.toString().toLowerCase()
+            .replace(/\s+/g, '-')           // Substitui espaços por -
+            .replace(/[^\w\-]+/g, '')       // Remove caracteres não-palavra (exceto hífens)
+            .replace(/\-\-+/g, '-')         // Substitui múltiplos hífens por um único
+            .replace(/^-+/, '')             // Remove hífens do início
+            .replace(/-+$/, '');            // Remove hífens do fim
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        // Seleciona todos os NOVOS BOTÕES
+        const selectButtons = document.querySelectorAll('.select-product-btn');
         const productCards = document.querySelectorAll('.product-card');
 
-        productCards.forEach(card => {
-            card.addEventListener('click', function() {
+        selectButtons.forEach(button => {
+            button.addEventListener('click', function() {
                 const productId = this.getAttribute('data-product-id');
-                const productName = this.getAttribute('data-product-name');
+                const card = this.closest('.product-card'); // Encontra o card pai
+                const productName = card.getAttribute('data-product-name');
+
+                const productSlug = slugify(productName);
                 const detailsDiv = document.getElementById(`details-${productId}`);
 
                 // 1. Destaque do Card
                 productCards.forEach(c => c.style.backgroundColor = '#fcfcfc');
-                this.style.backgroundColor = '#e6ffe6';
+                card.style.backgroundColor = '#e6ffe6';
 
                 // 2. Preenche os campos hidden do Formulário e exibe o formulário
                 inputCultura.value = productName;
@@ -108,18 +127,24 @@
                 selectedProductDisplay.textContent = productName;
                 finalFormContainer.style.display = 'block';
 
-                // 3. Carrega e exibe os detalhes
-                loadProductDetails(productId, productName, detailsDiv, this);
+                // 3. Carrega e exibe os detalhes, usando o productSlug para a URL
+                loadProductDetails(productSlug, productName, detailsDiv, card);
+
+                // Rola suavemente
+                setTimeout(() => {
+                    finalFormContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
             });
         });
 
-        async function loadProductDetails(productId, productName, detailsDiv, cardElement) {
+        async function loadProductDetails(productSlug, productName, detailsDiv, cardElement) {
             detailsDiv.innerHTML = '<p>Carregando dados detalhados...</p>';
 
             try {
                 // Monta a URL da API substituindo os placeholders
                 let url = API_URL_TEMPLATE.replace('PLACEHOLDER_T', TERRENO_ID);
-                url = url.replace('PLACEHOLDER_P', productId);
+                // CRUCIAL: Usa o SLUG (productSlug) para a URL
+                url = url.replace('PLACEHOLDER_P', productSlug);
 
                 const response = await fetch(url);
                 const data = await response.json();
@@ -149,16 +174,6 @@
                 detailsDiv.innerHTML = `<p style="color: red;">Erro ao comunicar com o servidor.</p>`;
             }
         }
-
-        // Rolagem suave para o formulário final após o clique
-        productCards.forEach(card => {
-            card.addEventListener('click', function() {
-                // Rola para o formulário de finalização após o clique
-                setTimeout(() => {
-                    finalFormContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            });
-        });
     });
 </script>
 
