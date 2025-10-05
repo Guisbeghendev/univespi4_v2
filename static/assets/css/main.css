@@ -194,10 +194,11 @@ button[type="submit"]:hover {
 /* Container para os cards de filtros e resultados (dentro da grid) */
 .filter-results-container {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Mobile First: 1 coluna */
     gap: 20px;
 }
 
+/* Esta media query garante o layout 50/50 em telas maiores (acima de 768px) */
 @media (min-width: 768px) {
     .filter-results-container {
         grid-template-columns: 1fr 1fr;
@@ -231,6 +232,42 @@ button[type="submit"]:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
 }
+
+/* --- ESTILOS ADICIONADOS PARA CORRIGIR O ESTOURO DO CONTEÚDO DA FICHA TÉCNICA (MOBILE) --- */
+#results-display {
+    /* Garante que palavras longas (como nomes de unidades) se quebrem */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    /* Permite rolagem horizontal interna SÓ SE NECESSÁRIO, para evitar estouro da página principal */
+    overflow-x: auto;
+    /* Garante que o container interno não exceda o limite */
+    width: 100%;
+}
+
+/* Regras de reforço: Garante que imagens, tabelas e outros elementos grandes respeitem a largura do container */
+#results-display * {
+    max-width: 100%;
+    height: auto;
+    box-sizing: border-box; /* Garante que padding/border não aumentem a largura total */
+}
+/* Regra para forçar a quebra de texto em qualquer elemento (especialmente importante para strings longas sem espaço) */
+#results-display p, #results-display span, #results-display div {
+    word-break: break-all;
+}
+/* Regra específica para tabelas */
+#results-display table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Remove a rolagem interna em telas maiores, onde há espaço */
+@media (min-width: 768px) {
+    #results-display {
+        overflow-x: hidden;
+    }
+}
+/* --------------------------------------------------------------------------------------- */
+
 
 /* -------------------------------------------------------------------- */
 /* ESTILOS ESPECÍFICOS PARA OS 3 CARDS DE CLIMA (dash-clima-grid) */

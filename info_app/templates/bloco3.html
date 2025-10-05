@@ -1,0 +1,38 @@
+{# O container abaixo habilita o grid responsivo: 1 coluna em mobile, 2 colunas em desktop #}
+<div class="filter-results-container">
+    {# Card 5 - Filtros de Agropecuária #}
+    <div class="dash-card">
+        <h4>Filtros de Agropecuária</h4>
+        <p>Selecione um produto para começar:</p>
+
+        <p>1. Selecione o Estado:</p>
+        <!-- ID: state-select-info é usado pelo JavaScript para carregar estados e cidades -->
+        <select id="state-select-info" class="form-field">
+            <option value="">Carregando estados...</option>
+        </select>
+
+        <p>2. Selecione a Cidade:</p>
+        <!-- ID: city-select-info é usado pelo JavaScript para carregar cidades e produtos -->
+        <select id="city-select-info" class="form-field" disabled>
+            <option value="">Selecione um estado primeiro</option>
+        </select>
+
+        <p>3. Selecione o Tipo de Cultivo:</p>
+        <!-- ID: produto-select-info é usado pelo JavaScript para acionar a busca da Ficha Técnica -->
+        <select id="produto-select-info" class="form-field" disabled>
+            <option value="">Selecione uma cidade primeiro</option>
+        </select>
+        <div id="produto-error-message" style="color: red; margin-top: 5px; display: none;"></div>
+    </div>
+    {# Fim card5 #}
+
+    {# Card de Resultados #}
+    <div class="dash-card">
+        <h4>Dados Detalhados (Ficha Técnica Completa)</h4>
+        <div id="results-display">
+            <p>Selecione um estado, cidade e cultivo para ver os dados.</p>
+            <!-- Os resultados completos da Ficha Técnica serão injetados aqui pelo JavaScript -->
+        </div>
+    </div>
+    {# Fim card de Resultados #}
+</div>

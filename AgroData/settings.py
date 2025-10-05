@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'home',
     'agro_app',
     'fichatecnica_app',
-    'climalocal_app'
+    'climalocal_app',
+    'info_app'
 ]
 
 MIDDLEWARE = [

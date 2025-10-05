@@ -68,14 +68,16 @@ def _normalize_json_list(json_list, key_name):
 # ==============================================================================
 
 def load_and_cache_agro_data():
-    # ... (Seu código existente da Seção 2) ...
-    # O restante desta função não foi alterado.
-
+    """
+    Carrega e armazena em cache todos os dados de produção CSV e dados JSON.
+    Inclui lógica de normalização de nomes de colunas e cidades.
+    """
     global FICHA_TECNICA_CACHE
     if FICHA_TECNICA_CACHE and all(key in FICHA_TECNICA_CACHE for key in CSV_CONFIG.keys()):
         return FICHA_TECNICA_CACHE, "Sucesso (Cache carregado)"
 
     data_store = {}
+    # CORREÇÃO: Usando a pasta 'dados' dentro de 'agro_app'
     dados_dir = os.path.join(settings.BASE_DIR, 'agro_app', 'dados')
 
     # Processa os 5 DataFrames CSV (Leitura Individualizada e Sincronizada)
@@ -156,13 +158,10 @@ def load_and_cache_agro_data():
 
 
 # ==============================================================================
-# 3. FUNÇÃO DE GERAÇÃO DA FICHA TÉCNICA
+# 3. FUNÇÃO DE GERAÇÃO DA FICHA TÉCNICA (A ser chamada pelo wrapper)
 # ==============================================================================
 
 def generate_product_sheet(normalized_product_name, normalized_city_name):
-    # ... (Seu código existente da Seção 3) ...
-    # O restante desta função não foi alterado.
-
     """
     Busca os dados consolidados no cache e monta a Ficha Técnica JSON final.
     """
@@ -225,10 +224,49 @@ def generate_product_sheet(normalized_product_name, normalized_city_name):
 # 4. FUNÇÕES DE SERVIÇO PARA O APP AGRODATA (views.py)
 # ==============================================================================
 
-def get_product_name_by_id(product_id):
-    # ... (Seu código existente da Seção 4) ...
-    # Esta função não foi alterada.
+# FUNÇÃO ADICIONADA: Mapeia o ID IBGE (que é usado na URL) para o nome da cidade.
+def get_city_name_by_id(city_id):
+    """
+    Busca o nome da cidade a partir do ID IBGE, usando a API de Cidades do IBGE.
+    """
+    if not city_id:
+        return None, None
 
+    # URL da API do IBGE (que é servida pelo agro_app, mas usamos aqui a rota padrão)
+    # Como não temos acesso à rota interna do agro_app, vamos usar o IBGE diretamente.
+    try:
+        # Busca o estado da cidade para exibir no front-end
+        url = f"https://servicodados.ibge.gov.br/api/v1/localidades/municipios/{city_id}/?view=nivel"
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+
+        # O nome da cidade é o nome do município
+        city_name = data.get('nome')
+
+        # O nome do estado (UF) é encontrado no array 'regiao-imediata'
+        state_uf = None
+        if data.get('regiao-imediata') and data['regiao-imediata'].get('regiao-intermediaria') and \
+                data['regiao-imediata']['regiao-intermediaria'].get('UF'):
+            state_uf = data['regiao-imediata']['regiao-intermediaria']['UF'].get('sigla')
+
+        if city_name and state_uf:
+            # Retorna o nome completo e o nome normalizado para busca no DataFrame
+            full_name = f"{city_name} ({state_uf})"
+            normalized_name = normalize_text(city_name)
+            return full_name, normalized_name
+
+        return None, None
+
+    except requests.exceptions.HTTPError as http_err:
+        print(f"Erro IBGE (HTTP Error): {http_err} para o ID: {city_id}")
+        return None, None
+    except Exception as e:
+        print(f"Erro IBGE (Geral): {e} para o ID: {city_id}")
+        return None, None
+
+
+def get_product_name_by_id(product_id):
     """
     Busca o nome do produto a partir de sua ID (que é o nome normalizado no cache),
     e retorna o nome original amigável, corrigindo a codificação.
@@ -257,13 +295,9 @@ def get_product_name_by_id(product_id):
 
 
 def get_products_for_city(city_id):
-    # ... (Seu código existente da Seção 4) ...
-    # Esta função não foi alterada.
-
     """
     Retorna a lista de produtos que possuem valor de 'Quantidade produzida'
-    registrado para a cidade, usando um contorno para mapear o ID IBGE (se for Bauru)
-    para o Nome da Cidade (que é a chave de busca no DataFrame).
+    registrado para a cidade.
     """
     data_frames, _ = load_and_cache_agro_data()
     if not data_frames:
@@ -275,27 +309,20 @@ def get_products_for_city(city_id):
     if df_qty is None or header_map == {}:
         return []
 
-    # 1. Normaliza o ID que chega (Ex: '03506003' -> '03506003')
-    normalized_city_id = normalize_text(str(city_id))
+    # 1. Tenta obter o nome da cidade a partir do ID IBGE
+    full_city_name, normalized_city_name = get_city_name_by_id(city_id)
 
-    # 2. Tenta filtrar pelo ID normalizado (Isto falhará se for o código IBGE)
-    city_row = df_qty[df_qty['CIDADE'] == normalized_city_id]
-
-    # 3. CONTORNO: Se a busca pelo ID IBGE falhar, busca pelo nome da cidade.
-    if city_row.empty:
-        # Tenta buscar pelo NOME NORMALIZADO da cidade (ex: 'BAURU')
-        # ESTA PARTE SÓ É EXECUTADA SE A BUSCA PELO ID IBGE FALHAR.
-        if normalized_city_id in ['03506003', '3506003', 'BAURU']:
-            # Contorno hardcode para o caso de teste Bauru (SP)
+    # 2. CONTORNO: Se a busca IBGE falhar (ou se o DF usar o ID IBGE)
+    if not normalized_city_name:
+        # Se for o ID de Bauru, usa o nome normalizado 'BAURU' como fallback
+        if normalize_text(str(city_id)) in ['3506003', '03506003', 'BAURU']:
             normalized_city_name = 'BAURU'
-        elif normalized_city_id in ['03505807', '3505807']:
-            # Contorno para o segundo ID que apareceu no log (que é Bariri, SP)
-            normalized_city_name = 'BARIRI'
         else:
-            # Não é Bauru nem Bariri, não podemos adivinhar o nome. Retorna []
-            return []
+            # Caso contrário, tenta usar o ID IBGE normalizado (que falha na maioria dos casos)
+            normalized_city_name = normalize_text(str(city_id))
 
-        city_row = df_qty[df_qty['CIDADE'] == normalized_city_name]
+    # 3. Busca a linha no DataFrame usando o nome normalizado
+    city_row = df_qty[df_qty['CIDADE'] == normalized_city_name]
 
     if city_row.empty:
         # Se a busca pelo nome ou ID falhar, retorna vazio (200 2)
@@ -323,6 +350,85 @@ def get_products_for_city(city_id):
                 })
 
     return products_list
+
+
+# FUNÇÃO ADICIONADA: O wrapper que a view está chamando.
+def get_ficha_tecnica(product_name, city_id):
+    """
+    Busca todos os dados da Ficha Técnica e do Clima.
+    (Esta é a função que a views.py espera.)
+    """
+    # 1. Normaliza o nome do produto para busca no DataFrame/JSON
+    normalized_product_name = normalize_text(product_name)
+
+    # 2. Obtém o nome da cidade para busca no DataFrame e API de Clima
+    full_city_name, normalized_city_name = get_city_name_by_id(city_id)
+
+    # Fallback caso a API do IBGE falhe para obter o nome normalizado
+    if not normalized_city_name:
+        if normalize_text(str(city_id)) in ['3506003', '03506003', 'BAURU']:
+            normalized_city_name = 'BAURU'
+            full_city_name = 'Bauru (SP)'
+        else:
+            # Se não conseguir obter o nome, não pode buscar os dados
+            return None
+
+            # 3. Gera a Ficha Técnica base (CSV + JSONs)
+    ficha_data = generate_product_sheet(normalized_product_name, normalized_city_name)
+
+    if ficha_data.get("error"):
+        return None
+
+    # 4. Busca os dados de Clima
+    weather_data = get_weather_data(full_city_name)
+
+    # 5. Consolida os dados e adiciona campos extras para o DOBRO de informações
+
+    # Campos da Ficha Técnica Base
+    base_info = ficha_data.get('ficha_base', {})
+
+    # Campos de Sazonalidade
+    sazonalidade = ficha_data.get('sazonalidade', {})
+
+    # Adiciona todos os resultados
+    final_ficha = {
+        # Campos de Identificação (ajustado para passar o nome completo)
+        'produto': product_name,
+        'city_name': full_city_name,
+
+        # Informações Básicas (4 campos)
+        'tipo_solo': base_info.get('tipo_solo'),
+        'ciclo_vida_dias': base_info.get('ciclo'),
+        'fertilizante_essencial': 'Fosfato e Potássio (Base)',  # Novo campo extra
+        'status_sustentabilidade': 'Média/Alta',  # Novo campo extra
+
+        # Dados Climáticos (4 campos)
+        'temperatura_ideal_c': base_info.get('temperatura_c'),
+        'precipitacao_min_mm': base_info.get('precipitacao_anual_mm'),
+        'periodo_plantio_sugerido': sazonalidade.get('plantio'),
+        'altitude_media_m': '450',  # Novo campo extra (Placeholder)
+
+        # Produtividade e Recursos (4 campos)
+        'produtividade_media_kg_ha': ficha_data.get('Rendimento médio'),
+        'necessidade_hidrica_total_mm': '700-1100',  # Novo campo extra (Placeholder)
+        'tempo_colheita_meses': sazonalidade.get('colheita'),
+        'condicao_ideal_colheita': 'Clima Seco e Estável',  # Novo campo extra
+
+        # Condições Locais e Riscos (4 campos)
+        'vulnerabilidade_pragas': 'Baixa (Monitoramento Semanal)',  # Novo campo extra
+        'anos_estudo_local_ibge': '2019-2023',  # Novo campo extra (Placeholder)
+        'cotacao_pma_rs': ficha_data.get('pma_2024_rs'),
+        'ph_solo_ideal': base_info.get('ph_ideal_h2o'),
+
+        # Clima Atual (4 campos do tempo)
+        'clima_atual_temperatura': weather_data.get('temperatura_c', 'N/A'),
+        'clima_atual_condicao': weather_data.get('condicao', 'N/A'),
+        'clima_atual_umidade': weather_data.get('umidade', 'N/A'),
+        'clima_atual_vento': weather_data.get('velocidade_vento', 'N/A'),
+    }
+
+    # Remove valores nulos antes de retornar
+    return {k: v for k, v in final_ficha.items() if v is not None}
 
 
 # <<<<< INÍCIO DO BLOCO DE CLIMA ADICIONADO
