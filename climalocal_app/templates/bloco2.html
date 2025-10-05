@@ -1,0 +1,44 @@
+<div class="dash-clima-grid">
+
+    {# inicio card4 #}
+    <div class="dash-card dash-card-full">
+        <h4>Temperatura em {{ city_name|default:"-" }}</h4>
+        {% if clima %}
+            <p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ clima.temperatura_c|default:"-" }}</p>
+            <p>Sensação térmica: {{ clima.sensacao_termica_c|default:"-" }}</p>
+            <p>Mínima: {{ clima.temp_min_c|default:"-" }} / Máxima: {{ clima.temp_max_c|default:"-" }}</p>
+        {% else %}
+            <p>Dados de temperatura não disponíveis.</p>
+        {% endif %}
+    </div>
+    {# fim card4 #}
+
+    
+    {# inicio card2 #}
+    <div class="dash-card">
+        <h4>Detalhes do Clima em {{ city_name|default:"-" }}</h4>
+        {% if clima %}
+            <p><strong>Umidade:</strong> {{ clima.umidade|default:"-" }}</p>
+            <p><strong>Vento:</strong> {{ clima.velocidade_vento|default:"-" }}</p>
+            <p><strong>Pressão:</strong> {{ clima.pressao_hpa|default:"-" }}</p>
+        {% else %}
+            <p>Dados de clima não disponíveis.</p>
+        {% endif %}
+    </div>
+    {# fim card2 #}
+
+
+    {# inicio card3 #}
+    <div class="dash-card">
+        <h4>Condição do Tempo em {{ city_name|default:"-" }}</h4>
+        {% if clima %}
+            <p><strong>{{ clima.condicao|default:"-" }}</strong></p>
+        {% else %}
+            <p>Dados de clima não disponíveis.</p>
+        {% endif %}
+    </div>
+    {# fim card3 #}
+
+
+
+</div>

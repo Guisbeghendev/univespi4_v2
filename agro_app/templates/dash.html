@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="dashboard-grid">
+
+    {# inserir bloco1 #}
+        {% include 'bloco1.html' %}
+
+
+    {# inserir bloco2 #}
+    {% if visibilidade.bloco2 %}
+        {% include 'bloco2.html' %}
+    {% endif %}
+
+    {# CORREÇÃO: O 'if' agora envolve a DIV externa do Bloco 3 #}
+    {% if visibilidade.bloco3 %}
+        <div class="filter-results-container dash-card-full">
+            {# inserir bloco3 #}
+            {% include 'bloco3.html' %}
+        </div>
+    {% endif %}
+
+    {# inserir bloco4 #}
+    {% if visibilidade.bloco4 %}
+        {% include 'bloco4.html' %}
+    {% endif %}
+
+    {# inserir bloco5 #}
+    {% if visibilidade.bloco5 %}
+        {% include 'bloco5.html' %}
+    {% endif %}
+
+    {# inserir bloco6 #}
+    {% if visibilidade.bloco6 %}
+        {% include 'bloco6.html' %}
+    {% endif %}
+
+    {# inserir bloco7 #}
+    {% if visibilidade.bloco7 %}
+        {% include 'bloco7.html' %}
+    {% endif %}
+
+</div>
+
+<script>
+    // ** Funções de Confirmação (Card 7) **
+
+    /**
+     * Confirmação de Exclusão.
+     */
+    function confirmDelete(event, terrenoName) {
+        // NOTE: Usamos window.confirm() pois é uma função nativa que simula uma modal simples.
+        if (!window.confirm(`Tem certeza que deseja excluir o terreno "${terrenoName}"? Esta ação não pode ser desfeita.`)) {
+            event.preventDefault(); // Impede o envio do formulário se o usuário cancelar
+            return false;
+        }
+        return true;
+    }
+
+
+    const GET_STATES_URL = "{% url 'agro_app:get_states' %}";
+    // Usamos um placeholder '0' ou 'placeholder' que será substituído no JS
+    const GET_CITIES_URL_TEMPLATE = "{% url 'agro_app:get_cities' 0 %}";
+
+    // CORREÇÃO: Nova template para usar a view que espera o ID da cidade
+    const GET_PRODUCTS_BY_CITY_ID_URL_TEMPLATE = "{% url 'agro_app:get_products_by_city_by_id' 0 %}";
+
+    // MANTIDA, mas não usada pela populateProductsDropdown
+    const GET_PRODUCTS_BY_CITY_URL_TEMPLATE = "{% url 'agro_app:get_products_by_city' 'placeholder' %}";
+
+    const GET_DETAILED_DATA_URL_TEMPLATE = "{% url 'agro_app:get_detailed_data' 'placeholder1' 'placeholder2' %}";
+
+    // ** Funções de Lógica da Dashboard (Existentes) **
+    document.addEventListener('DOMContentLoaded', function() {
+        const stateSelect = document.getElementById('state-select');
+        const citySelect = document.getElementById('city-select');
+        const produtoSelect = document.getElementById('produto-select');
+        const produtoErrorMessageDiv = document.getElementById('produto-error-message');
+        const resultsDisplayDiv = document.getElementById('results-display');
+        const currentDateParagraph = document.getElementById('current-date');
+
+        // Adiciona a data atual ao card 1
+        const date = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = date.toLocaleDateString('pt-BR', options);
+        currentDateParagraph.textContent = `Hoje é ${formattedDate}.`;
+
+        async function populateStatesDropdown() {
+            stateSelect.innerHTML = '<option value="">Carregando estados...</option>';
+            stateSelect.disabled = true;
+            try {
+                // CHAMA A URL GERADA PELO DJANGO: GET_STATES_URL
+                const response = await fetch(GET_STATES_URL);
+                if (!response.ok) {
+                    // Logamos o erro para debug, mas o template tag garante que a URL está correta.
+                    throw new Error('Erro ao carregar os estados. URL: ' + GET_STATES_URL);
+                }
+                const states = await response.json();
+                stateSelect.innerHTML = '<option value="">Selecione um estado...</option>';
+                states.forEach(state => {
+                    const option = document.createElement('option');
+                    option.value = state.id;
+                    option.textContent = state.nome;
+                    stateSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro:', error);
+                stateSelect.innerHTML = '<option value="">Erro ao carregar estados</option>';
+            } finally {
+                stateSelect.disabled = false;
+            }
+        }
+
+        async function populateCitiesDropdown(stateId) {
+            produtoSelect.innerHTML = '<option value="">Selecione uma cidade primeiro</option>';
+            produtoSelect.disabled = true;
+            if (!stateId) {
+                citySelect.innerHTML = '<option value="">Selecione um estado primeiro</option>';
+                citySelect.disabled = true;
+                return;
+            }
+            citySelect.innerHTML = '<option value="">Carregando cidades...</option>';
+            citySelect.disabled = true;
+            try {
+                // GERA A URL COM O ID DO ESTADO
+                const url = GET_CITIES_URL_TEMPLATE.replace('0', stateId);
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar as cidades. URL: ' + url);
+                }
+                const cities = await response.json();
+                citySelect.innerHTML = '<option value="">Selecione uma cidade...</option>';
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.id;
+                    option.textContent = city.nome;
+                    citySelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro:', error);
+                citySelect.innerHTML = '<option value="">Erro ao carregar cidades</p>';
+            } finally {
+                citySelect.disabled = false;
+            }
+        }
+
+        // FUNÇÃO CORRIGIDA: Usa o ID da cidade para chamar a view correta no Django.
+        async function populateProductsDropdown(cityId) {
+            produtoErrorMessageDiv.style.display = 'none';
+            produtoSelect.disabled = true;
+            if (!cityId) {
+                produtoSelect.innerHTML = '<option value="">Selecione uma cidade primeiro</option>';
+                return;
+            }
+            produtoSelect.innerHTML = '<option value="">Carregando produtos...</option>';
+            try {
+                // CORREÇÃO APLICADA: Usa a template que chama a view get_products_by_city_by_id
+                const url = GET_PRODUCTS_BY_CITY_ID_URL_TEMPLATE.replace('0', cityId);
+
+                const productsResponse = await fetch(url);
+                if (!productsResponse.ok) {
+                    throw new Error('Erro ao carregar os produtos. URL: ' + url);
+                }
+
+                const products = await productsResponse.json();
+
+                if (products.length > 0) {
+                    produtoSelect.innerHTML = '<option value="">Selecione um produto...</option>';
+                    products.forEach(product => {
+                        const option = document.createElement('option');
+                        option.value = product.id;
+                        option.textContent = product.nome;
+                        produtoSelect.appendChild(option);
+                    });
+                } else {
+                    produtoSelect.innerHTML = '<option value="">Nenhum produto encontrado</option>';
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                produtoErrorMessageDiv.textContent = 'Erro ao carregar os produtos.';
+                produtoErrorMessageDiv.style.display = 'block';
+                produtoSelect.innerHTML = '<option value="">Erro</option>';
+            } finally {
+                produtoSelect.disabled = false;
+            }
+        }
+
+        // Função para exibir os dados detalhados (MANTIDA)
+        async function displayDetailedData() {
+            const selectedCityId = citySelect.value;
+            const selectedProductId = produtoSelect.value;
+
+            if (!selectedCityId || !selectedProductId) {
+                resultsDisplayDiv.innerHTML = '<p>Selecione um estado, cidade e cultivo para ver os dados.</p>';
+                return;
+            }
+
+            resultsDisplayDiv.innerHTML = '<p>Carregando dados...</p>';
+
+            try {
+                // A LÓGICA DE BUSCAR O NOME DA CIDADE AQUI FOI MANTIDA, POIS A VIEW get_detailed_data AINDA ESPERA O NOME.
+                const cityResponse = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/municipios/${selectedCityId}`);
+                const cityData = await cityResponse.json();
+                const cityName = cityData.nome;
+
+                // GERA A URL COM CIDADE E PRODUTO
+                let url = GET_DETAILED_DATA_URL_TEMPLATE.replace('placeholder1', cityName);
+                url = url.replace('placeholder2', selectedProductId);
+
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar os dados detalhados. URL: ' + url);
+                }
+                const data = await response.json();
+
+                let htmlContent = '<h4>Informações para ' + cityName + '</h4><ul>';
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        htmlContent += '<li><strong>' + key + ':</strong> ' + data[key] + '</li>';
+                    }
+                }
+                htmlContent += '</ul>';
+
+                resultsDisplayDiv.innerHTML = htmlContent;
+
+            } catch (error) {
+                console.error('Erro:', error);
+                resultsDisplayDiv.innerHTML = '<p>Erro ao carregar os dados. Tente novamente.</p>';
+            }
+        }
+
+
+        stateSelect.addEventListener('change', (event) => {
+            const selectedStateId = event.target.value;
+            populateCitiesDropdown(selectedStateId);
+        });
+
+        citySelect.addEventListener('change', (event) => {
+            const selectedCityId = event.target.value;
+            populateProductsDropdown(selectedCityId);
+        });
+
+        // Adiciona um listener ao dropdown de produtos
+        produtoSelect.addEventListener('change', () => {
+            displayDetailedData();
+        });
+
+        // Inicializa os dropdowns
+        citySelect.disabled = true;
+        produtoSelect.disabled = true;
+
+        populateStatesDropdown();
+    });
+</script>
+
+{% endblock %}

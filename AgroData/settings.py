@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'home',
-    'agro_app'
+    'agro_app',
+    'fichatecnica_app',
+    'climalocal_app'
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Novo Plano de Cultivo - Etapa 2{% endblock %}
+
+{% block content %}
+
+<div class="container" style="max-width: 1000px; margin: 40px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+
+    <h2 style="color: #38761d; border-bottom: 2px solid #38761d; padding-bottom: 10px; margin-bottom: 20px;">
+        Novo Plano de Cultivo (2/2): Selecione o Cultivo
+    </h2>
+
+    <p style="margin-bottom: 15px; color: #555;">
+        Terreno selecionado: <strong>{{ terreno.name }}</strong> (Área: {{ terreno.area|floatformat:"2" }} {{ terreno.unit }})
+    </p>
+
+    <p style="margin-bottom: 25px; color: #555; font-weight: bold;">
+        Baseado em sua localização ({{ city_name }}), veja abaixo as sugestões de cultivo com maior pontuação. Clique para ver a Ficha Técnica:
+    </p>
+
+    {% if suggestions %}
+        <div id="plano-product-selection" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+
+            {% for suggestion in suggestions %}
+            <div class="product-card" data-product-name="{{ suggestion.name }}" data-product-slug="{{ suggestion.id }}"
+                 style="border: 1px solid #ddd; border-left: 5px solid #38761d; padding: 15px; border-radius: 6px; min-height: 280px; transition: all 0.3s; background-color: #fcfcfc; overflow: hidden; cursor: pointer;">
+
+                <h4 style="margin-top: 0; color: #333;">{{ suggestion.name }}</h4>
+                <p style="font-size: 0.9em; color: #666;">
+                    Pontuação Agro: <strong style="color: {% if suggestion.score >= 75 %}#38761d{% elif suggestion.score >= 50 %}#ff9900{% else %}#e06666{% endif %};">{{ suggestion.score }}%</strong>
+                </p>
+
+                <div id="details-{{ suggestion.id }}" class="ficha-tecnica-details" style="margin-top: 10px; font-size: 0.85em; color: #777; height: 120px; overflow-y: auto;">
+                    <p style="text-align: center; color: #555;">Clique no card para carregar a Ficha Técnica.</p>
+                </div>
+
+                <button type="button" class="btn btn-sm select-product-btn" data-product-name="{{ suggestion.name }}"
+                        style="display: block; width: 100%; margin-top: 10px; background-color: #5cb85c; color: white; border: none;">
+                    Selecionar Cultivo
+                </button>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        {# FORMULÁRIO DE FINALIZAÇÃO: Inicialmente escondido #}
+        <div id="final-plano-form-container" style="margin-top: 40px; padding: 25px; border: 1px solid #38761d; border-radius: 8px; display: none;">
+            <h3 style="color: #38761d; margin-top: 0;">Finalizar Plano de Cultivo</h3>
+
+            <form id="plano-submit-form" method="post" action="{% url 'agro_app:save_plano' terreno_id=terreno.pk %}">
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                {# Campo customizado para exibir o produto selecionado #}
+                <div style="margin-bottom: 15px;">
+                    <label>Cultivo Selecionado:</label>
+                    <p id="selected-product-display" style="font-weight: bold; color: #007bff;">Nenhum</p>
+                </div>
+
+                <button type="submit" id="submit-plano-btn" class="btn btn-success" style="padding: 10px 30px;">
+                    Criar Plano de Cultivo
+                </button>
+            </form>
+        </div>
+
+    {% else %}
+        <div class="alert-warning" style="padding: 15px; background: #ffeeba; border: 1px solid #ffcc00; color: #856404; border-radius: 5px;">
+            <p>Não foi possível gerar sugestões de cultivo para **{{ city_name }}** ou os dados agropecuários não estão disponíveis.</p>
+        </div>
+    {% endif %}
+
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="{% url 'agro_app:create_plano' %}" style="color: #888; text-decoration: none;">&larr; Voltar para a Etapa 1</a>
+        <span style="margin: 0 15px;">|</span>
+        <a href="{% url 'agro_app:dashboard' %}" style="color: #888; text-decoration: none;">Voltar para a Dashboard</a>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectButtons = document.querySelectorAll('.select-product-btn');
+        const productCards = document.querySelectorAll('.product-card');
+        const finalFormContainer = document.getElementById('final-plano-form-container');
+        const selectedProductDisplay = document.getElementById('selected-product-display');
+        const city_name = "{{ city_name }}";
+        const inputCultura = document.getElementById('id_cultura');
+
+        // Função para formatar a Ficha Técnica para exibição
+        function formatFichaTecnica(data) {
+            let html = '<ul style="list-style: none; padding-left: 0;">';
+
+            // Dados Agropecuários
+            if (data.agropecuaria && Object.keys(data.agropecuaria).length > 0) {
+                html += '<li style="font-weight: bold; margin-top: 10px; color: #38761d;">Dados Agropecuários (IBGE):</li>';
+                for (const [key, value] of Object.entries(data.agropecuaria)) {
+                    // Formata a chave para ser mais legível
+                    const cleanKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    html += `<li>- ${cleanKey}: <strong>${value || 'N/D'}</strong></li>`;
+                }
+            }
+
+            // Clima (Temperatura/Chuva)
+            if (data.clima && Object.keys(data.clima).length > 0) {
+                html += '<li style="font-weight: bold; margin-top: 10px; color: #38761d;">Condições Climáticas (Médias):</li>';
+                for (const [key, value] of Object.entries(data.clima)) {
+                    const cleanKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    html += `<li>- ${cleanKey}: <strong>${value || 'N/D'}</strong></li>`;
+                }
+            }
+
+            // Ficha Técnica (Requisitos)
+            if (data.ficha_tecnica && Object.keys(data.ficha_tecnica).length > 0) {
+                html += '<li style="font-weight: bold; margin-top: 10px; color: #38761d;">Requisitos de Plantio:</li>';
+                for (const [key, value] of Object.entries(data.ficha_tecnica)) {
+                    const cleanKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    html += `<li>- ${cleanKey}: <strong>${value || 'N/D'}</strong></li>`;
+                }
+            }
+
+            html += '</ul>';
+            return html;
+        }
+
+        // Função para carregar a Ficha Técnica via AJAX
+        function loadFichaTecnica(productName, productSlug, targetElement) {
+            targetElement.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Carregando...</p>';
+
+            // Monta a URL para a nova view AJAX
+            const url = `{% url 'agro_app:get_ficha_tecnica_ajax' city_name='0' product_name='0' %}`.replace('0/0/', `${city_name}/${productName}/`);
+
+            fetch(url)
+                .then(response => {
+                    // Verifica se o status HTTP indica erro (4xx ou 5xx)
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.error || 'Erro desconhecido na API.');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        targetElement.innerHTML = `<p style="color: #e06666;">Erro: ${data.error}</p>`;
+                    } else {
+                        // Exibe os dados formatados
+                        targetElement.innerHTML = formatFichaTecnica(data);
+                    }
+                })
+                .catch(error => {
+                    targetElement.innerHTML = `<p style="color: #e06666;">Falha ao carregar a Ficha Técnica: ${error.message}</p>`;
+                    console.error('Erro AJAX Ficha Técnica:', error);
+                });
+        }
+
+        // --- Event Listeners ---
+
+        // 1. Lógica para carregar a Ficha Técnica ao clicar no Card
+        productCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove o destaque de todos os cards antes de carregar
+                productCards.forEach(c => c.style.borderLeft = '5px solid #38761d');
+                this.style.borderLeft = '5px solid #ff9900'; // Destaca o card clicado com outra cor
+
+                const productName = this.getAttribute('data-product-name');
+                const productSlug = this.getAttribute('data-product-slug');
+                const detailsContainer = this.querySelector('.ficha-tecnica-details');
+
+                loadFichaTecnica(productName, productSlug, detailsContainer);
+            });
+        });
+
+
+        // 2. Lógica para Selecionar o Cultivo e Exibir o Formulário
+        selectButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation(); // Impede que o clique no botão ative o clique no card (que carrega a FT)
+                const card = this.closest('.product-card');
+                const productName = this.getAttribute('data-product-name');
+
+                // Destaque do Card (usando cor de seleção)
+                productCards.forEach(c => c.style.backgroundColor = '#fcfcfc');
+                card.style.backgroundColor = '#e6ffe6';
+
+                // Preenche o campo 'cultura' do formulário
+                inputCultura.value = productName;
+
+                // Exibe o nome do produto e o formulário
+                selectedProductDisplay.textContent = productName;
+                finalFormContainer.style.display = 'block';
+
+                // Atualiza o título do formulário
+                const planoFormTitle = finalFormContainer.querySelector('h3');
+                planoFormTitle.textContent = `Finalizar Plano de Cultivo: ${productName}`;
+
+                // Rola suavemente
+                setTimeout(() => {
+                    finalFormContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            });
+        });
+
+        // 3. Lógica para pré-seleção (se vier do request.GET)
+        if (inputCultura && inputCultura.value) {
+            const productName = inputCultura.value;
+            selectedProductDisplay.textContent = productName;
+            finalFormContainer.style.display = 'block';
+
+            const planoFormTitle = finalFormContainer.querySelector('h3');
+            planoFormTitle.textContent = `Finalizar Plano de Cultivo: ${productName}`;
+
+            // Tenta destacar o card e carregar a FT automaticamente
+            const preSelectedCard = document.querySelector(`.product-card[data-product-name="${productName}"]`);
+            if (preSelectedCard) {
+                preSelectedCard.style.backgroundColor = '#e6ffe6';
+                preSelectedCard.style.borderLeft = '5px solid #ff9900';
+
+                const productSlug = preSelectedCard.getAttribute('data-product-slug');
+                const detailsContainer = preSelectedCard.querySelector('.ficha-tecnica-details');
+
+                loadFichaTecnica(productName, productSlug, detailsContainer);
+            }
+        }
+    });
+</script>
+
+{% endblock %}

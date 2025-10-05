@@ -1,5 +1,4 @@
 from django import forms
-# ATUALIZAÇÃO: Adicionado PlanoPlantio
 from .models import Profile, Terreno, UNIT_CHOICES, PlanoPlantio
 
 
@@ -86,8 +85,7 @@ class PlanoPlantioForm(forms.ModelForm):
     """
     Formulário para salvar o Plano de Cultivo final.
     """
-    # Campo para receber o ID do produto, usado para fins de validação e rastreio.
-    cultivo_id = forms.CharField(widget=forms.HiddenInput(), required=False)
+    # CAMPO 'cultivo_id' REMOVIDO: A view usa apenas o campo 'cultura' (o nome)
 
     class Meta:
         model = PlanoPlantio
@@ -95,12 +93,11 @@ class PlanoPlantioForm(forms.ModelForm):
             'nome_plantacao',
             'cultura',  # Nome da cultura (original)
             'terreno',
-            # 'localizacao' e 'area' são preenchidos pela view/modelo
         ]
 
         widgets = {
             'nome_plantacao': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Safra Milho 2025'}),
-            # Escondidos, pois são preenchidos na view/POST
+            # Escondidos, pois são preenchidos na view/POST pelo template
             'terreno': forms.HiddenInput(),
             'cultura': forms.HiddenInput(),
         }
@@ -113,6 +110,7 @@ class PlanoPlantioForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # removemos os campos que serao preenchidos automaticamente na view
+        # 'cultura' e 'terreno' estao no fields, mas ocultos
         if 'localizacao' in self.fields:
             del self.fields['localizacao']
         if 'area' in self.fields:

@@ -22,4 +22,6 @@ urlpatterns = [
     path('', include('home.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('dashboard/', include('agro_app.urls')),
+    path('ficha/', include('fichatecnica_app.urls')),
+    path('clima/', include('climalocal_app.urls')),
 ]

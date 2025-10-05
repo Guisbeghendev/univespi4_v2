@@ -85,9 +85,8 @@ footer {
 
 /* Estilos para o conteúdo principal */
 main {
-    border: 1px dashed #5D4037;
-    margin: 20px 0;
-    padding: 20px;
+    margin: 0px 0;
+    padding: 10px;
 }
 
 /* Estilos para cards */
@@ -233,6 +232,37 @@ button[type="submit"]:hover {
     padding: 20px;
 }
 
+/* -------------------------------------------------------------------- */
+/* ESTILOS ESPECÍFICOS PARA OS 3 CARDS DE CLIMA (dash-clima-grid) */
+/* -------------------------------------------------------------------- */
+
+.dash-clima-grid {
+    display: grid;
+    /* Padrão Mobile First: Empilha em uma única coluna */
+    grid-template-columns: 1fr;
+    gap: 20px; /* Espaço entre os cards */
+    margin-bottom: 20px;
+}
+
+/* Para telas médias (onde a dashboard-grid já tem 2 colunas) */
+@media (min-width: 768px) {
+    .dash-clima-grid {
+        /* Define 3 colunas, com o terceiro card (wide) sendo o dobro dos outros */
+        grid-template-columns: 1fr 1fr 2fr;
+    }
+}
+
+/* Para telas grandes (onde a dashboard-grid tem 5 colunas) */
+@media (min-width: 1200px) {
+    .dash-clima-grid {
+        /* Garante que o container se estenda por toda a largura na grid de 5 colunas */
+        grid-column: 1 / -1;
+        /* Mantém o layout interno (2 cards pequenos + 1 card grande) */
+        grid-template-columns: 1fr 1fr 2fr;
+    }
+}
+
+
 /* Card para o layout 50/50 responsivo (Card 6 e Card 7) - Padrão: 100% */
 .dash-card-responsive-half {
     grid-column: 1 / -1;
@@ -352,9 +382,6 @@ button[type="submit"]:hover {
     border-bottom: 2px solid #ddd;
     padding-bottom: 5px;
 }
-
-/* Estilos de modal (removidos, pois o modal de edição não existe mais na dashboard) */
-
 
 /* Estilo responsivo para lista de terrenos */
 @media (min-width: 768px) {

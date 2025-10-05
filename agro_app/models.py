@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+# Importa o JSONField. Assumindo Django 3.1+ ou compatibilidade
+from django.db.models import JSONField
 
 # Opções de Unidade de Medida para o Terreno
 UNIT_CHOICES = (
@@ -29,6 +31,9 @@ class PlanoPlantio(models.Model):
     # e a área serão primariamente derivadas do Terreno, mas mantidos para compatibilidade.
     localizacao = models.CharField(max_length=200, blank=True, null=True, verbose_name="Localização (Cidade/Estado)")
     area = models.DecimalField(max_digits=10, decimal_places=2, help_text="Área em hectares", blank=True, null=True)
+
+    # NOVO CAMPO: Armazena a Ficha Técnica consolidada (JSON)
+    ficha_tecnica = JSONField(default=dict, verbose_name="Ficha Técnica Consolidada")
 
     data_criacao = models.DateTimeField(auto_now_add=True)
 
