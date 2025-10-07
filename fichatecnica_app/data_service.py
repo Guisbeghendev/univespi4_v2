@@ -352,6 +352,94 @@ def get_products_for_city(city_id):
     return products_list
 
 
+def get_all_product_data_for_city(city_id):
+    """
+    Retorna uma lista de todos os produtos de uma cidade, incluindo os valores
+    de 'Rendimento médio' e 'Valor da produção' em formato numérico e de exibição.
+
+    Esta função é usada pelo bloco de Ranqueamento/Comparação.
+    """
+    data_frames, _ = load_and_cache_agro_data()
+    if not data_frames:
+        return []
+
+    # Tenta obter o nome da cidade a partir do ID IBGE
+    _, normalized_city_name = get_city_name_by_id(city_id)
+
+    # Fallback caso a API do IBGE falhe para obter o nome normalizado
+    if not normalized_city_name:
+        if normalize_text(str(city_id)) in ['3506003', '03506003', 'BAURU']:
+            normalized_city_name = 'BAURU'
+        else:
+            return []
+
+    # DataFrames necessários
+    df_rendimento = data_frames.get('Rendimento médio')
+    df_valor = data_frames.get('Valor da produção')
+    # O header map de Quantidade é usado pois ele lista todos os produtos
+    header_map = data_frames.get('Quantidade produzida_header_map', {})
+
+    if df_rendimento is None or df_valor is None or header_map == {}:
+        return []
+
+    # Busca a linha no DataFrame usando o nome normalizado
+    rendimento_row = df_rendimento[df_rendimento['CIDADE'] == normalized_city_name].iloc[0] if not df_rendimento[df_rendimento['CIDADE'] == normalized_city_name].empty else None
+    valor_row = df_valor[df_valor['CIDADE'] == normalized_city_name].iloc[0] if not df_valor[df_valor['CIDADE'] == normalized_city_name].empty else None
+
+    if rendimento_row is None or valor_row is None:
+        return []
+
+    # Helper para converter strings formatadas (ex: "1.234") para float, tratando erros
+    def safe_numeric_conversion(value_raw):
+        # Normaliza a string para verificação de 'Dado não disponível'
+        value_check = normalize_text(str(value_raw))
+        if value_check in [normalize_text('DADO NAO DISPONIVEL'), normalize_text('-'), normalize_text('...')]:
+            return None, 'Dado não disponível'
+
+        try:
+            # Remove o ponto de milhar para obter um valor limpo.
+            # O ponto no CSV é usado como separador de milhar no contexto brasileiro.
+            clean_value = str(value_raw).replace('.', '').replace(',', '.')
+            return float(clean_value), None
+        except:
+            return None, str(value_raw) # Retorna a string original se a conversão falhar
+
+    products_data = []
+
+    # Itera pelas colunas de produto e extrai os dados
+    for id_normalizado, nome_original in header_map.items():
+        if id_normalizado not in ['CIDADE', 'ANO']:
+            # 1. Extração do Rendimento
+            rendimento_raw = rendimento_row.get(id_normalizado)
+            rendimento_val, rendimento_str = safe_numeric_conversion(rendimento_raw)
+
+            # 2. Extração do Valor
+            valor_raw = valor_row.get(id_normalizado)
+            valor_val, valor_str = safe_numeric_conversion(valor_raw)
+
+            # Só inclui se tiver pelo menos um dos dados numéricos válidos
+            if rendimento_val is not None or valor_val is not None:
+
+                # Tenta corrigir a codificação do nome do produto para exibição
+                try:
+                    display_name = nome_original.encode('latin-1').decode('utf-8').title()
+                except:
+                    display_name = nome_original.title()
+
+                products_data.append({
+                    'id': id_normalizado,
+                    'nome': display_name,
+                    # Para ranking/comparação, usamos o valor numérico (None se indisponível)
+                    'rendimento_num': rendimento_val,
+                    'valor_producao_num': valor_val,
+                    # Para exibição, usamos o string formatado
+                    'rendimento_display': f"{rendimento_val} Kg/Ha" if rendimento_val is not None else rendimento_str,
+                    'valor_producao_display': f"R$ {valor_val}" if valor_val is not None else valor_str,
+                })
+
+    return products_data
+
+
 # FUNÇÃO ADICIONADA: O wrapper que a view está chamando.
 def get_ficha_tecnica(product_name, city_id):
     """

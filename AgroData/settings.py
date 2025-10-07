@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',  # <-- Linha adicionada para habilitar o filtro 'intcomma'
     'home',
     'agro_app',
     'fichatecnica_app',

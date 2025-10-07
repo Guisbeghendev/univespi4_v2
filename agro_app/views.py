@@ -8,16 +8,36 @@ from .models import Profile
 from .forms import ProfileForm
 from fichatecnica_app import data_service
 
+# ------------------------------------------------------------------------------------------------------
+# ### CONFIGURAÇÃO E CONSTANTES GLOBAIS ###
+# ------------------------------------------------------------------------------------------------------
+# Define o número de itens a serem exibidos em cada lista de ranqueamento (Bloco 4)
+TOP_N_SUGGESTIONS = 5
+
 
 # ### CONTROLE DE VISIBILIDADE & DASHBOARD ###
 # ------------------------------------------------------------------------------------------------------
 @login_required
 def dashboard(request):
+    # ----------------------------------------------------------------------
+    #### DICIONÁRIO DE CONTROLE DE VISIBILIDADE (POSIÇÃO EXIGIDA: TOPO DA FUNÇÃO)
+    # Dicionário simples para controle ON/OFF de cada bloco
+    controle_de_visibilidade = {
+        'bloco2': True,  # Climalocal_app
+        'bloco3': True,  # info_app
+        'bloco4': True,  # Ranqueamento (Lucratividade e Preço)
+        'bloco5': False,
+        'bloco6': False,
+        'bloco7': False,
+    }
+    # ----------------------------------------------------------------------
+
     # Lógica ADICIONAL para o Bloco 1 (Saudação/Status):
     user_profile, created = Profile.objects.get_or_create(user=request.user)
 
     # Busca os nomes da Cidade e Estado para passar para o contexto (usado no bloco1.html)
-    city_name = get_city_name_from_id(user_profile.city) if user_profile.city else None
+    city_id = user_profile.city
+    city_name = get_city_name_from_id(city_id) if city_id else None
     state_name = get_state_name_from_id(user_profile.state) if user_profile.state else None
 
     # ----------------------------------------------------------------------
@@ -30,24 +50,79 @@ def dashboard(request):
     print(f"DEBUG CLIMA RETORNO FINAL: {weather_data} para a cidade: {city_name}")
 
     # ----------------------------------------------------------------------
+    # --- INÍCIO: LÓGICA DO BLOCO 4 (Ranqueamento Passivo) ---
+    # Ranqueamento passivo baseado nos dados da Ficha Técnica (Rendimento e Valor)
+    suggestions_lucratividade = []
+    suggestions_preco = []
 
-    # Dicionário simples para controle ON/OFF de cada bloco
-    controle_de_visibilidade = {
-        'bloco2': True,  # Climalocal_app
-        'bloco3': True,  # info_app
-        'bloco4': False,
-        'bloco5': False,
-        'bloco6': False,
-        'bloco7': False,
-    }
+    if city_id:
+        try:
+            # 1. Obter dados: Busca todos os dados de produto da Ficha Técnica para a cidade
+            # NOTA: Assumido que data_service.get_all_product_data_for_city(city_id) retorna uma lista de dicionários
+            all_products_data = data_service.get_all_product_data_for_city(city_id)
 
-    # Combina o controle de visibilidade com os dados do perfil.
+            # >>> DEBUG ADICIONADO AQUI <<<
+            print(
+                f"DEBUG BLOCO 4 - RAW DATA: Total de {len(all_products_data)} produtos retornados por get_all_product_data_for_city.")
+
+            # 2. Processamento: Cálculo do Preço por Quilo (R$/kg)
+            processed_data = []
+            for product in all_products_data:
+                # CORREÇÃO CRÍTICA: As chaves corretas do data_service são 'rendimento_num' e 'valor_producao_num'.
+                # O 'or 0' garante que valores None (retornados pelo safe_numeric_conversion) sejam tratados como 0.
+                rendimento = product.get('rendimento_num', 0) or 0
+                valor = product.get('valor_producao_num', 0) or 0
+
+                # DEBUG: Vê o que está sendo filtrado
+                print(
+                    f"DEBUG BLOCO 4 - FILTRO: Produto={product.get('nome', 'N/A')}, Rendimento={rendimento}, Valor={valor}")
+
+                # Filtra apenas produtos com dados válidos (Valor e Rendimento devem ser positivos)
+                if rendimento > 0 and valor > 0:
+                    # Preço por Quilo: Valor Total (R$) / Rendimento (kg/ha)
+                    preco_por_quilo = valor / rendimento
+
+                    processed_data.append({
+                        # CORREÇÃO: Usar a chave 'nome' para o nome de exibição
+                        'name': product.get('nome', 'N/A'),
+                        'rendimento': rendimento,
+                        # Para o ranking, usamos o valor total de produção (R$)
+                        'valor': valor,
+                        'preco_por_quilo': preco_por_quilo
+                    })
+
+            # >>> DEBUG ADICIONADO AQUI <<<
+            print(f"DEBUG BLOCO 4 - PROCESSED DATA: Total de {len(processed_data)} produtos válidos para ranqueamento.")
+
+            # 3. Ranqueamento de Lucratividade: Ordena pelo 'valor' (R$) em ordem decrescente.
+            suggestions_lucratividade = sorted(
+                processed_data,
+                key=lambda x: x['valor'],
+                reverse=True
+            )[:TOP_N_SUGGESTIONS]
+
+            # 4. Ranqueamento de Preço Unitário: Ordena pelo 'preco_por_quilo' (R$/kg) em ordem crescente.
+            suggestions_preco = sorted(
+                processed_data,
+                key=lambda x: x['preco_por_quilo'],
+                reverse=False
+            )[:TOP_N_SUGGESTIONS]
+
+
+        except Exception as e:
+            print(f"ERRO AO GERAR SUGESTÕES DO BLOCO 4: {e}")
+
+    # --- FIM: LÓGICA DO BLOCO 4 (Ranqueamento Passivo) ---
+
+    # Combina o controle de visibilidade com os dados do perfil e NOVOS DADOS DO BLOCO 4.
     context = {
         'visibilidade': controle_de_visibilidade,
         'city_name': city_name,
         'state_name': state_name,
         'profile': user_profile,
         'clima': weather_data,
+        'suggestions_lucratividade': suggestions_lucratividade,
+        'suggestions_preco': suggestions_preco,
     }
 
     return render(request, 'dashboard.html', context)
