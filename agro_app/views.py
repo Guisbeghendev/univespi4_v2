@@ -30,8 +30,8 @@ def dashboard(request):
         'bloco2': True,  # Climalocal_app
         'bloco3': True,  # info_app
         'bloco4': True,  # Ranqueamento (Lucratividade e Preço)
-        'bloco5': True,
-        'bloco6': False,
+        'bloco5': True,  # terreno_app
+        'bloco6': True,  # cotação
         'bloco7': False,
     }
     # ----------------------------------------------------------------------

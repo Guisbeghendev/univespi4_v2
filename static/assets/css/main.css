@@ -205,6 +205,15 @@ button[type="submit"]:hover {
     }
 }
 
+/* --- Sugestion container responsivo (blocos 4 e 6) --- */
+.sugestion-container {
+    /* Mantenho a correção aqui para ocupar 100% da largura, mesmo que o layout final seja todo empilhado */
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 1fr; /* Mobile: empilhado */
+}
+
 /* Card que ocupa toda a largura da grid */
 .dash-card-full {
     grid-column: 1 / -1;
@@ -231,6 +240,8 @@ button[type="submit"]:hover {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
+    /* --- CORREÇÃO ADICIONAL PARA IMPEDIR ESTOURO DO PAI (CARD INTEIRO) --- */
+    overflow: hidden;
 }
 
 /* --- ESTILOS ADICIONADOS PARA CORRIGIR O ESTOURO DO CONTEÚDO DA FICHA TÉCNICA (MOBILE) --- */
@@ -428,5 +439,27 @@ button[type="submit"]:hover {
     }
     .terreno-details {
         margin-bottom: 0;
+    }
+}
+
+/* --- CORREÇÃO FINAL E DEFINITIVA: Overflow Horizontal para o Widget de Cotações (bloco6.html) --- */
+.cotacao-widget-wrapper {
+    /* Define o display para garantir que o contêiner respeite a largura 100% do card */
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    /* Por padrão (telas maiores), não há rolagem */
+    overflow-x: hidden;
+}
+
+/* Aplica a rolagem APENAS em telas pequenas (até 767px de largura) */
+@media (max-width: 767px) {
+    .cotacao-widget-wrapper {
+        /* Garante que o contêiner interno tenha a largura mínima do widget (400px),
+           forçando o navegador a reconhecer o estouro, ignorando a largura de 100% do card pai */
+        min-width: 400px;
+
+        /* ESSENCIAL: Ativa a rolagem horizontal (barra ou arrasto) */
+        overflow-x: auto;
     }
 }

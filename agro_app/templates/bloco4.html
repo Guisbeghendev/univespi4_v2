@@ -1,72 +1,66 @@
 {% load humanize %}  {# ESTA LINHA É NECESSÁRIA! Incluídos não herdam loads do template pai. #}
 
 {# inicio card6 #}
-    <div class="dash-card dash-card-responsive-half">
-        <h4>⚙️ Sugestões de Plantio para {{ city_name|default:"sua Região" }}</h4>
-        <p class="mb-4">Baseado no histórico de **Maior Valor Total (R$)** e **Melhor Preço por Quilo (R$/kg)** na sua cidade.</p>
+<div class="dash-card">
+    <h4>⚙️ Sugestões de Plantio para {{ city_name|default:"sua Região" }}</h4>
+    <p class="mb-4">Baseado no histórico de **Maior Valor Total (R$)** e **Melhor Preço por Quilo (R$/kg)** na sua cidade.</p>
 
-        {# CORREÇÃO: Verifica as variáveis que a view envia: suggestions_lucratividade e suggestions_preco #}
-        {% if suggestions_lucratividade or suggestions_preco %}
+    {% if suggestions_lucratividade or suggestions_preco %}
 
-            <!-- CORREÇÃO DE RESPONSIVIDADE: -->
-            <!-- Telas pequenas: Stacked (vertical) com espaço vertical (space-y-4) -->
-            <!-- Telas médias (md) e maiores: Flex (horizontal) com espaço horizontal (md:space-x-4) -->
-            <div class="ranking-container space-y-4 md:flex md:space-x-4 md:space-y-0">
+        <!-- CORREÇÃO DE RESPONSIVIDADE: -->
+        <!-- Telas pequenas: empilhado vertical com espaço -->
+        <!-- Telas médias e maiores: flex horizontal com espaço -->
+        <div class="ranking-container space-y-4 md:flex md:space-x-4 md:space-y-0">
 
-                {# BLOCO DE RANQUEAMENTO POR LUCRATIVIDADE (Valor Total) #}
-                <!-- Telas pequenas: w-full (100%) / Telas médias e maiores: md:w-1/2 (50%) -->
-                <div class="w-full md:w-1/2">
-                    <h5 class="text-sm font-semibold text-green-700 border-b pb-1 mb-2">🏆 Maior Lucratividade (Valor Total)</h5>
-                    <ul class="suggestion-list">
-                        {# CORREÇÃO: Itera sobre suggestions_lucratividade #}
-                        {% for product in suggestions_lucratividade %}
-                            <li class="suggestion-item rank-{{ forloop.counter }} flex justify-between items-center">
-                                <span class="text-sm font-medium">
-                                    <strong class="text-lg mr-1 text-green-600">{{ forloop.counter }}º</strong> {{ product.name }}
-                                </span>
-                                <span class="text-sm text-gray-600 font-bold">
-                                    {# Exibe o valor total (R$) #}
-                                    R$ {{ product.valor|floatformat:"0"|intcomma }}
-                                </span>
-                            </li>
-                        {% endfor %}
-                        {% if not suggestions_lucratividade %}
-                             <li class="text-xs text-gray-500 italic">Dados de lucratividade não disponíveis.</li>
-                        {% endif %}
-                    </ul>
-                </div>
-
-                {# BLOCO DE RANQUEAMENTO POR PREÇO UNITÁRIO (R$/kg) #}
-                <!-- Telas pequenas: w-full (100%) / Telas médias e maiores: md:w-1/2 (50%) -->
-                <div class="w-full md:w-1/2">
-                    <h5 class="text-sm font-semibold text-yellow-700 border-b pb-1 mb-2">💰 Melhor Preço por Quilo (R$/kg)</h5>
-                    <ul class="suggestion-list">
-                        {# CORREÇÃO: Itera sobre suggestions_preco #}
-                        {% for product in suggestions_preco %}
-                             <li class="suggestion-item rank-{{ forloop.counter }} flex justify-between items-center">
-                                <span class="text-sm font-medium">
-                                    <strong class="text-lg mr-1 text-yellow-600">{{ forloop.counter }}º</strong> {{ product.name }}
-                                </span>
-                                <span class="text-sm text-gray-600 font-bold">
-                                    {# Exibe o preço por quilo (R$/kg) com 2 casas decimais #}
-                                    R$ {{ product.preco_por_quilo|floatformat:"2" }}
-                                </span>
-                            </li>
-                        {% endfor %}
-                        {% if not suggestions_preco %}
-                             <li class="text-xs text-gray-500 italic">Dados de preço não disponíveis.</li>
-                        {% endif %}
-                    </ul>
-                </div>
+            {# BLOCO DE RANQUEAMENTO POR LUCRATIVIDADE (Valor Total) #}
+            <div class="w-full md:w-1/2">
+                <h5 class="text-sm font-semibold text-green-700 border-b pb-1 mb-2">🏆 Maior Lucratividade (Valor Total)</h5>
+                <ul class="suggestion-list">
+                    {% for product in suggestions_lucratividade %}
+                        <li class="suggestion-item rank-{{ forloop.counter }} flex justify-between items-center">
+                            <span class="text-sm font-medium">
+                                <strong class="text-lg mr-1 text-green-600">{{ forloop.counter }}º</strong> {{ product.name }}
+                            </span>
+                            <span class="text-sm text-gray-600 font-bold">
+                                R$ {{ product.valor|floatformat:"0"|intcomma }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                    {% if not suggestions_lucratividade %}
+                        <li class="text-xs text-gray-500 italic">Dados de lucratividade não disponíveis.</li>
+                    {% endif %}
+                </ul>
             </div>
 
+            {# BLOCO DE RANQUEAMENTO POR PREÇO UNITÁRIO (R$/kg) #}
+            <div class="w-full md:w-1/2">
+                <h5 class="text-sm font-semibold text-yellow-700 border-b pb-1 mb-2">💰 Melhor Preço por Quilo (R$/kg)</h5>
+                <ul class="suggestion-list">
+                    {% for product in suggestions_preco %}
+                        <li class="suggestion-item rank-{{ forloop.counter }} flex justify-between items-center">
+                            <span class="text-sm font-medium">
+                                <strong class="text-lg mr-1 text-yellow-600">{{ forloop.counter }}º</strong> {{ product.name }}
+                            </span>
+                            <span class="text-sm text-gray-600 font-bold">
+                                R$ {{ product.preco_por_quilo|floatformat:"2" }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                    {% if not suggestions_preco %}
+                        <li class="text-xs text-gray-500 italic">Dados de preço não disponíveis.</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+        </div>
+
+    {% else %}
+        {# Fallback para quando não há nenhum dado de ranqueamento #}
+        {% if profile.city %}
+            <p>Não foi possível gerar sugestões com base nos dados históricos da sua cidade. Certifique-se de que a cidade cadastrada possui dados de produção ou tente outra localização.</p>
         {% else %}
-            {# Fallback para quando não há nenhum dado de ranqueamento #}
-            {% if profile.city %}
-                <p>Não foi possível gerar sugestões com base nos dados históricos da sua cidade. Certifique-se de que a cidade cadastrada possui dados de produção ou tente outra localização.</p>
-            {% else %}
-                <p>Por favor, complete seu cadastro de localização para receber as sugestões.</p>
-            {% endif %}
+            <p>Por favor, complete seu cadastro de localização para receber as sugestões.</p>
         {% endif %}
-    </div>
-    {# fim card6 #}
+    {% endif %}
+</div>
+{# fim card6 #}
