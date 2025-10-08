@@ -6,7 +6,8 @@
         <!-- Formulário de Criação de Terreno -->
         <div class="terreno-form-container" id="terreno-create-form">
             <h5>Cadastrar Novo Terreno</h5>
-            <form method="post" action="{% url 'agro_app:create_terreno' %}">
+            <!-- ATUALIZADO: Ação aponta para 'terreno_app:create_terreno' -->
+            <form method="post" action="{% url 'terreno_app:create_terreno' %}">
                 {% csrf_token %}
                 <!-- Renderiza os campos do formulário -->
                 {% for field in terreno_form %}
@@ -32,16 +33,16 @@
                     <li class="terreno-item">
                         <div class="terreno-details">
                             <strong>{{ terreno.name }}</strong>
-                            {# CORREÇÃO DA ÁREA (feito antes, mas mantido para estabilidade) #}
-                            <small>| Área: **{{ terreno.area|default:"0"|floatformat:"0" }} ha** | Cultivo: {{ terreno.cultivo_principal|default:"Não definido" }}</small>
+                            {# CORREÇÃO: Usando area e unit #}
+                            <small>| Área: **{{ terreno.area|default:"0"|floatformat:"2" }} {{ terreno.get_unit_display }}** | Cultivo: {{ terreno.cultivo_principal|default:"Não definido" }}</small>
                         </div>
                         <div class="terreno-actions">
-                            <!-- Botão de Edição AGORA É UM LINK PARA O NOVO TEMPLATE -->
-                            <a href="{% url 'agro_app:edit_terreno' pk=terreno.pk %}" class="edit-btn">
+                            <!-- ATUALIZADO: Link de Edição aponta para 'terreno_app:edit_terreno' -->
+                            <a href="{% url 'terreno_app:edit_terreno' pk=terreno.pk %}" class="edit-btn">
                                 Editar
                             </a>
-                            <!-- Formulário de Exclusão com confirmação JS -->
-                            <form method="post" action="{% url 'agro_app:delete_terreno' pk=terreno.pk %}" style="display:inline;" onsubmit="return confirmDelete(event, '{{ terreno.name|escapejs }}')">
+                            <!-- ATUALIZADO: Formulário de Exclusão aponta para 'terreno_app:delete_terreno' -->
+                            <form method="post" action="{% url 'terreno_app:delete_terreno' pk=terreno.pk %}" style="display:inline;" onsubmit="return confirmDelete(event, '{{ terreno.name|escapejs }}')">
                                 {% csrf_token %}
                                 <button type="submit" class="delete-btn">Excluir</button>
                             </form>

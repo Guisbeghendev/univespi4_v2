@@ -7,6 +7,10 @@ from django.http import JsonResponse
 from .models import Profile
 from .forms import ProfileForm
 from fichatecnica_app import data_service
+# INSERIDO: Importa o modelo Terreno do aplicativo principal para listar os terrenos
+from .models import Terreno
+# INSERIDO: Importa o formulário de terreno do novo aplicativo (terreno_app)
+from terreno_app.forms import TerrenoForm
 
 # ------------------------------------------------------------------------------------------------------
 # ### CONFIGURAÇÃO E CONSTANTES GLOBAIS ###
@@ -26,7 +30,7 @@ def dashboard(request):
         'bloco2': True,  # Climalocal_app
         'bloco3': True,  # info_app
         'bloco4': True,  # Ranqueamento (Lucratividade e Preço)
-        'bloco5': False,
+        'bloco5': True,
         'bloco6': False,
         'bloco7': False,
     }
@@ -39,6 +43,19 @@ def dashboard(request):
     city_id = user_profile.city
     city_name = get_city_name_from_id(city_id) if city_id else None
     state_name = get_state_name_from_id(user_profile.state) if user_profile.state else None
+
+    # INSERIDO: Lógica para Terrenos (Bloco 1)
+    terrenos = Terreno.objects.filter(user=request.user).order_by('name')
+    terreno_form = TerrenoForm()
+    # INSERIDO: Lógica para Plano de Plantio (Bloco 5)
+    # ATENÇÃO: Adicione a importação de PlanoPlantio aqui ou no topo se o modelo estiver no agro_app.models
+    # Se o modelo PlanoPlantio está em agro_app.models, ele já está disponível se foi importado.
+    # Se PlanoPlantio está em outro app (ex: plano_app), a importação deve ser ajustada.
+    # Por enquanto, assumimos que PlanoPlantio não está totalmente configurado, mas o form de seleção sim.
+    # Passando um queryset vazio ou None para evitar erro caso o PlanoPlantio ainda não esteja acessível.
+    planos_plantio = [] # Placeholder: Mude isto quando o PlanoPlantio estiver configurado
+    from terreno_app.forms import PlanoCultivoSelectTerrenoForm # Adicionei aqui para evitar quebrar o topo
+    select_terreno_form = PlanoCultivoSelectTerrenoForm(user=request.user)
 
     # ----------------------------------------------------------------------
     # CÓDIGO DO CLIMA (Bloco 2)
@@ -123,6 +140,14 @@ def dashboard(request):
         'clima': weather_data,
         'suggestions_lucratividade': suggestions_lucratividade,
         'suggestions_preco': suggestions_preco,
+        # INSERIDO: Adiciona o formulário de terreno ao contexto
+        'terreno_form': terreno_form,
+        # INSERIDO: Adiciona a lista de terrenos ao contexto
+        'terrenos': terrenos,
+        # INSERIDO: Adiciona o formulário de seleção do plano de cultivo ao contexto
+        'select_terreno_form': select_terreno_form,
+        # INSERIDO: Adiciona a lista de planos de plantio (vazia ou real)
+        'planos_plantio': planos_plantio,
     }
 
     return render(request, 'dashboard.html', context)

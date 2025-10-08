@@ -7,6 +7,16 @@
         <h2 class="sub-title">✏️ Editar Terreno: {{ terreno.name }}</h2>
         <p>Use o formulário abaixo para atualizar os dados do seu terreno.</p>
 
+        <!-- Tratamento de Mensagens (Opcional, mas útil se o base.html não fizer) -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message-{{ message.tags }}" style="padding: 10px; margin-bottom: 15px; border-radius: 6px; background-color: #e0f2f1; color: #0f766e;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- O formulário POSTa para a mesma URL que o chamou, usando o PK do terreno -->
         <form method="post">
             {% csrf_token %}
             {% for field in form %}

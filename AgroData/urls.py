@@ -25,5 +25,6 @@ urlpatterns = [
     path('ficha/', include('fichatecnica_app.urls')),
     path('clima/', include('climalocal_app.urls')),
     path('info/', include('info_app.urls')),
+    path('terrenos/', include('terreno_app.urls', namespace='terreno_app')),
 
 ]
