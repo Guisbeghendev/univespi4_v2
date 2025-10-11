@@ -9,27 +9,29 @@ from .forms import TerrenoForm
 def create_terreno(request):
     """
     Cria um novo terreno associado ao usuário logado.
-    Adiciona a lógica para salvar os IDs de estado e cidade do IBGE.
+    Adiciona a lógica para salvar os IDs de pais, estado e cidade.
     """
     if request.method == 'POST':
         form = TerrenoForm(request.POST)
         if form.is_valid():
             terreno = form.save(commit=False)
-            terreno.user = request.user
+            terreno.proprietario = request.user  # CORRIGIDO: O Terreno usa 'proprietario', não 'user'
 
-            # CORREÇÃO CRÍTICA: Garante que os IDs de estado e cidade (selecionados dinamicamente
-            # via JavaScript/AJAX no frontend) sejam salvos manualmente.
-            terreno.state = request.POST.get('state', None)
-            terreno.city = request.POST.get('city', None)
+            # CORREÇÃO CRÍTICA: Garante que os IDs de pais, estado e cidade
+            # (selecionados dinamicamente via JavaScript/AJAX no frontend) sejam salvos manualmente.
+            # Os nomes dos campos no modelo são 'pais', 'estado' e 'cidade'.
+            terreno.pais = request.POST.get('pais', None)
+            terreno.estado = request.POST.get('estado', None)
+            terreno.cidade = request.POST.get('cidade', None)
 
             terreno.save()
-            messages.success(request, f"Terreno '{terreno.name}' cadastrado com sucesso!")
-            # Redireciona de volta para o dashboard principal (onde o card é exibido)
+            messages.success(request, f"Terreno '{terreno.nome}' cadastrado com sucesso!") # Usa 'nome', não 'name'
+            # Redireciona de volta para o dashboard principal
             return redirect('agro_app:dashboard')
         else:
-            # Se o form for inválido, redireciona de volta com uma mensagem de erro
+            # Em caso de falha, é melhor renderizar o dashboard novamente, injetando o form inválido.
+            # Como a criação é feita via include (bloco5), voltamos ao dashboard com erro.
             messages.error(request, "Erro ao cadastrar terreno. Verifique os campos.")
-            # Para o POST falho, é melhor manter o redirect para evitar reenvio do formulário.
             return redirect('agro_app:dashboard')
 
     # Acesso via GET deve redirecionar
@@ -40,24 +42,26 @@ def create_terreno(request):
 def edit_terreno(request, pk):
     """
     Edita um terreno existente do usuário logado.
-    Adiciona a lógica para salvar os IDs de estado e cidade do IBGE.
+    Adiciona a lógica para salvar os IDs de pais, estado e cidade.
     """
     # Garante que só o usuário dono do terreno possa editá-lo
-    terreno = get_object_or_404(Terreno, pk=pk, user=request.user)
+    # CORRIGIDO: O Terreno usa 'proprietario', não 'user'
+    terreno = get_object_or_404(Terreno, pk=pk, proprietario=request.user)
 
     if request.method == 'POST':
         form = TerrenoForm(request.POST, instance=terreno)
         if form.is_valid():
-            # CORREÇÃO CRÍTICA: Garante que os IDs de estado e cidade sejam atualizados
+            # CORREÇÃO CRÍTICA: Garante que os IDs de pais, estado e cidade sejam atualizados
             # a partir do request.POST antes de salvar.
-            form.instance.state = request.POST.get('state', None)
-            form.instance.city = request.POST.get('city', None)
+            form.instance.pais = request.POST.get('pais', None)
+            form.instance.estado = request.POST.get('estado', None)
+            form.instance.cidade = request.POST.get('cidade', None)
 
             form.save()
-            messages.success(request, f"Terreno '{terreno.name}' atualizado com sucesso!")
+            messages.success(request, f"Terreno '{terreno.nome}' atualizado com sucesso!") # Usa 'nome', não 'name'
             return redirect('agro_app:dashboard')
         else:
-            messages.error(request, f"Erro ao editar terreno '{terreno.name}'. Verifique os campos.")
+            messages.error(request, f"Erro ao editar terreno '{terreno.nome}'. Verifique os campos.") # Usa 'nome', não 'name'
     else:
         form = TerrenoForm(instance=terreno)
 
@@ -75,10 +79,11 @@ def delete_terreno(request, pk):
     Exclui um terreno existente do usuário logado.
     """
     # Garante que só o usuário dono do terreno possa excluí-lo
-    terreno = get_object_or_404(Terreno, pk=pk, user=request.user)
+    # CORRIGIDO: O Terreno usa 'proprietario', não 'user'
+    terreno = get_object_or_404(Terreno, pk=pk, proprietario=request.user)
 
     if request.method == 'POST':
-        terreno_name = terreno.name
+        terreno_name = terreno.nome # Usa 'nome', não 'name'
         terreno.delete()
         messages.success(request, f"Terreno '{terreno_name}' excluído com sucesso.")
         return redirect('agro_app:dashboard')

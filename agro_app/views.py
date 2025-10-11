@@ -12,7 +12,6 @@ from fichatecnica_app import data_service
 from fichatecnica_app.data_service import get_products_for_city, normalize_text
 # INSERIDO: Importa o formulário de terreno do novo aplicativo (terreno_app)
 from terreno_app.forms import TerrenoForm
-from terreno_app.forms import PlanoCultivoSelectTerrenoForm  # Movido para o topo para organização
 
 # ------------------------------------------------------------------------------------------------------
 # ### CONFIGURAÇÃO E CONSTANTES GLOBAIS ###
@@ -57,8 +56,7 @@ def dashboard(request):
     # Por enquanto, assumimos que PlanoPlantio não está totalmente configurado, mas o form de seleção sim.
     # Passando um queryset vazio ou None para evitar erro caso o PlanoPlantio ainda não esteja acessível.
     planos_plantio = []  # Placeholder: Mude isto quando o PlanoPlantio estiver configurado
-    # Importação movida para o topo: from terreno_app.forms import PlanoCultivoSelectTerrenoForm
-    select_terreno_form = PlanoCultivoSelectTerrenoForm(user=request.user)
+
 
     # ----------------------------------------------------------------------
     # CÓDIGO DO CLIMA (Bloco 2)
@@ -147,8 +145,6 @@ def dashboard(request):
         'terreno_form': terreno_form,
         # INSERIDO: Adiciona a lista de terrenos ao contexto
         'terrenos': terrenos,
-        # INSERIDO: Adiciona o formulário de seleção do plano de cultivo ao contexto
-        'select_terreno_form': select_terreno_form,
         # INSERIDO: Adiciona a lista de planos de plantio (vazia ou real)
         'planos_plantio': planos_plantio,
     }

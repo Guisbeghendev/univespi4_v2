@@ -3,24 +3,55 @@
     <h4>🌱 Gerenciamento de Terrenos</h4>
     <p>Cadastre e acompanhe os seus terrenos e o cultivo principal em cada um.</p>
 
-    <!-- Formulário de Criação de Terreno -->
     <div class="terreno-form-container" id="terreno-create-form">
         <h5>Cadastrar Novo Terreno</h5>
-        <!-- ATUALIZADO: Ação aponta para 'terreno_app:create_terreno' -->
-        <form method="post" action="{% url 'terreno_app:create_terreno' %}">
+        <form method="post" action="{% url 'terreno_app:create_terreno' %}" id="create-terreno-form">
             {% csrf_token %}
-            <!-- Renderiza os campos do formulário (incluindo state e city, que serão preenchidos via JS) -->
             {% for field in terreno_form %}
-                <p>
-                    <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <ul style="color: red; list-style: none; padding: 0; font-size: 0.9em;">
-                            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
-                        </ul>
-                    {% endif %}
-                </p>
+                {# Renderiza nome, área, e unidade de medida #}
+                {% if field.name == 'nome' or field.name == 'area_total' or field.name == 'unidade_area' %}
+                    <p>
+                        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <ul style="color: red; list-style: none; padding: 0; font-size: 0.9em;">
+                                {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </p>
+                {% endif %}
             {% endfor %}
+
+            <p>
+                <label for="{{ terreno_form.pais.id_for_label }}">{{ terreno_form.pais.label }}:</label>
+                {{ terreno_form.pais }}
+            </p>
+
+            <p>
+                <label for="id_terreno_estado">Estado:</label>
+                <select id="id_terreno_estado" name="estado" class="form-control">
+                    <option value="">Selecione um país primeiro</option>
+                </select>
+                {% if terreno_form.estado.errors %}
+                    <ul style="color: red; list-style: none; padding: 0; font-size: 0.9em;">
+                        {% for error in terreno_form.estado.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </p>
+
+            <p>
+                <label for="id_terreno_cidade">Cidade:</label>
+                <select id="id_terreno_cidade" name="cidade" class="form-control">
+                    <option value="">Selecione um estado primeiro</option>
+                </select>
+                {% if terreno_form.cidade.errors %}
+                    <ul style="color: red; list-style: none; padding: 0; font-size: 0.9em;">
+                        {% for error in terreno_form.cidade.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </p>
+
+
             <button type="submit" class="edit-btn" style="width: 100%; margin-top: 10px;">Salvar Terreno</button>
         </form>
     </div>
@@ -32,20 +63,18 @@
             {% for terreno in terrenos %}
                 <li class="terreno-item">
                     <div class="terreno-details">
-                        <strong>{{ terreno.name }}</strong>
-                        {# CORREÇÃO: Usando métodos (que devem ser criados no modelo) para exibir o nome da Cidade/Estado, não o campo inexistente 'cidade'. #}
+                        <strong>{{ terreno.nome }}</strong>
+                        {# CORREÇÃO: Usando 'area_total' e 'unidade_area' (nomes reais do modelo) #}
                         <small>
-                            | Área: **{{ terreno.area|default:"0"|floatformat:"2" }} {{ terreno.get_unit_display }}** | Localização: {{ terreno.get_city_name|default:"Não informada" }} ({{ terreno.get_state_name|default:"UF" }})
+                            | Área: **{{ terreno.area_total|default:"0"|floatformat:"2" }} {{ terreno.unidade_area }}** | Localização: {{ terreno.cidade|default:"Não informada" }} ({{ terreno.estado|default:"UF" }})
                             | Cultivo: {{ terreno.cultura_atual|default:"Não definido" }}
                         </small>
                     </div>
                     <div class="terreno-actions">
-                        <!-- ATUALIZADO: Link de Edição aponta para 'terreno_app:edit_terreno' -->
                         <a href="{% url 'terreno_app:edit_terreno' pk=terreno.pk %}" class="edit-btn">
                             Editar
                         </a>
-                        <!-- ATUALIZADO: Formulário de Exclusão aponta para 'terreno_app:delete_terreno' -->
-                        <form method="post" action="{% url 'terreno_app:delete_terreno' pk=terreno.pk %}" style="display:inline;" onsubmit="return confirmDelete(event, '{{ terreno.name|escapejs }}')">
+                        <form method="post" action="{% url 'terreno_app:delete_terreno' pk=terreno.pk %}" style="display:inline;" onsubmit="return confirmDelete(event, '{{ terreno.nome|escapejs }}')">
                             {% csrf_token %}
                             <button type="submit" class="delete-btn">Excluir</button>
                         </form>
@@ -56,18 +85,103 @@
     {% else %}
         <p style="margin-top: 10px;">Você ainda não tem terrenos cadastrados. Use o formulário acima para adicionar o seu primeiro.</p>
     {% endif %}
+
+    <input type="hidden" id="get-states-url-terreno" value="{% url 'agro_app:get_states' %}">
+    <input type="hidden" id="get-cities-url-terreno" value="{% url 'agro_app:get_cities' 0 %}">
+
+
+    <script>
+        // Função para exibir um modal de confirmação simples
+        function confirmDelete(event, itemName) {
+            const confirmed = window.confirm(`Tem certeza que deseja excluir o terreno '${itemName}'? Esta ação não pode ser desfeita.`);
+            if (!confirmed) {
+                event.preventDefault();
+            }
+            return confirmed;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos do formulário de CRIAÇÃO DE TERRENO (bloco5)
+            const countrySelect = document.getElementById('id_pais'); // O ID gerado pelo ModelForm para 'pais'
+            const stateSelect = document.getElementById('id_terreno_estado'); // ID customizado
+            const citySelect = document.getElementById('id_terreno_cidade'); // ID customizado
+
+            // Obtém URLs das APIs do IBGE (armazenadas em campos hidden acima)
+            const getStatesUrl = document.getElementById('get-states-url-terreno').value;
+            const getCitiesUrlBase = document.getElementById('get-cities-url-terreno').value.slice(0, -1);
+
+
+            // Preenche o campo de estado
+            function loadStates() {
+                stateSelect.innerHTML = '<option value="">Carregando estados...</option>';
+                citySelect.innerHTML = '<option value="">Selecione um estado primeiro</option>';
+
+                fetch(getStatesUrl)
+                    .then(response => response.json())
+                    .then(states => {
+                        let optionsHtml = '<option value="">Selecione um estado</option>';
+                        states.sort((a, b) => a.nome.localeCompare(b.nome));
+                        states.forEach(state => {
+                            optionsHtml += `<option value="${state.id}">${state.nome}</option>`;
+                        });
+                        stateSelect.innerHTML = optionsHtml;
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar estados:', error);
+                        stateSelect.innerHTML = '<option value="">Erro ao carregar estados</option>';
+                    });
+            }
+
+            // Preenche o campo de cidade
+            function loadCities(stateId) {
+                citySelect.innerHTML = '<option value="">Carregando cidades...</option>';
+
+                fetch(`${getCitiesUrlBase}${stateId}/`)
+                    .then(response => response.json())
+                    .then(cities => {
+                        let optionsHtml = '<option value="">Selecione uma cidade</option>';
+                        cities.sort((a, b) => a.nome.localeCompare(b.nome));
+                        cities.forEach(city => {
+                            optionsHtml += `<option value="${city.id}">${city.nome}</option>`;
+                        });
+                        citySelect.innerHTML = optionsHtml;
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar cidades:', error);
+                        citySelect.innerHTML = '<option value="">Erro ao carregar cidades</option>';
+                    });
+            }
+
+            // Ação de País
+            if (countrySelect) {
+                // Inicializa com base no valor padrão (se for 'Brasil')
+                if (countrySelect.value === 'Brasil') {
+                    loadStates();
+                }
+
+                countrySelect.addEventListener('change', function() {
+                    if (this.value === 'Brasil') {
+                        loadStates();
+                    } else {
+                        // Limpa os dropdowns se o país não for Brasil
+                        stateSelect.innerHTML = '<option value="">Selecione um país primeiro</option>';
+                        citySelect.innerHTML = '<option value="">Selecione um estado primeiro</option>';
+                    }
+                });
+            }
+
+            // Ação de Estado
+            if (stateSelect) {
+                stateSelect.addEventListener('change', function() {
+                    const selectedStateId = this.value;
+                    if (selectedStateId) {
+                        loadCities(selectedStateId);
+                    } else {
+                        citySelect.innerHTML = '<option value="">Selecione um estado primeiro</option>';
+                    }
+                });
+            }
+        });
+    </script>
 </div>
 {# fim card7 #}
-
-<!-- Script Básico para Confirmação de Exclusão -->
-<script>
-    // Função para exibir um modal de confirmação simples (substituindo o antigo alert/confirm)
-    // ATENÇÃO: Se você usa um sistema de modal global, adapte esta função para usá-lo.
-    function confirmDelete(event, itemName) {
-        const confirmed = window.confirm(`Tem certeza que deseja excluir o terreno '${itemName}'? Esta ação não pode ser desfeita.`);
-        if (!confirmed) {
-            event.preventDefault(); // Impede o envio do formulário se o usuário cancelar
-        }
-        return confirmed;
-    }
-</script>

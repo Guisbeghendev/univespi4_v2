@@ -4,10 +4,9 @@
 {% block content %}
 <main>
     <div class="auth-card">
-        <h2 class="sub-title">✏️ Editar Terreno: {{ terreno.name }}</h2>
+        <h2 class="sub-title">✏️ Editar Terreno: {{ terreno.nome }}</h2>
         <p>Use o formulário abaixo para atualizar os dados do seu terreno, incluindo a localização.</p>
 
-        <!-- Tratamento de Mensagens -->
         {% if messages %}
             {% for message in messages %}
                 <div class="message-{{ message.tags }}" style="padding: 10px; margin-bottom: 15px; border-radius: 6px; background-color: #e0f2f1; color: #0f766e;">
@@ -16,27 +15,34 @@
             {% endfor %}
         {% endif %}
 
-        <!-- O formulário POSTa para a mesma URL que o chamou, usando o PK do terreno -->
         <form method="post">
             {% csrf_token %}
             {% for field in form %}
-                <!-- Renderiza os campos de localização como selects separados, conforme a estrutura do Profile -->
-                {% if field.name == 'state' %}
+                {% if field.name == 'pais' %}
                     <div class="form-field">
-                        <label for="{{ field.id_for_label }}">Estado:</label>
-                        <select id="{{ field.id_for_label }}" name="{{ field.name }}" class="form-control">
+                        <label for="{{ field.id_for_label }}">País:</label>
+                        {{ field }}
+                        {% if field.errors %}<ul style="color: red; list-style: none; padding: 0; font-size: 0.9em;">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+                    </div>
+
+                {% elif field.name == 'estado' %}
+                    <div class="form-field">
+                        <label for="id_edit_estado">Estado:</label>
+                        <select id="id_edit_estado" name="estado" class="form-control">
                             <option value="">Carregando estados...</option>
                         </select>
                         {% if field.errors %}<ul style="color: red; list-style: none; padding: 0; font-size: 0.9em;">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                     </div>
-                {% elif field.name == 'city' %}
+
+                {% elif field.name == 'cidade' %}
                     <div class="form-field">
-                        <label for="{{ field.id_for_label }}">Cidade:</label>
-                        <select id="{{ field.id_for_label }}" name="{{ field.name }}" class="form-control">
+                        <label for="id_edit_cidade">Cidade:</label>
+                        <select id="id_edit_cidade" name="cidade" class="form-control">
                             <option value="">Selecione um estado primeiro</option>
                         </select>
                         {% if field.errors %}<ul style="color: red; list-style: none; padding: 0; font-size: 0.9em;">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                     </div>
+
                 {% else %}
                     <div class="form-field">
                         <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
@@ -54,23 +60,25 @@
     </div>
 </main>
 
-<!-- Campos escondidos para obter as URLs de API necessárias (do agro_app) -->
-<input type="hidden" id="get-states-url" value="{% url 'agro_app:get_states' %}">
-<!-- O '0' é um placeholder que será substituído pelo JS -->
-<input type="hidden" id="get-cities-url" value="{% url 'agro_app:get_cities' 0 %}">
+<input type="hidden" id="get-states-url-edit" value="{% url 'agro_app:get_states' %}">
+<input type="hidden" id="get-cities-url-edit" value="{% url 'agro_app:get_cities' 0 %}">
 
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const stateSelect = document.getElementById('id_state');
-        const citySelect = document.getElementById('id_city');
+        // Elementos do formulário de EDIÇÃO DE TERRENO
+        const countrySelect = document.getElementById('id_pais'); // O ID gerado pelo ModelForm para 'pais'
+        const stateSelect = document.getElementById('id_edit_estado');
+        const citySelect = document.getElementById('id_edit_cidade');
+
         // Obtém URLs das APIs do IBGE
-        const getStatesUrl = document.getElementById('get-states-url').value;
-        const getCitiesUrlBase = document.getElementById('get-cities-url').value.slice(0, -1);
+        const getStatesUrl = document.getElementById('get-states-url-edit').value;
+        const getCitiesUrlBase = document.getElementById('get-cities-url-edit').value.slice(0, -1);
 
         // Valores iniciais do Terreno para pré-seleção
-        const initial_state_id = '{{ terreno.state|default:"" }}';
-        const initial_city_id = '{{ terreno.city|default:"" }}';
+        const initial_country = '{{ terreno.pais|default:"" }}';
+        const initial_state_id = '{{ terreno.estado|default:"" }}';
+        const initial_city_id = '{{ terreno.cidade|default:"" }}';
 
         // Preenche o campo de estado
         function loadStates() {
@@ -84,10 +92,10 @@
                     });
                     stateSelect.innerHTML = optionsHtml;
 
-                    // Pré-seleciona o estado atual, se existir
+                    // 1. Pré-seleciona o estado atual, se existir
                     stateSelect.value = initial_state_id;
 
-                    // Se houver estado e cidade salvos, carrega as cidades
+                    // 2. Se houver estado e cidade salvos, carrega as cidades
                     if (initial_state_id && initial_city_id) {
                         loadCities(initial_state_id, initial_city_id);
                     }
@@ -109,7 +117,7 @@
                     });
                     citySelect.innerHTML = optionsHtml;
 
-                    // Pré-seleciona a cidade atual, se existir
+                    // 3. Pré-seleciona a cidade atual, se existir
                     if (cityId) {
                         citySelect.value = cityId;
                     } else {
@@ -122,6 +130,28 @@
                 });
         }
 
+        // Event listener para o campo de País
+        if (countrySelect) {
+            // Se o País for Brasil na inicialização, carrega os estados
+            if (initial_country === 'Brasil') {
+                loadStates();
+            } else {
+                stateSelect.innerHTML = '<option value="">Selecione um país primeiro</option>';
+                citySelect.innerHTML = '<option value="">Selecione um estado primeiro</option>';
+            }
+
+            countrySelect.addEventListener('change', function() {
+                if (this.value === 'Brasil') {
+                    loadStates();
+                } else {
+                    // Limpa os dropdowns se o país não for Brasil
+                    stateSelect.innerHTML = '<option value="">Selecione um país primeiro</option>';
+                    citySelect.innerHTML = '<option value="">Selecione um estado primeiro</option>';
+                }
+            });
+        }
+
+
         // Event listener para o campo de estado
         stateSelect.addEventListener('change', function() {
             const selectedStateId = this.value;
@@ -132,9 +162,6 @@
                 citySelect.innerHTML = '<option value="">Selecione um estado primeiro</option>';
             }
         });
-
-        // Inicia o carregamento dos estados quando a página carregar
-        loadStates();
     });
 </script>
 {% endblock %}
