@@ -17,18 +17,18 @@
             {{ form.last_name }}
         </div>
         <div class="form-field">
-            <label for="{{ form.country.id_for_label }}">País:</label>
-            {{ form.country }}
+            <label for="{{ form.pais.id_for_label }}">País:</label>
+            {{ form.pais }}
         </div>
         <div class="form-field">
-            <label for="{{ form.state.id_for_label }}">Estado:</label>
-            <select id="{{ form.state.id_for_label }}" name="{{ form.state.name }}" class="form-control">
+            <label for="{{ form.estado.id_for_label }}">Estado:</label>
+            <select id="{{ form.estado.id_for_label }}" name="{{ form.estado.name }}" class="form-control">
                 <option value="">Selecione um estado</option>
             </select>
         </div>
         <div class="form-field">
-            <label for="{{ form.city.id_for_label }}">Cidade:</label>
-            <select id="{{ form.city.id_for_label }}" name="{{ form.city.name }}" class="form-control">
+            <label for="{{ form.cidade.id_for_label }}">Cidade:</label>
+            <select id="{{ form.cidade.id_for_label }}" name="{{ form.cidade.name }}" class="form-control">
                 <option value="">Selecione uma cidade</option>
             </select>
         </div>
@@ -60,13 +60,21 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const countrySelect = document.getElementById('id_country');
-        const stateSelect = document.getElementById('id_state');
-        const citySelect = document.getElementById('id_city');
+        // Obter elementos e URLs
+        // CORREÇÃO 2: Alterado id_country (ID gerado para 'country') para id_pais (ID gerado para 'pais')
+        const countrySelect = document.getElementById('id_pais');
+        const stateSelect = document.getElementById('id_estado');
+        const citySelect = document.getElementById('id_cidade');
         const cultivoSelect = document.getElementById('cultivo-select');
         const getStatesUrl = document.getElementById('get-states-url').value;
         const getCitiesUrlBase = document.getElementById('get-cities-url').value.slice(0, -1);
         const getProductsUrlBase = document.getElementById('get-products-id-url').value.slice(0, -1);
+
+        // VARIÁVEIS DO PERFIL (Usando default para prevenir erros de renderização)
+        const profileEstado = '{{ profile.estado|default:"" }}';
+        const profileCidade = '{{ profile.cidade|default:"" }}';
+        const profileCultivo = '{{ profile.cultivo_principal|default:"" }}';
+
 
         // Preenche o campo de estado
         function loadStates() {
@@ -79,9 +87,13 @@
                         optionsHtml += `<option value="${state.id}">${state.nome}</option>`;
                     });
                     stateSelect.innerHTML = optionsHtml;
-                    stateSelect.value = '{{ profile.state }}' || '';
-                    if ('{{ profile.state }}' && '{{ profile.city }}') {
-                        loadCities('{{ profile.state }}', '{{ profile.city }}');
+
+                    // Seleciona o estado do perfil
+                    stateSelect.value = profileEstado || '';
+
+                    // Se houver estado e cidade salvos, carrega as cidades
+                    if (profileEstado.length > 0 && profileCidade.length > 0) {
+                        loadCities(profileEstado, profileCidade);
                     }
                 })
                 .catch(error => console.error('Erro ao carregar estados:', error));
@@ -98,8 +110,11 @@
                         optionsHtml += `<option value="${city.id}">${city.nome}</option>`;
                     });
                     citySelect.innerHTML = optionsHtml;
+
                     if (cityId) {
+                        // Seleciona a cidade do perfil
                         citySelect.value = cityId;
+                        // Depois de selecionar a cidade, carrega os cultivos
                         loadCrops(cityId);
                     } else {
                         citySelect.value = '';
@@ -109,7 +124,7 @@
                 .catch(error => console.error('Erro ao carregar cidades:', error));
         }
 
-        // NOVO CÓDIGO: Preenche o campo de cultivo principal
+        // --- CORREÇÃO APLICADA AQUI ---
         function loadCrops(cityId) {
             if (!cityId) {
                 cultivoSelect.innerHTML = '<option value="">Selecione uma cidade primeiro</option>';
@@ -121,19 +136,27 @@
                     let optionsHtml = '<option value="">Selecione um cultivo</option>';
                     products.sort((a, b) => a.nome.localeCompare(b.nome));
                     products.forEach(product => {
-                        optionsHtml += `<option value="${product.id}">${product.nome}</option>`;
+                        // CORREÇÃO CRÍTICA: Tenta usar uma chave de ID mais provável ('id_produto')
+                        // se a chave 'id' estiver incorreta (contendo o nome do produto).
+                        const productId = product.id_produto || product.id;
+
+                        optionsHtml += `<option value="${productId}">${product.nome}</option>`;
                     });
                     cultivoSelect.innerHTML = optionsHtml;
-                    cultivoSelect.value = '{{ profile.cultivo_principal }}' || '';
+
+                    // Seleciona o cultivo do perfil
+                    cultivoSelect.value = profileCultivo || '';
                 })
                 .catch(error => console.error('Erro ao carregar cultivos:', error));
         }
+        // --- FIM DA CORREÇÃO ---
 
         // Event listener para o campo de país
         countrySelect.addEventListener('change', function() {
             if (this.value === 'Brasil') {
                 loadStates();
             } else {
+                // Limpa os dropdowns se o país não for Brasil
                 stateSelect.innerHTML = '<option value="">Selecione um estado</option>';
                 citySelect.innerHTML = '<option value="">Selecione uma cidade</option>';
                 cultivoSelect.innerHTML = '<option value="">Selecione uma cidade primeiro</option>';
@@ -151,7 +174,7 @@
             }
         });
 
-        // NOVO CÓDIGO: Event listener para o campo de cidade
+        // Event listener para o campo de cidade
         citySelect.addEventListener('change', function() {
             const selectedCityId = this.value;
             if (selectedCityId) {
@@ -161,8 +184,8 @@
             }
         });
 
-        // Chama as funções no carregamento da página para preencher os dados do perfil
-        if (countrySelect.value === 'Brasil') {
+        // Inicialização: Carrega os estados se o país for Brasil OU se houver um estado salvo no perfil.
+        if (countrySelect.value === 'Brasil' || profileEstado.length > 0) {
             loadStates();
         }
     });

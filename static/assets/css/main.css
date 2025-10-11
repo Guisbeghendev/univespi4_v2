@@ -463,3 +463,36 @@ button[type="submit"]:hover {
         overflow-x: auto;
     }
 }
+
+/* --- Estilos para o Bloco 7 (Seleção de Terreno para Plano) --- */
+
+/* Estilo para a caixa de detalhes do terreno selecionado */
+.terreno-details-box {
+    padding: 10px;
+    margin-top: 15px;
+    border: 1px dashed #5D4037; /* Marrom */
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+/* Estilos de fonte dentro da caixa de detalhes */
+.terreno-details-box p {
+    font-size: 0.9em;
+}
+
+/* Estilo para o estado desabilitado do botão */
+button[type="submit"]:disabled {
+    background-color: #ccc !important; /* Cor cinza, importante para sobrepor o hover */
+    cursor: not-allowed;
+    color: #666;
+    box-shadow: none;
+}
+
+/* Estilo para a caixa de mensagens/erros */
+#messageBox {
+    font-size: 0.9em;
+    text-align: center;
+    margin-top: 10px;
+    color: #dc3545; /* Vermelho padrão para mensagens de erro */
+    font-weight: bold;
+}

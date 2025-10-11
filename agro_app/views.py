@@ -4,13 +4,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from .models import Profile
+# CORREÇÃO 1/2: Importa Produto, que é o nome atual do modelo.
+from .models import Profile, Terreno, Produto
 from .forms import ProfileForm
 from fichatecnica_app import data_service
-# INSERIDO: Importa o modelo Terreno do aplicativo principal para listar os terrenos
-from .models import Terreno
+# CORREÇÃO CRÍTICA: Importa as funções necessárias para a nova lógica de busca.
+from fichatecnica_app.data_service import get_products_for_city, normalize_text
 # INSERIDO: Importa o formulário de terreno do novo aplicativo (terreno_app)
 from terreno_app.forms import TerrenoForm
+from terreno_app.forms import PlanoCultivoSelectTerrenoForm  # Movido para o topo para organização
 
 # ------------------------------------------------------------------------------------------------------
 # ### CONFIGURAÇÃO E CONSTANTES GLOBAIS ###
@@ -32,7 +34,7 @@ def dashboard(request):
         'bloco4': True,  # Ranqueamento (Lucratividade e Preço)
         'bloco5': True,  # terreno_app
         'bloco6': True,  # cotação
-        'bloco7': False,
+        'bloco7': True,
     }
     # ----------------------------------------------------------------------
 
@@ -40,12 +42,13 @@ def dashboard(request):
     user_profile, created = Profile.objects.get_or_create(user=request.user)
 
     # Busca os nomes da Cidade e Estado para passar para o contexto (usado no bloco1.html)
-    city_id = user_profile.city
+    # CORREÇÃO: Substituído .city por .cidade e .state por .estado
+    city_id = user_profile.cidade
     city_name = get_city_name_from_id(city_id) if city_id else None
-    state_name = get_state_name_from_id(user_profile.state) if user_profile.state else None
+    state_name = get_state_name_from_id(user_profile.estado) if user_profile.estado else None
 
     # INSERIDO: Lógica para Terrenos (Bloco 1)
-    terrenos = Terreno.objects.filter(user=request.user).order_by('name')
+    terrenos = Terreno.objects.filter(proprietario=request.user).order_by('nome')
     terreno_form = TerrenoForm()
     # INSERIDO: Lógica para Plano de Plantio (Bloco 5)
     # ATENÇÃO: Adicione a importação de PlanoPlantio aqui ou no topo se o modelo estiver no agro_app.models
@@ -53,8 +56,8 @@ def dashboard(request):
     # Se PlanoPlantio está em outro app (ex: plano_app), a importação deve ser ajustada.
     # Por enquanto, assumimos que PlanoPlantio não está totalmente configurado, mas o form de seleção sim.
     # Passando um queryset vazio ou None para evitar erro caso o PlanoPlantio ainda não esteja acessível.
-    planos_plantio = [] # Placeholder: Mude isto quando o PlanoPlantio estiver configurado
-    from terreno_app.forms import PlanoCultivoSelectTerrenoForm # Adicionei aqui para evitar quebrar o topo
+    planos_plantio = []  # Placeholder: Mude isto quando o PlanoPlantio estiver configurado
+    # Importação movida para o topo: from terreno_app.forms import PlanoCultivoSelectTerrenoForm
     select_terreno_form = PlanoCultivoSelectTerrenoForm(user=request.user)
 
     # ----------------------------------------------------------------------
@@ -156,6 +159,34 @@ def dashboard(request):
 # ------------------------------------------------------------------------------------------------------
 ### FUNÇÕES AUXILIARES DE TRADUÇÃO (Para Perfil e Dashboard)
 # ------------------------------------------------------------------------------------------------------
+
+# NOVA FUNÇÃO: Adicionada para buscar o nome do país
+def get_country_name_from_id(country_id):
+    """Retorna o nome do país a partir da ID (assumindo 1058 = Brasil)."""
+    if not country_id: return None
+    # Esta é a ID do Brasil segundo a API do IBGE, mas o Profile pode usar um padrão diferente.
+    # Assumimos que a ID é '1058' ou 'BR' ou o nome já está salvo como string.
+
+    # Se o valor salvo for a string '1058' ou o número 1058
+    if str(country_id) in ['1058']:
+        return "Brasil"
+
+    # Se o campo for uma string preenchida (ex: 'Brasil' ou 'BRA') e não for o valor padrão
+    if isinstance(country_id, str) and country_id.strip() not in ('', '-'):
+        return country_id.title()
+
+    # Caso contrário, tenta a API do IBGE (países) se necessário, mas geralmente é fixo.
+    try:
+        url = f"https://servicodados.ibge.gov.br/api/v1/localidades/paises/{country_id}"
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+        return data[0].get('nome') if isinstance(data, list) else None
+    except:
+        # Se a busca falhar ou o ID não for padrão (e não for 'Brasil'), retorna None
+        return None
+
+
 def get_city_name_from_id(city_id):
     """Busca o nome da cidade a partir da ID do IBGE. Usa a API do IBGE."""
     if not city_id: return None
@@ -182,10 +213,29 @@ def get_state_name_from_id(state_id):
         return None
 
 
-def get_product_name_from_id(product_id):
-    """Busca o nome do produto a partir da ID, chamando o serviço de dados (usado na visualização do perfil)."""
-    if not product_id: return None
-    return data_service.get_product_name_by_id(product_id)
+def get_product_name_from_id(product_id, city_id):
+    """
+    Busca o nome do produto comparando o ID normalizado salvo
+    com a lista de produtos retornada pela API para a cidade.
+    """
+    if not product_id or not city_id: return None
+
+    try:
+        # 1. Normaliza o ID/Nome que está salvo no perfil (ex: 'SOJA')
+        normalized_saved_id = normalize_text(str(product_id))
+
+        # 2. Puxa a lista de produtos da API para a cidade salva.
+        products_data = get_products_for_city(city_id)
+
+        # 3. Filtra a lista de produtos para encontrar o nome de exibição.
+        for product in products_data:
+            # A chave 'id' da API é o nome normalizado (ex: 'SOJA')
+            if product.get('id', '') == normalized_saved_id:
+                return product.get('nome')  # Retorna o nome amigável (ex: 'Soja')
+
+        return None
+    except Exception:
+        return None
 
 
 # ------------------------------------------------------------------------------------------------------
@@ -197,13 +247,21 @@ def profile(request):
     """Exibe o perfil do usuário, buscando nomes de cidade e cultivo por ID."""
     user_profile, created = Profile.objects.get_or_create(user=request.user)
 
-    city_name = get_city_name_from_id(user_profile.city) if user_profile.city else None
-    state_name = get_state_name_from_id(user_profile.state) if user_profile.state else None
+    # NOVO: Busca o nome do País
+    country_name = get_country_name_from_id(user_profile.pais) if user_profile.pais else None
+
+    # CORREÇÃO: Substituído .city por .cidade e .state por .estado
+    city_name = get_city_name_from_id(user_profile.cidade) if user_profile.cidade else None
+    state_name = get_state_name_from_id(user_profile.estado) if user_profile.estado else None
+
+    # Esta linha agora usa a função CORRIGIDA
     cultivo_principal_name = get_product_name_from_id(
-        user_profile.cultivo_principal) if user_profile.cultivo_principal else None
+        user_profile.cultivo_principal, user_profile.cidade
+    ) if user_profile.cultivo_principal else None
 
     context = {
         'profile': user_profile,
+        'country_name': country_name,  # NOVO: Adiciona ao contexto
         'city_name': city_name,
         'state_name': state_name,
         'cultivo_principal_name': cultivo_principal_name,
@@ -220,8 +278,14 @@ def profile_edit(request):
         form = ProfileForm(request.POST, instance=user_profile)
         if form.is_valid():
             # Garante que os valores vindo dos selects (que são IDs) sejam salvos
-            form.instance.city = request.POST.get('city', None)
-            form.instance.state = request.POST.get('state', None)
+            # Os campos 'cidade', 'estado' e 'cultivo_principal' são preenchidos
+            # com os valores (IDs) dos selects do profile_edit.html.
+
+            # RE-INSERIDO: Linha 'form.instance.pais = request.POST.get('pais', None)'
+            form.instance.pais = request.POST.get('pais', None)
+
+            form.instance.cidade = request.POST.get('cidade', None)
+            form.instance.estado = request.POST.get('estado', None)
             form.instance.cultivo_principal = request.POST.get('cultivo_principal', None)
 
             form.save()
@@ -232,8 +296,9 @@ def profile_edit(request):
     else:
         form = ProfileForm(instance=user_profile)
 
-    city_name = get_city_name_from_id(user_profile.city) if user_profile.city else None
-    state_name = get_state_name_from_id(user_profile.state) if user_profile.state else None
+    # CORREÇÃO: Substituído .city por .cidade e .state por .estado
+    city_name = get_city_name_from_id(user_profile.cidade) if user_profile.cidade else None
+    state_name = get_state_name_from_id(user_profile.estado) if user_profile.estado else None
 
     context = {
         'form': form,

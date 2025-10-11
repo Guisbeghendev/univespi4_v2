@@ -1,0 +1,41 @@
+{# inicio bloco7 #}
+
+<div class="dash-card">
+    <h4>Iniciar Novo Plano de Plantio</h4>
+    <p class="text-gray-600 mb-6">Selecione um terreno cadastrado para iniciar a análise climática e de solo.</p>
+
+    <!-- Estrutura de Seleção -->
+    <div>
+        <label for="terrenoSelect">Terrenos disponíveis:</label>
+        <select id="terrenoSelect">
+            <!-- As opções serão carregadas via JavaScript -->
+            <option value="" disabled selected>Carregue os terrenos...</option>
+        </select>
+    </div>
+
+    <!-- Detalhes do Terreno Selecionado -->
+    <div id="terrenoDetails">
+        <p>Detalhes do Terreno:</p>
+        <ul>
+            <li>Nome: <span id="detailNome"></span></li>
+            <li>Tamanho (ha): <span id="detailTamanho"></span></li>
+            <!-- CORRIGIDO: Agora exibe a Cidade -->
+            <li>Localização (Cidade): <span id="detailLocalizacao"></span></li>
+        </ul>
+    </div>
+
+    <!-- Botão de Ação -->
+    <div>
+        <button id="selecionarBtn" disabled>
+            <span id="btnText">Selecione um Terreno</span>
+            <span id="loadingSpinner"></span>
+        </button>
+        <p id="messageBox"></p>
+    </div>
+
+</div>
+{# fim bloco7 #}
+
+{% load static %}
+<script src="{% static 'planodeplantio_app/js/bloco7.js' %}"></script>
+

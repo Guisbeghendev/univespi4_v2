@@ -1,6 +1,8 @@
 from django import forms
 # CORRIGIDO: Importa os modelos e constantes do aplicativo principal (agro_app)
-from agro_app.models import Terreno, UNIT_CHOICES, PlanoPlantio
+# Assumindo que Terreno, UNIT_CHOICES e PlanoPlantio estão disponíveis para importação
+# O Terreno está definido no models.py que você enviou.
+from agro_app.models import Terreno, UNIT_CHOICES, PlanoPlantio  # Ajuste a importação se Terreno estiver em outro lugar
 
 
 # ==============================================================================
@@ -8,21 +10,42 @@ from agro_app.models import Terreno, UNIT_CHOICES, PlanoPlantio
 # ==============================================================================
 class TerrenoForm(forms.ModelForm):
     """
-    Formulário para criar e editar o modelo Terreno.
+    Formulário para criar e editar o modelo Terreno, corrigido para usar os nomes de campo
+    exatos do modelo: 'nome', 'estado', 'cidade'.
+    (O campo 'area_hectares' foi removido para resolver o FieldError.)
     """
+    # Sobrescrevemos os campos 'estado' e 'cidade' para adicionar widgets customizados
+    # e IDs, mas mantemos os nomes de campo exatos para que o ModelForm os reconheça.
+    estado = forms.CharField(
+        label='Estado',
+        required=True,
+        # O ID deve refletir o nome do campo no modelo para consistência: 'id_estado'
+        widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_estado', 'data-url-cities': '/api/cities/'})
+    )
+
+    cidade = forms.CharField(
+        label='Cidade',
+        required=True,
+        # O ID deve refletir o nome do campo no modelo para consistência: 'id_cidade'
+        widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_cidade'})
+    )
+
+    # O campo 'unit' (unidade de medida) foi removido daqui porque não existe no modelo Terreno.
+    # Caso você precise dele, adicione-o no modelo Terreno.
 
     class Meta:
         model = Terreno
-        fields = ['name', 'area', 'unit']
+        # CAMPOS CORRIGIDOS para corresponder exatamente ao modelo Terreno, excluindo 'area_hectares':
+        fields = ['nome', 'estado', 'cidade']
+
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Lote Fundos'}),
-            'area': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ex: 15.5'}),
-            'unit': forms.Select(choices=UNIT_CHOICES, attrs={'class': 'form-control'}),
+            'nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Lote Fundos'}),
+            # 'area_hectares' foi removido
         }
         labels = {
-            'name': 'Nome do Terreno',
-            'area': 'Tamanho',
-            'unit': 'Unidade',
+            'nome': 'Nome do Terreno',
+            # 'area_hectares' foi removido
+            # 'estado' e 'cidade' já têm labels definidos acima
         }
 
 
@@ -44,5 +67,5 @@ class PlanoCultivoSelectTerrenoForm(forms.Form):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         if user is not None:
-            # Filtra os terrenos apenas para o usuário atual
-            self.fields['terreno'].queryset = Terreno.objects.filter(user=user)
+            # CORRIGIDO: O Terreno se relaciona ao User pelo campo 'proprietario'
+            self.fields['terreno'].queryset = Terreno.objects.filter(proprietario=user)

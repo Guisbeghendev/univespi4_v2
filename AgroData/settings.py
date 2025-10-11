@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'fichatecnica_app',
     'climalocal_app',
     'info_app',
-    'terreno_app'
+    'terreno_app',
+    'planodeplantio_app'
 ]
 
 MIDDLEWARE = [

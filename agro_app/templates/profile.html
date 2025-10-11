@@ -10,12 +10,10 @@
     <p><strong>Contato:</strong> {{ profile.contact|default:"-" }}</p>
     <p><strong>Data de Nascimento:</strong> {{ profile.birth_date|default:"-" }}</p>
 
-    <p><strong>País:</strong> {{ profile.country|default:"-" }}</p>
-    <p><strong>Estado:</strong> {{ state_name|default:"-" }}</p>
-    <!-- ALTERAÇÃO: Agora exibe o nome da cidade em vez do ID -->
-    <p><strong>Cidade:</strong> {{ city_name|default:"-" }}</p>
+    <p><strong>País:</strong> {{ country_name|default:"-" }}</p>
 
-    <!-- ALTERAÇÃO: Agora exibe o nome do cultivo em vez do ID -->
+    <p><strong>Estado:</strong> {{ state_name|default:"-" }}</p>
+    <p><strong>Cidade:</strong> {{ city_name|default:"-" }}</p>
     <p><strong>Principal Cultivo:</strong> {{ cultivo_principal_name|default:"-" }}</p>
 
     <a href="{% url 'agro_app:profile_edit' %}">Editar Perfil</a>

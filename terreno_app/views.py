@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-# CORRIGIDO: Importa o modelo Terreno do aplicativo principal (agro_app)
+# Importa o modelo Terreno do aplicativo principal (agro_app)
 from agro_app.models import Terreno
 from .forms import TerrenoForm
 
@@ -9,12 +9,19 @@ from .forms import TerrenoForm
 def create_terreno(request):
     """
     Cria um novo terreno associado ao usuário logado.
+    Adiciona a lógica para salvar os IDs de estado e cidade do IBGE.
     """
     if request.method == 'POST':
         form = TerrenoForm(request.POST)
         if form.is_valid():
             terreno = form.save(commit=False)
             terreno.user = request.user
+
+            # CORREÇÃO CRÍTICA: Garante que os IDs de estado e cidade (selecionados dinamicamente
+            # via JavaScript/AJAX no frontend) sejam salvos manualmente.
+            terreno.state = request.POST.get('state', None)
+            terreno.city = request.POST.get('city', None)
+
             terreno.save()
             messages.success(request, f"Terreno '{terreno.name}' cadastrado com sucesso!")
             # Redireciona de volta para o dashboard principal (onde o card é exibido)
@@ -22,8 +29,7 @@ def create_terreno(request):
         else:
             # Se o form for inválido, redireciona de volta com uma mensagem de erro
             messages.error(request, "Erro ao cadastrar terreno. Verifique os campos.")
-            # Note: Para mostrar erros de formulário em um redirect, você precisaria armazenar
-            # os erros na sessão ou passar via query parameter. Por simplicidade, apenas redirecionamos.
+            # Para o POST falho, é melhor manter o redirect para evitar reenvio do formulário.
             return redirect('agro_app:dashboard')
 
     # Acesso via GET deve redirecionar
@@ -34,6 +40,7 @@ def create_terreno(request):
 def edit_terreno(request, pk):
     """
     Edita um terreno existente do usuário logado.
+    Adiciona a lógica para salvar os IDs de estado e cidade do IBGE.
     """
     # Garante que só o usuário dono do terreno possa editá-lo
     terreno = get_object_or_404(Terreno, pk=pk, user=request.user)
@@ -41,6 +48,11 @@ def edit_terreno(request, pk):
     if request.method == 'POST':
         form = TerrenoForm(request.POST, instance=terreno)
         if form.is_valid():
+            # CORREÇÃO CRÍTICA: Garante que os IDs de estado e cidade sejam atualizados
+            # a partir do request.POST antes de salvar.
+            form.instance.state = request.POST.get('state', None)
+            form.instance.city = request.POST.get('city', None)
+
             form.save()
             messages.success(request, f"Terreno '{terreno.name}' atualizado com sucesso!")
             return redirect('agro_app:dashboard')
