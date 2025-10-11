@@ -4,13 +4,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-# CORREÇÃO 1/2: Importa Produto, que é o nome atual do modelo.
+# Importa Produto, que é o nome atual do modelo.
 from .models import Profile, Terreno, Produto
 from .forms import ProfileForm
 from fichatecnica_app import data_service
-# CORREÇÃO CRÍTICA: Importa as funções necessárias para a nova lógica de busca.
+# Importa as funções necessárias para a nova lógica de busca.
 from fichatecnica_app.data_service import get_products_for_city, normalize_text
-# INSERIDO: Importa o formulário de terreno do novo aplicativo (terreno_app)
+# Importa o formulário de terreno do novo aplicativo (terreno_app)
 from terreno_app.forms import TerrenoForm
 
 # ------------------------------------------------------------------------------------------------------
@@ -41,20 +41,45 @@ def dashboard(request):
     user_profile, created = Profile.objects.get_or_create(user=request.user)
 
     # Busca os nomes da Cidade e Estado para passar para o contexto (usado no bloco1.html)
-    # CORREÇÃO: Substituído .city por .cidade e .state por .estado
     city_id = user_profile.cidade
     city_name = get_city_name_from_id(city_id) if city_id else None
     state_name = get_state_name_from_id(user_profile.estado) if user_profile.estado else None
 
     # INSERIDO: Lógica para Terrenos (Bloco 1)
-    terrenos = Terreno.objects.filter(proprietario=request.user).order_by('nome')
+    terrenos_queryset = Terreno.objects.filter(proprietario=request.user).order_by('nome')
     terreno_form = TerrenoForm()
+
+    # Processamento dos dados de Terrenos para exibição formatada (cidade/cultivo)
+    processed_terrenos = []
+    for terreno in terrenos_queryset:
+        # Busca os nomes formatados usando as funções auxiliares
+        terreno_city_name = get_city_name_from_id(terreno.cidade)
+        terreno_state_name = get_state_name_from_id(terreno.estado)
+
+        # CORREÇÃO CRÍTICA DEFINITIVA: REMOVIDA A REFERÊNCIA AO CAMPO INEXISTENTE.
+        # Como o campo de cultivo não existe no modelo Terreno, definimos um valor padrão.
+        terreno_cultivo_name = 'Não definido'
+
+        # Cria um dicionário com os dados do terreno + nomes de exibição
+        terreno_data = {
+            'pk': terreno.pk,
+            'nome': terreno.nome,
+            'area_total': terreno.area_total,
+            'unidade_area': terreno.unidade_area,
+
+            # CAMPOS DE EXIBIÇÃO: Agora com os nomes legíveis
+            'localizacao_display': f"{terreno_city_name or 'N/A'} - {terreno_state_name or 'N/A'}",
+            'cultivo_display': terreno_cultivo_name, # Usa o valor padrão 'Não definido'
+
+            # Mantém os IDs originais (apenas para referência)
+            'cidade_id': terreno.cidade,
+            'estado_id': terreno.estado,
+            # REMOVIDO: Acesso ao campo inexistente ('cultivo'/'produto')
+            'produto_id': None,
+        }
+        processed_terrenos.append(terreno_data)
+
     # INSERIDO: Lógica para Plano de Plantio (Bloco 5)
-    # ATENÇÃO: Adicione a importação de PlanoPlantio aqui ou no topo se o modelo estiver no agro_app.models
-    # Se o modelo PlanoPlantio está em agro_app.models, ele já está disponível se foi importado.
-    # Se PlanoPlantio está em outro app (ex: plano_app), a importação deve ser ajustada.
-    # Por enquanto, assumimos que PlanoPlantio não está totalmente configurado, mas o form de seleção sim.
-    # Passando um queryset vazio ou None para evitar erro caso o PlanoPlantio ainda não esteja acessível.
     planos_plantio = []  # Placeholder: Mude isto quando o PlanoPlantio estiver configurado
 
 
@@ -76,18 +101,15 @@ def dashboard(request):
     if city_id:
         try:
             # 1. Obter dados: Busca todos os dados de produto da Ficha Técnica para a cidade
-            # NOTA: Assumido que data_service.get_all_product_data_for_city(city_id) retorna uma lista de dicionários
             all_products_data = data_service.get_all_product_data_for_city(city_id)
 
-            # >>> DEBUG ADICIONADO AQUI <<<
             print(
                 f"DEBUG BLOCO 4 - RAW DATA: Total de {len(all_products_data)} produtos retornados por get_all_product_data_for_city.")
 
             # 2. Processamento: Cálculo do Preço por Quilo (R$/kg)
             processed_data = []
             for product in all_products_data:
-                # CORREÇÃO CRÍTICA: As chaves corretas do data_service são 'rendimento_num' e 'valor_producao_num'.
-                # O 'or 0' garante que valores None (retornados pelo safe_numeric_conversion) sejam tratados como 0.
+                # As chaves corretas do data_service são 'rendimento_num' e 'valor_producao_num'.
                 rendimento = product.get('rendimento_num', 0) or 0
                 valor = product.get('valor_producao_num', 0) or 0
 
@@ -101,7 +123,7 @@ def dashboard(request):
                     preco_por_quilo = valor / rendimento
 
                     processed_data.append({
-                        # CORREÇÃO: Usar a chave 'nome' para o nome de exibição
+                        # Usar a chave 'nome' para o nome de exibição
                         'name': product.get('nome', 'N/A'),
                         'rendimento': rendimento,
                         # Para o ranking, usamos o valor total de produção (R$)
@@ -109,7 +131,6 @@ def dashboard(request):
                         'preco_por_quilo': preco_por_quilo
                     })
 
-            # >>> DEBUG ADICIONADO AQUI <<<
             print(f"DEBUG BLOCO 4 - PROCESSED DATA: Total de {len(processed_data)} produtos válidos para ranqueamento.")
 
             # 3. Ranqueamento de Lucratividade: Ordena pelo 'valor' (R$) em ordem decrescente.
@@ -143,8 +164,8 @@ def dashboard(request):
         'suggestions_preco': suggestions_preco,
         # INSERIDO: Adiciona o formulário de terreno ao contexto
         'terreno_form': terreno_form,
-        # INSERIDO: Adiciona a lista de terrenos ao contexto
-        'terrenos': terrenos,
+        # CORREÇÃO CRÍTICA: Passa a lista de terrenos processada (com nomes legíveis)
+        'terrenos': processed_terrenos,
         # INSERIDO: Adiciona a lista de planos de plantio (vazia ou real)
         'planos_plantio': planos_plantio,
     }

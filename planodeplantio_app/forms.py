@@ -1,8 +1,11 @@
 from django import forms
-from agro_app.models import PlanoPlantio, EtapaPlantio, Terreno, Produto
-from django.contrib.auth import get_user_model
 
-User = get_user_model()
+# Importa os modelos da aplicação atual (planodeplantio_app)
+from agro_app.models import PlanoPlantio, EtapaPlantio
+
+# Importa modelos de outras aplicações (Terreno e Produto, conforme estrutura em views.py)
+# Terreno e Produto estão no agro_app, conforme as importações no views.py
+from agro_app.models import Terreno, Produto
 
 
 class PlanoPlantioForm(forms.ModelForm):
@@ -33,14 +36,14 @@ class PlanoPlantioForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        # A view deve passar o usuário logado no argumento 'user'
-        self.user = kwargs.pop('user', None)
+        # A view (views.py) já passa o QuerySet filtrado de terrenos no argumento 'terrenos_queryset'
+        terrenos_queryset = kwargs.pop('terrenos_queryset', None)
         super().__init__(*args, **kwargs)
 
-        # Filtra o campo 'terreno' para exibir apenas os terrenos pertencentes ao usuário
-        if self.user:
-            self.fields['terreno'].queryset = Terreno.objects.filter(proprietario=self.user)
-            # Torna o campo 'terreno' obrigatório (se o usuário existir)
+        # Filtra o campo 'terreno' usando o queryset passado pela view
+        if terrenos_queryset is not None:
+            self.fields['terreno'].queryset = terrenos_queryset
+            # Torna o campo 'terreno' obrigatório
             self.fields['terreno'].required = True
 
         # Garante que o campo produto exiba apenas produtos

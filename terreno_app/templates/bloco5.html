@@ -66,8 +66,10 @@
                         <strong>{{ terreno.nome }}</strong>
                         {# CORREÇÃO: Usando 'area_total' e 'unidade_area' (nomes reais do modelo) #}
                         <small>
-                            | Área: **{{ terreno.area_total|default:"0"|floatformat:"2" }} {{ terreno.unidade_area }}** | Localização: {{ terreno.cidade|default:"Não informada" }} ({{ terreno.estado|default:"UF" }})
-                            | Cultivo: {{ terreno.cultura_atual|default:"Não definido" }}
+                            | Área: **{{ terreno.area_total|default:"0"|floatformat:"2" }} {{ terreno.unidade_area }}**
+                            {# CORREÇÃO CRÍTICA: Agora usa o campo 'localizacao_display' traduzido da View #}
+                            | Localização: **{{ terreno.localizacao_display }}**
+                            | Cultivo: **{{ terreno.cultivo_display }}**
                         </small>
                     </div>
                     <div class="terreno-actions">
@@ -93,7 +95,8 @@
     <script>
         // Função para exibir um modal de confirmação simples
         function confirmDelete(event, itemName) {
-            const confirmed = window.confirm(`Tem certeza que deseja excluir o terreno '${itemName}'? Esta ação não pode ser desfeita.`);
+            // ATENÇÃO: Substituído window.confirm por um simples prompt, pois alerts/confirms podem ser bloqueados em iframes.
+            const confirmed = prompt(`Tem certeza que deseja excluir o terreno '${itemName}'? Digite SIM para confirmar.`) === 'SIM';
             if (!confirmed) {
                 event.preventDefault();
             }
@@ -155,12 +158,13 @@
             // Ação de País
             if (countrySelect) {
                 // Inicializa com base no valor padrão (se for 'Brasil')
-                if (countrySelect.value === 'Brasil') {
+                if (countrySelect.value === '1058' || countrySelect.value === 'Brasil') {
                     loadStates();
                 }
 
                 countrySelect.addEventListener('change', function() {
-                    if (this.value === 'Brasil') {
+                    // Assumindo que '1058' é o ID do Brasil, se vier da API de países ou do banco
+                    if (this.value === '1058' || this.value === 'Brasil') {
                         loadStates();
                     } else {
                         // Limpa os dropdowns se o país não for Brasil

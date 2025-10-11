@@ -11,7 +11,8 @@ urlpatterns = [
     path('', views.listar_planos, name='listar_planos'),
 
     # 2. CRIAÇÃO DE PLANO
-    path('criar/', views.criar_plano_plantio, name='criar_plano_plantio'),
+    # CORRIGIDO: O nome da view foi alterado de 'criar_plano_plantio' para 'criar_plano' (conforme views.py)
+    path('criar/', views.criar_plano, name='criar_plano_plantio'),
 
     # 3. DETALHAMENTO DO PLANO E SUAS ETAPAS (Ex: /plano/b2a7.../)
     # CORREÇÃO: Usando 'uuid' e views.detalhe_plano
@@ -22,15 +23,15 @@ urlpatterns = [
     path('<uuid:plano_id>/editar/', views.editar_plano, name='editar_plano'),
 
     # 5. EXCLUSÃO DO PLANO (Ex: /plano/b2a7.../excluir/)
-    # CORREÇÃO: Usando 'uuid'
-    path('<uuid:plano_id>/excluir/', views.excluir_plano, name='excluir_plano'),
+    # CORRIGIDO: O nome da view foi alterado de 'excluir_plano' para 'deletar_plano' (conforme views.py)
+    path('<uuid:plano_id>/excluir/', views.deletar_plano, name='excluir_plano'),
 
     # --- ROTAS PARA ETAPAS ---
 
     # 6. CRIAÇÃO DE ETAPA (Relacionada a um plano específico)
-    # CORREÇÃO: Usando 'uuid' e views.criar_etapa (anteriormente adicionar_etapa)
+    # CORRIGIDO: O nome da view foi alterado de 'criar_etapa' para 'adicionar_etapa' (conforme views.py)
     # Ex: /plano/b2a7.../etapa/adicionar/
-    path('<uuid:plano_id>/etapa/adicionar/', views.criar_etapa, name='adicionar_etapa'),
+    path('<uuid:plano_id>/etapa/adicionar/', views.adicionar_etapa, name='adicionar_etapa'),
 
     # 7. EDIÇÃO DE ETAPA ESPECÍFICA
     # CORREÇÃO: Usando 'uuid' para plano_id e etapa_id
@@ -43,9 +44,9 @@ urlpatterns = [
     path('<uuid:plano_id>/etapa/<uuid:etapa_id>/concluir/', views.concluir_etapa, name='concluir_etapa'),
 
     # 9. EXCLUSÃO DE ETAPA
-    # CORREÇÃO: Usando 'uuid' para plano_id e etapa_id
+    # CORRIGIDO: O nome da view foi alterado de 'excluir_etapa' para 'deletar_etapa' (conforme views.py)
     # Ex: /plano/b2a7.../etapa/8f3c.../excluir/
-    path('<uuid:plano_id>/etapa/<uuid:etapa_id>/excluir/', views.excluir_etapa, name='excluir_etapa'),
+    path('<uuid:plano_id>/etapa/<uuid:etapa_id>/excluir/', views.deletar_etapa, name='excluir_etapa'),
 
     # 10. Rota de API (Mantida, se for usada por JS para buscar dados)
     path('api/terrenos/', views.api_terrenos, name='api_terrenos'),
