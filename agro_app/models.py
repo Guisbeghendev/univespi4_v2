@@ -16,6 +16,15 @@ UNIT_CHOICES = [
     ('UN', 'Unidade'),
 ]
 
+# NOVO: CONSTANTES PARA ETAPAS
+ETAPA_CHOICES = [
+    ('PREPARO', 'Preparo do Solo'),
+    ('PLANTIO', 'Plantio'),
+    ('MANUTENCAO', 'Manutenção/Tratos Culturais'),
+    ('COLHEITA', 'Colheita'),
+    ('OUTRA', 'Outra Etapa'),
+]
+
 
 # --- MODELO PERFIL (PROFILE) ---
 # Armazena informações adicionais do usuário e o sistema de localização padrão.
@@ -172,27 +181,85 @@ class Clima(models.Model):
         return f'Clima em {self.cidade_ibge} em {self.data_hora.strftime("%Y-%m-%d %H:%M")}'
 
 
-# --- MODELO Plano PLANTIO (RELACIONA TERRENO E PRODUTO) ---
+# --- MODELO Plano PLANTIO (MODIFICADO E EXPANDIDO) ---
 class PlanoPlantio(models.Model):
+    # ADICIONADO: Link explícito ao Proprietário (Criador do Plano)
+    proprietario = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='planos_proprietario',
+        verbose_name="Proprietário do Plano"
+    )
+
     terreno = models.ForeignKey(
         Terreno,
         on_delete=models.CASCADE,
         related_name='plantios',
         verbose_name="Terreno"
     )
+    # MODIFICADO: Campo 'produto' é opcional no início
     produto = models.ForeignKey(
         Produto,
         on_delete=models.CASCADE,
-        verbose_name="Produto Plantado"
+        verbose_name="Produto Plantado",
+        null=True, blank=True
     )
+
+    # ADICIONADO: Nome descritivo para o Plano (ex: "Milho Safra 2025")
+    nome = models.CharField(max_length=100, verbose_name="Nome do Plano", default="Novo Plano")
+
     data_inicio = models.DateField(verbose_name="Data de Início")
     data_colheita_prevista = models.DateField(verbose_name="Colheita Prevista", null=True, blank=True)
 
-    class Meta:
-        verbose_name = "Plantio"
-        verbose_name_plural = "Plantios"
-        unique_together = ('terreno', 'produto', 'data_inicio')
+    # ADICIONADO: Status do Plano
+    STATUS_CHOICES = [
+        ('ANDAMENTO', 'Em Andamento'),
+        ('CONCLUIDO', 'Concluído'),
+        ('CANCELADO', 'Cancelado'),
+        ('RASCUNHO', 'Rascunho'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='RASCUNHO')
 
-    # CORREÇÃO: Parêntese de fechamento adicionado aqui
+    # Armazenamento opcional do rendimento e unidade final (para registro histórico)
+    rendimento_final = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    unidade_rendimento = models.CharField(max_length=10, choices=UNIT_CHOICES, default='KG')
+
+    class Meta:
+        verbose_name = "Plano de Plantio"
+        verbose_name_plural = "Planos de Plantio"
+        ordering = ['data_inicio']
+
     def __str__(self):
-        return f'{self.produto.nome} em {self.terreno.nome} ({self.data_inicio.year})'
+        return f'{self.nome} - {self.terreno.nome} ({self.status})'
+
+
+# --- NOVO MODELO DE ETAPAS (EtapaPlantio) ---
+class EtapaPlantio(models.Model):
+    """
+    Representa uma etapa específica (tarefa) dentro de um Plano de Plantio.
+    """
+    plano = models.ForeignKey(PlanoPlantio, on_delete=models.CASCADE, related_name='etapas')
+
+    # Campo para o tipo de etapa (Preparo, Plantio, Colheita, etc.)
+    tipo = models.CharField(max_length=20, choices=ETAPA_CHOICES)
+    nome = models.CharField(max_length=100, help_text="Nome curto da tarefa")
+    descricao = models.TextField(blank=True, null=True)
+
+    data_prevista = models.DateField()
+    data_conclusao = models.DateField(null=True, blank=True)
+
+    # Detalhes de insumos/custo (opcional)
+    insumo_usado = models.CharField(max_length=100, blank=True, null=True, help_text="Ex: Fertilizante NPK 10-10-10")
+    quantidade_insumo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    unidade_insumo = models.CharField(max_length=10, choices=UNIT_CHOICES, blank=True, null=True)
+    custo_total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+    concluida = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Etapa de Plantio"
+        verbose_name_plural = "Etapas de Plantio"
+        ordering = ['data_prevista']
+
+    def __str__(self):
+        return f"[{self.tipo}] {self.nome} - {self.plano.nome}"

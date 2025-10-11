@@ -105,13 +105,16 @@ const updateDetails = () => {
             // Usa o campo 'cidade' que agora deve vir do backend
             document.getElementById('detailLocalizacao').textContent = selectedTerreno.cidade || 'Não informada';
 
-            terrenoDetails.classList.remove('hidden');
+            // terrenoDetails.classList.remove('hidden'); // Removido pois o HTML não tem hidden inicialmente
             selecionarBtn.disabled = false;
             btnText.textContent = 'Continuar Planejamento';
             displayMessage('');
         }
     } else {
-        terrenoDetails.classList.add('hidden');
+        document.getElementById('detailNome').textContent = 'N/A';
+        document.getElementById('detailTamanho').textContent = '0 ha';
+        document.getElementById('detailLocalizacao').textContent = 'N/A';
+        // terrenoDetails.classList.add('hidden');
         selecionarBtn.disabled = true;
         btnText.textContent = 'Selecione um Terreno';
         displayMessage('');
