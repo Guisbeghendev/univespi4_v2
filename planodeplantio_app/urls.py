@@ -10,44 +10,54 @@ urlpatterns = [
     # 1. VISÃO GERAL (LISTAGEM)
     path('', views.listar_planos, name='listar_planos'),
 
-    # 2. CRIAÇÃO DE PLANO
-    # CORRIGIDO: O nome da view foi alterado de 'criar_plano_plantio' para 'criar_plano' (conforme views.py)
-    path('criar/', views.criar_plano, name='criar_plano_plantio'),
+    # --- ROTAS DO WIZARD DE CRIAÇÃO ---
 
-    # 3. DETALHAMENTO DO PLANO E SUAS ETAPAS (Ex: /plano/b2a7.../)
-    # CORREÇÃO: Usando 'uuid' e views.detalhe_plano
+    # 2. INÍCIO DO WIZARD (Etapa 1: Recebe 'terreno_id' via GET do dashboard e redireciona)
+    path('iniciar/', views.iniciar_wizard, name='iniciar_wizard'),
+
+    # 3. SELEÇÃO DE PRODUTO (Etapa 2: A view precisa do ID do terreno na URL)
+    # Ex: /plano/selecao-produto/123e4567-e89b-12d3-a456-426614174000/
+    path('selecao-produto/<uuid:terreno_id>/', views.selecao_produto, name='selecao_produto'),
+
+    # 4. CRIAÇÃO DE PLANO (Etapa 3: Submissão final, recebe 'terreno_id' e 'produto_id' via GET/POST)
+    # Rota simples, pois os IDs são passados via parâmetros GET na views.py
+    path('criar/', views.criar_plano_plantio, name='criar_plano_plantio'),
+
+    # --- ROTAS DE CRUD PRINCIPAIS ---
+
+    # 5. DETALHAMENTO DO PLANO E SUAS ETAPAS (Ex: /plano/b2a7.../)
     path('<uuid:plano_id>/', views.detalhe_plano, name='detalhe_plano'),
 
-    # 4. EDIÇÃO DO PLANO PRINCIPAL (Ex: /plano/b2a7.../editar/)
-    # CORREÇÃO: Usando 'uuid'
+    # 6. EDIÇÃO DO PLANO PRINCIPAL (Ex: /plano/b2a7.../editar/)
     path('<uuid:plano_id>/editar/', views.editar_plano, name='editar_plano'),
 
-    # 5. EXCLUSÃO DO PLANO (Ex: /plano/b2a7.../excluir/)
-    # CORRIGIDO: O nome da view foi alterado de 'excluir_plano' para 'deletar_plano' (conforme views.py)
+    # 7. EXCLUSÃO DO PLANO (Ex: /plano/b2a7.../excluir/)
+    # O nome da rota é 'excluir_plano', mas aponta para a função 'deletar_plano'
     path('<uuid:plano_id>/excluir/', views.deletar_plano, name='excluir_plano'),
 
     # --- ROTAS PARA ETAPAS ---
 
-    # 6. CRIAÇÃO DE ETAPA (Relacionada a um plano específico)
-    # CORRIGIDO: O nome da view foi alterado de 'criar_etapa' para 'adicionar_etapa' (conforme views.py)
+    # 8. CRIAÇÃO DE ETAPA (Relacionada a um plano específico)
     # Ex: /plano/b2a7.../etapa/adicionar/
     path('<uuid:plano_id>/etapa/adicionar/', views.adicionar_etapa, name='adicionar_etapa'),
 
-    # 7. EDIÇÃO DE ETAPA ESPECÍFICA
-    # CORREÇÃO: Usando 'uuid' para plano_id e etapa_id
+    # 9. EDIÇÃO DE ETAPA ESPECÍFICA
     # Ex: /plano/b2a7.../etapa/8f3c.../editar/
     path('<uuid:plano_id>/etapa/<uuid:etapa_id>/editar/', views.editar_etapa, name='editar_etapa'),
 
-    # 8. MARCAR ETAPA COMO CONCLUÍDA (Ação rápida)
-    # CORREÇÃO: Usando 'uuid' para plano_id e etapa_id
+    # 10. MARCAR ETAPA COMO CONCLUÍDA (Ação rápida)
     # Ex: /plano/b2a7.../etapa/8f3c.../concluir/
     path('<uuid:plano_id>/etapa/<uuid:etapa_id>/concluir/', views.concluir_etapa, name='concluir_etapa'),
 
-    # 9. EXCLUSÃO DE ETAPA
-    # CORRIGIDO: O nome da view foi alterado de 'excluir_etapa' para 'deletar_etapa' (conforme views.py)
+    # 11. EXCLUSÃO DE ETAPA
     # Ex: /plano/b2a7.../etapa/8f3c.../excluir/
     path('<uuid:plano_id>/etapa/<uuid:etapa_id>/excluir/', views.deletar_etapa, name='excluir_etapa'),
 
-    # 10. Rota de API (Mantida, se for usada por JS para buscar dados)
+    # --- ROTAS DE API (AJAX) ---
+
+    # 12. API para listar terrenos do usuário (usada na Dashboard/Wizard)
     path('api/terrenos/', views.api_terrenos, name='api_terrenos'),
+
+    # 13. API para buscar produtos por cidade (usada no Wizard)
+    path('api/produtos/<str:cidade_id>/', views.buscar_produtos_por_cidade, name='api_produtos_por_cidade'),
 ]

@@ -1,56 +1,61 @@
 {% load static %}
 
 <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-<div class="flex items-center justify-between mb-4">
-<h4 class="text-xl font-bold text-gray-800 flex items-center">
-Iniciar Novo Plano de Plantio
-</h4>
-<a href="{% url 'plano:listar_planos' %}" class="text-sm font-medium text-blue-600 hover:text-blue-800 transition duration-150">
-Ver Todos &rarr;
-</a>
+    <div class="flex items-center justify-between mb-4">
+        <h4 class="text-xl font-bold text-gray-800 flex items-center">
+            Iniciar Novo Plano de Plantio
+        </h4>
+        <a href="{% url 'plano:listar_planos' %}" class="text-sm font-medium text-blue-600 hover:text-blue-800 transition duration-150">
+            Ver Todos &rarr;
+        </a>
+    </div>
+
+    <p class="text-gray-600 mb-6">
+        Selecione um terreno cadastrado para iniciar a configuração detalhada do seu plano de safra.
+    </p>
+
+    <!-- Estrutura de Seleção -->
+    <div class="mb-5">
+        <label for="terrenoSelect" class="block text-sm font-medium text-gray-700 mb-2">Terrenos disponíveis:</label>
+        <select id="terrenoSelect" class="block w-full px-3 py-2 border border-gray-300 bg-gray-50 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition duration-150">
+            <!-- As opções serão carregadas via JavaScript -->
+            <option value="" disabled selected>Carregando terrenos...</option>
+        </select>
+    </div>
+
+    <!-- Detalhes do Terreno Selecionado -->
+    <div id="terrenoDetails" class="bg-gray-50 p-4 rounded-lg border border-dashed border-gray-300 mb-6 text-sm text-gray-700">
+        <p class="font-semibold mb-1">Detalhes do Terreno Selecionado:</p>
+        <ul class="space-y-1">
+            <li class="flex justify-between">
+                <span>Nome:</span> <span id="detailNome" class="font-medium text-gray-900">N/A</span>
+            </li>
+            <li class="flex justify-between">
+                <span>Tamanho:</span> <span id="detailTamanho" class="font-medium text-gray-900">0 ha</span>
+            </li>
+            <li class="flex justify-between">
+                <span>Localização (Cidade):</span> <span id="detailLocalizacao" class="font-medium text-gray-900">N/A</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Botão de Ação -->
+    <div>
+        <button id="selecionarBtn" disabled
+                class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out">
+            <span id="btnText">Selecione um Terreno</span>
+            <span id="loadingSpinner" class="hidden ml-2 h-5 w-5 border-2 border-t-white border-green-200 rounded-full animate-spin"></span>
+        </button>
+        <p id="messageBox" class="text-center"></p>
+    </div>
+
 </div>
 
-<p class="text-gray-600 mb-6">
-    Selecione um terreno cadastrado para iniciar a configuração detalhada do seu plano de safra.
-</p>
-
-<!-- Estrutura de Seleção -->
-<div class="mb-5">
-    <label for="terrenoSelect" class="block text-sm font-medium text-gray-700 mb-2">Terrenos disponíveis:</label>
-    <select id="terrenoSelect" class="block w-full px-3 py-2 border border-gray-300 bg-gray-50 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition duration-150">
-        <!-- As opções serão carregadas via JavaScript -->
-        <option value="" disabled selected>Carregue os terrenos...</option>
-    </select>
-</div>
-
-<!-- Detalhes do Terreno Selecionado -->
-<div id="terrenoDetails" class="bg-gray-50 p-4 rounded-lg border border-dashed border-gray-300 mb-6 text-sm text-gray-700">
-    <p class="font-semibold mb-1">Detalhes do Terreno Selecionado:</p>
-    <ul class="space-y-1">
-        <li class="flex justify-between">
-            <span>Nome:</span> <span id="detailNome" class="font-medium text-gray-900">N/A</span>
-        </li>
-        <li class="flex justify-between">
-            <span>Tamanho:</span> <span id="detailTamanho" class="font-medium text-gray-900">0 ha</span>
-        </li>
-        <li class="flex justify-between">
-            <span>Localização (Cidade):</span> <span id="detailLocalizacao" class="font-medium text-gray-900">N/A</span>
-        </li>
-    </ul>
-</div>
-
-<!-- Botão de Ação -->
-<div>
-    <button id="selecionarBtn" disabled
-            class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out">
-        <span id="btnText">Selecione um Terreno</span>
-        <span id="loadingSpinner" class="hidden ml-2 h-5 w-5 border-2 border-t-white border-green-200 rounded-full animate-spin"></span>
-    </button>
-    <p id="messageBox" class="text-center"></p>
-</div>
-
-</div>
-
+<!-- Injeta as URLs do Django para o JavaScript usar -->
+<script>
+    const API_TERRENOS_URL = "{% url 'plano:api_terrenos' %}";
+    // Corrigido para apontar para a função que inicia o fluxo do Wizard no servidor
+    const WIZARD_START_URL = "{% url 'plano:iniciar_wizard' %}";
+</script>
 <!-- Inclui o JavaScript que carrega e interage com os dados -->
-
 <script src="{% static 'planodeplantio_app/js/bloco7.js' %}"></script>

@@ -1,32 +1,34 @@
 from django import forms
 
-# Importa os modelos da aplicação atual (planodeplantio_app)
-from agro_app.models import PlanoPlantio, EtapaPlantio
+# Importa os modelos da aplicação consolidada (agro_app.models)
+from agro_app.models import PlanoPlantio, EtapaPlantio, Terreno, Produto
 
-# Importa modelos de outras aplicações (Terreno e Produto, conforme estrutura em views.py)
-# Terreno e Produto estão no agro_app, conforme as importações no views.py
-from agro_app.models import Terreno, Produto
+# --- CLASSES DE ESTILO PARA TW ---
+TAILWIND_INPUT_CLASSES = 'form-input w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500'
+TAILWIND_SELECT_CLASSES = 'form-select w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500'
 
 
+# Formulário para criar ou editar um Plano de Plantio
 class PlanoPlantioForm(forms.ModelForm):
     """
     Formulário para a criação e edição do Plano de Plantio principal.
+    Prepara o formulário para receber dados via o Wizard (terreno e produto pré-selecionados).
     """
 
     class Meta:
         model = PlanoPlantio
-        # Excluímos 'proprietario' pois será preenchido automaticamente pela view
-        # Excluímos 'status' e 'rendimento_final' pois são preenchidos por lógica
+        # Excluímos campos preenchidos pela lógica da View ou por ação posterior.
         exclude = ('proprietario', 'status', 'rendimento_final', 'unidade_rendimento')
 
         widgets = {
-            'nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Soja Safra 2025'}),
-            # O Terreno será filtrado para mostrar apenas os terrenos do usuário logado
-            'terreno': forms.Select(attrs={'class': 'form-control'}),
-            'produto': forms.Select(attrs={'class': 'form-control'}),
-            'data_inicio': forms.DateInput(attrs={'class': 'form-control date-picker', 'type': 'date'}),
-            'data_colheita_prevista': forms.DateInput(attrs={'class': 'form-control date-picker', 'type': 'date'}),
+            'nome': forms.TextInput(attrs={'class': TAILWIND_INPUT_CLASSES, 'placeholder': 'Ex: Soja Safra 2025'}),
+            # Terreno e Produto serão pré-selecionados, mas ainda são inputs visíveis
+            'terreno': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES, 'readonly': 'readonly'}),
+            'produto': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES, 'readonly': 'readonly'}),
+            'data_inicio': forms.DateInput(attrs={'type': 'date', 'class': TAILWIND_INPUT_CLASSES}),
+            'data_colheita_prevista': forms.DateInput(attrs={'type': 'date', 'class': TAILWIND_INPUT_CLASSES}),
         }
+
         labels = {
             'nome': 'Nome do Plano',
             'terreno': 'Terreno para o Plantio',
@@ -36,20 +38,19 @@ class PlanoPlantioForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        # A view (views.py) já passa o QuerySet filtrado de terrenos no argumento 'terrenos_queryset'
+        # Recebe o QuerySet de terrenos filtrado para o usuário logado, enviado pela View
         terrenos_queryset = kwargs.pop('terrenos_queryset', None)
         super().__init__(*args, **kwargs)
 
-        # Filtra o campo 'terreno' usando o queryset passado pela view
+        # Filtra e configura o campo 'terreno'
         if terrenos_queryset is not None:
             self.fields['terreno'].queryset = terrenos_queryset
-            # Torna o campo 'terreno' obrigatório
-            self.fields['terreno'].required = True
 
         # Garante que o campo produto exiba apenas produtos
         self.fields['produto'].queryset = Produto.objects.all()
 
 
+# Formulário para criar ou editar uma Etapa de Plantio
 class EtapaPlantioForm(forms.ModelForm):
     """
     Formulário para a criação e edição das etapas do Plano de Plantio.
@@ -57,19 +58,20 @@ class EtapaPlantioForm(forms.ModelForm):
 
     class Meta:
         model = EtapaPlantio
-        # Excluímos 'plano' e 'concluida' pois serão preenchidos pela view/lógica
+        # Excluímos campos preenchidos automaticamente
         exclude = ('plano', 'concluida', 'data_conclusao')
 
         widgets = {
-            'tipo': forms.Select(attrs={'class': 'form-control'}),
-            'nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Aplicação de Ureia'}),
-            'descricao': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'data_prevista': forms.DateInput(attrs={'class': 'form-control date-picker', 'type': 'date'}),
-            'insumo_usado': forms.TextInput(attrs={'class': 'form-control'}),
-            'quantidade_insumo': forms.NumberInput(attrs={'class': 'form-control'}),
-            'unidade_insumo': forms.Select(attrs={'class': 'form-control'}),
-            'custo_total': forms.NumberInput(attrs={'class': 'form-control'}),
+            'tipo': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'nome': forms.TextInput(attrs={'class': TAILWIND_INPUT_CLASSES, 'placeholder': 'Ex: Aplicação de Ureia'}),
+            'descricao': forms.Textarea(attrs={'rows': 3, 'class': TAILWIND_INPUT_CLASSES}),
+            'data_prevista': forms.DateInput(attrs={'type': 'date', 'class': TAILWIND_INPUT_CLASSES}),
+            'insumo_usado': forms.TextInput(attrs={'class': TAILWIND_INPUT_CLASSES}),
+            'quantidade_insumo': forms.NumberInput(attrs={'class': TAILWIND_INPUT_CLASSES}),
+            'unidade_insumo': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'custo_total': forms.NumberInput(attrs={'class': TAILWIND_INPUT_CLASSES}),
         }
+
         labels = {
             'tipo': 'Tipo de Etapa',
             'nome': 'Título da Tarefa',

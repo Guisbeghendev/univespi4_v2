@@ -1,7 +1,14 @@
-// planodeplantio_app/js/bloco7.js
 // Script para carregar dinamicamente a lista de terrenos no Bloco 7 (Dashboard)
 
 document.addEventListener('DOMContentLoaded', () => {
+    // As URLs API_TERRENOS_URL e WIZARD_START_URL são injetadas no template HTML.
+
+    // Verifica se as URLs foram injetadas corretamente
+    if (typeof API_TERRENOS_URL === 'undefined' || typeof WIZARD_START_URL === 'undefined') {
+        console.error("Erro: As URLs do Django (API_TERRENOS_URL ou WIZARD_START_URL) não foram injetadas no HTML.");
+        return;
+    }
+
     // 1. Definição dos elementos do DOM
     const terrenoSelect = document.getElementById('terrenoSelect');
     const selecionarBtn = document.getElementById('selecionarBtn');
@@ -22,21 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         messageBox.className = isError ? 'text-sm mt-2 text-red-600' : 'text-sm mt-2 text-gray-500';
     };
 
-    // Função para buscar a URL da API do Django (necessária para obter a rota correta)
-    // No ambiente Django, a tag {% url 'plano:api_terrenos' %} deve ser renderizada no template HTML.
-    // Assumimos que a URL base da API é /plano/api/terrenos/
-    const getApiUrl = () => {
-        // Tenta obter a URL do atributo data-url se for definido no HTML
-        const scriptTag = document.querySelector('script[src*="bloco7.js"]');
-        if (scriptTag && scriptTag.dataset.apiUrl) {
-            return scriptTag.dataset.apiUrl;
-        }
-        // Fallback: assume que a URL é conhecida no contexto global.
-        // Se a tag {% url %} foi usada no template, ela deve ter sido injetada de alguma forma.
-        // Como não foi, usamos o padrão de rota conhecido:
-        return '/plano/api/terrenos/';
-    };
-
     // 2. Função principal para carregar os terrenos
     const loadTerrenos = async () => {
         showMessage('Carregando terrenos...', false);
@@ -44,11 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingSpinner.classList.remove('hidden');
 
         try {
-            const apiUrl = getApiUrl();
-            const response = await fetch(apiUrl);
+            // Usa a URL injetada do Django
+            const response = await fetch(API_TERRENOS_URL);
 
             if (!response.ok) {
-                // Se a resposta HTTP não for OK (ex: 404, 500), tenta ler o erro do JSON
+                // Tenta ler o erro do JSON se a resposta HTTP não for OK
                 const errorData = await response.json();
                 throw new Error(errorData.error || `Erro HTTP: ${response.status} ${response.statusText}`);
             }
@@ -98,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btnText.textContent = `Iniciar Plano para ${selectedTerreno.nome}`;
             showMessage('Pronto para iniciar o plano.', false);
         } else {
-            // Limpa e desabilita se algo der errado (o que não deve acontecer)
+            // Limpa e desabilita se algo der errado
             detailNome.textContent = 'N/A';
             detailTamanho.textContent = '0 ha';
             detailLocalizacao.textContent = 'N/A';
@@ -111,12 +103,15 @@ document.addEventListener('DOMContentLoaded', () => {
     selecionarBtn.addEventListener('click', () => {
         if (!selecionarBtn.disabled) {
             const selectedId = terrenoSelect.value;
-            // A view 'plano:criar_plano_plantio' espera receber um 'terreno_id' via GET
-            const redirectUrl = `/plano/criar/?terreno_id=${selectedId}`;
+
+            // Redireciona para o ponto de partida do wizard, passando o ID via Query Parameter
+            // A view 'plano:iniciar_wizard' fará a validação e o redirecionamento final.
+            const redirectUrl = `${WIZARD_START_URL}?terreno_id=${selectedId}`;
 
             // Exibe que a ação está ocorrendo
             btnText.textContent = 'Redirecionando...';
             selecionarBtn.disabled = true;
+            loadingSpinner.classList.remove('hidden');
 
             // Redireciona
             window.location.href = redirectUrl;
