@@ -206,11 +206,19 @@ def generate_product_sheet(normalized_product_name, normalized_city_name):
 
     # 1. Cotação (cotacao_media.json)
     cotacao_data = data_frames.get('cotacao', {}).get(normalized_product_name, {})
+    # NOVO: Inclui todos os campos do JSON de Cotação para garantir que o resultado contenha TUDO
+    results['cotacao_raw'] = cotacao_data
+
+    # Mantém a extração específica para compatibilidade com Section 4
     results['cotacao'] = cotacao_data.get('precos_2025_rs', {})
     results['pma_2024_rs'] = cotacao_data.get('pma_2024_rs', 'N/A')
 
     # 2. Ficha Base (ficha_producao.json)
     ficha_base_data = data_frames.get('ficha_base', {}).get(normalized_product_name, {})
+    # NOVO: Inclui todos os campos do JSON de Ficha Base para garantir que o resultado contenha TUDO
+    results['ficha_base_raw'] = ficha_base_data
+
+    # Mantém a extração específica para compatibilidade com Section 4
     results['ficha_base'] = {
         'ciclo': ficha_base_data.get('ciclo', 'N/A'),
         'temperatura_c': ficha_base_data.get('temperatura_c', 'N/A'),
@@ -221,6 +229,10 @@ def generate_product_sheet(normalized_product_name, normalized_city_name):
 
     # 3. Sazonalidade (sazonalidade.json)
     sazonalidade_data = data_frames.get('sazonalidade', {}).get(normalized_product_name, {})
+    # NOVO: Inclui todos os campos do JSON de Sazonalidade para garantir que o resultado contenha TUDO
+    results['sazonalidade_raw'] = sazonalidade_data
+
+    # Mantém a extração específica para compatibilidade com Section 4
     results['sazonalidade'] = {
         'plantio': sazonalidade_data.get('plantio', 'N/A'),
         'colheita': sazonalidade_data.get('colheita', 'N/A')
@@ -228,6 +240,10 @@ def generate_product_sheet(normalized_product_name, normalized_city_name):
 
     # 4. Atributos da Cultura (atributos_cultura.json)
     cultura_atributos_data = data_frames.get('cultura_atributos', {}).get(normalized_product_name, {})
+    # NOVO: Inclui todos os campos do JSON de Atributos para garantir que o resultado contenha TUDO
+    results['cultura_atributos_raw'] = cultura_atributos_data
+
+    # Mantém a extração específica para compatibilidade com Section 4
     results['cultura_atributos'] = {  # Adicionado novo bloco para os atributos
         'fertilizante_essencial': cultura_atributos_data.get('fertilizante_essencial', 'N/A'),
         'status_sustentabilidade': cultura_atributos_data.get('status_sustentabilidade', 'N/A'),
@@ -542,6 +558,12 @@ def get_ficha_tecnica(product_name, city_id):
         'clima_atual_condicao': weather_data.get('condicao', 'N/A'),
         'clima_atual_umidade': weather_data.get('umidade', 'N/A'),
         'clima_atual_vento': weather_data.get('velocidade_vento', 'N/A'),
+
+        # NOVOS BLOCOS: Incluem os dados brutos de todos os campos dos JSONs
+        'cotacao_dados_completos': ficha_data.get('cotacao_raw', {}),
+        'ficha_base_dados_completos': ficha_data.get('ficha_base_raw', {}),
+        'sazonalidade_dados_completos': ficha_data.get('sazonalidade_raw', {}),
+        'cultura_atributos_dados_completos': ficha_data.get('cultura_atributos_raw', {}),
     }
 
     # Remove valores nulos antes de retornar
