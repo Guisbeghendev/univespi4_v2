@@ -5,6 +5,7 @@ import json
 import pandas as pd
 from django.conf import settings
 import requests
+import math  # Adicionado para checagem robusta de valores numéricos (NaN/Inf)
 
 # ==============================================================================
 # 1. SETUP E UTILS
@@ -13,7 +14,8 @@ import requests
 FICHA_TECNICA_CACHE = {}
 UNIDADE_TERRITORIAL_COL = "Município"
 
-# Configuração Individualizada: O índice de cabeçalho é 4 (Linha 5)
+# Configuração Individualizada: O índice de cabeçalho é 4 (Linha 5),
+# o que corresponde à linha com os nomes dos produtos nos CSVs do IBGE.
 CSV_CONFIG = {
     'Quantidade produzida': {'file': 'Quantidade produzida (Toneladas).csv', 'header_row_index': 4},
     'Rendimento médio': {'file': 'Rendimento médio da produção (Quilogramas por Hectare).csv', 'header_row_index': 4},
@@ -22,13 +24,13 @@ CSV_CONFIG = {
     'Área destinada': {'file': 'Área destinada à colheita.csv', 'header_row_index': 4},
 }
 
+# Atualizado para incluir o JSON de Atributos da Cultura
 JSON_CONFIG = {
     'cotacao': ('cotacao_media.json', 'produto'),
     'ficha_base': ('ficha_producao.json', 'cultura_produto'),
-    'sazonalidade': ('sazonalidade.json', 'produto')
+    'sazonalidade': ('sazonalidade.json', 'produto'),
+    'cultura_atributos': ('atributos_cultura.json', 'cultura_produto')  # Reintroduzido
 }
-
-# <<<<< INÍCIO DO BLOCO DE CONFIGURAÇÃO DE CLIMA ADICIONADO
 
 # ==============================================================================
 # CONFIGURAÇÕES DA API DE CLIMA
@@ -37,13 +39,14 @@ CLIMA_API_KEY = '1651adf768bfe011596a30a1801c57f6'
 CLIMA_API_URL = 'http://api.openweathermap.org/data/2.5/weather'
 
 
-# <<<<< FIM DO BLOCO DE CONFIGURAÇÃO DE CLIMA ADICIONADO
+# <<<<< FIM DO BLOCO DE CONFIGURAÇÃO DE CLIMA
 
 
 def normalize_text(text):
     """Normaliza o texto para slugs (Usa para produtos e cidades)."""
     if not isinstance(text, str):
         return ""
+    # Remove texto entre parênteses para limpeza de nome de produto (ex: "(em caroço)")
     text = re.sub(r'\s*\([^)]*\)', '', text)
     normalized = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8')
     return normalized.upper().strip()
@@ -73,26 +76,27 @@ def load_and_cache_agro_data():
     Inclui lógica de normalização de nomes de colunas e cidades.
     """
     global FICHA_TECNICA_CACHE
-    if FICHA_TECNICA_CACHE and all(key in FICHA_TECNICA_CACHE for key in CSV_CONFIG.keys()):
+    # Garante que todos os CSVs e JSONs estejam no cache
+    required_keys = list(CSV_CONFIG.keys()) + list(JSON_CONFIG.keys())
+    if FICHA_TECNICA_CACHE and all(key in FICHA_TECNICA_CACHE for key in required_keys):
         return FICHA_TECNICA_CACHE, "Sucesso (Cache carregado)"
 
     data_store = {}
-    # CORREÇÃO: Usando a pasta 'dados' dentro de 'agro_app'
     dados_dir = os.path.join(settings.BASE_DIR, 'agro_app', 'dados')
 
     # Processa os 5 DataFrames CSV (Leitura Individualizada e Sincronizada)
     for key, config in CSV_CONFIG.items():
         file_name = config['file']
-        header_index = config['header_row_index']
+        header_index = config['header_row_index']  # 4
         caminho_arquivo = os.path.join(dados_dir, file_name)
 
         try:
-            # 1. Leitura do CABEÇALHO DE PRODUTOS
+            # 1. Leitura do CABEÇALHO DE PRODUTOS (Linha 5 - header_index 4)
             header_df = pd.read_csv(caminho_arquivo, sep=';', encoding='latin1',
                                     header=None, skiprows=header_index, nrows=1)
             product_header_line = header_df.iloc[0].tolist()
 
-            # 2. Leitura dos DADOS
+            # 2. Leitura dos DADOS (Começando da linha 6 - header_index + 1)
             df = pd.read_csv(caminho_arquivo, sep=';', encoding='latin1',
                              header=None, skiprows=header_index + 1, skip_blank_lines=True)
 
@@ -137,7 +141,7 @@ def load_and_cache_agro_data():
             data_store[key] = pd.DataFrame()
             data_store[f'{key}_header_map'] = {}
 
-    # Processa os 3 Arquivos JSON
+    # Processa os 4 Arquivos JSON (Incluindo 'cultura_atributos')
     for key, (file_name, json_key) in JSON_CONFIG.items():
         caminho_arquivo = os.path.join(dados_dir, file_name)
 
@@ -189,6 +193,7 @@ def generate_product_sheet(normalized_product_name, normalized_city_name):
 
                 if normalize_text(str(value)) not in [normalize_text('DADO NAO DISPONIVEL'), '-', '...']:
                     if isinstance(value, str):
+                        # Remove ponto como separador de milhar
                         value = value.replace('.', '')
 
                     results[key] = f"{str(value)} {unit}"
@@ -197,11 +202,14 @@ def generate_product_sheet(normalized_product_name, normalized_city_name):
             else:
                 results[key] = 'Cidade não possui dados cadastrados'
 
-    # B. Integração dos 3 JSONs (Dados Descritivos/Específicos)
+    # B. Integração dos 4 JSONs (Dados Descritivos/Específicos)
+
+    # 1. Cotação (cotacao_media.json)
     cotacao_data = data_frames.get('cotacao', {}).get(normalized_product_name, {})
     results['cotacao'] = cotacao_data.get('precos_2025_rs', {})
     results['pma_2024_rs'] = cotacao_data.get('pma_2024_rs', 'N/A')
 
+    # 2. Ficha Base (ficha_producao.json)
     ficha_base_data = data_frames.get('ficha_base', {}).get(normalized_product_name, {})
     results['ficha_base'] = {
         'ciclo': ficha_base_data.get('ciclo', 'N/A'),
@@ -211,10 +219,21 @@ def generate_product_sheet(normalized_product_name, normalized_city_name):
         'precipitacao_anual_mm': ficha_base_data.get('precipitacao_anual_mm', 'N/A'),
     }
 
+    # 3. Sazonalidade (sazonalidade.json)
     sazonalidade_data = data_frames.get('sazonalidade', {}).get(normalized_product_name, {})
     results['sazonalidade'] = {
         'plantio': sazonalidade_data.get('plantio', 'N/A'),
         'colheita': sazonalidade_data.get('colheita', 'N/A')
+    }
+
+    # 4. Atributos da Cultura (atributos_cultura.json)
+    cultura_atributos_data = data_frames.get('cultura_atributos', {}).get(normalized_product_name, {})
+    results['cultura_atributos'] = {  # Adicionado novo bloco para os atributos
+        'fertilizante_essencial': cultura_atributos_data.get('fertilizante_essencial', 'N/A'),
+        'status_sustentabilidade': cultura_atributos_data.get('status_sustentabilidade', 'N/A'),
+        'necessidade_hidrica_total_mm': cultura_atributos_data.get('necessidade_hidrica_total_mm', 'N/A'),
+        'condicao_ideal_colheita': cultura_atributos_data.get('condicao_ideal_colheita', 'N/A'),
+        'vulnerabilidade_pragas': cultura_atributos_data.get('vulnerabilidade_pragas', 'N/A'),
     }
 
     return results
@@ -232,8 +251,6 @@ def get_city_name_by_id(city_id):
     if not city_id:
         return None, None
 
-    # URL da API do IBGE (que é servida pelo agro_app, mas usamos aqui a rota padrão)
-    # Como não temos acesso à rota interna do agro_app, vamos usar o IBGE diretamente.
     try:
         # Busca o estado da cidade para exibir no front-end
         url = f"https://servicodados.ibge.gov.br/api/v1/localidades/municipios/{city_id}/?view=nivel"
@@ -383,8 +400,10 @@ def get_all_product_data_for_city(city_id):
         return []
 
     # Busca a linha no DataFrame usando o nome normalizado
-    rendimento_row = df_rendimento[df_rendimento['CIDADE'] == normalized_city_name].iloc[0] if not df_rendimento[df_rendimento['CIDADE'] == normalized_city_name].empty else None
-    valor_row = df_valor[df_valor['CIDADE'] == normalized_city_name].iloc[0] if not df_valor[df_valor['CIDADE'] == normalized_city_name].empty else None
+    rendimento_row = df_rendimento[df_rendimento['CIDADE'] == normalized_city_name].iloc[0] if not df_rendimento[
+        df_rendimento['CIDADE'] == normalized_city_name].empty else None
+    valor_row = df_valor[df_valor['CIDADE'] == normalized_city_name].iloc[0] if not df_valor[
+        df_valor['CIDADE'] == normalized_city_name].empty else None
 
     if rendimento_row is None or valor_row is None:
         return []
@@ -400,9 +419,14 @@ def get_all_product_data_for_city(city_id):
             # Remove o ponto de milhar para obter um valor limpo.
             # O ponto no CSV é usado como separador de milhar no contexto brasileiro.
             clean_value = str(value_raw).replace('.', '').replace(',', '.')
-            return float(clean_value), None
+            val = float(clean_value)
+            # Adiciona checagem de NaN e Inf para robustez
+            if math.isnan(val) or math.isinf(val):
+                return None, 'Dado não disponível'
+
+            return val, None
         except:
-            return None, str(value_raw) # Retorna a string original se a conversão falhar
+            return None, str(value_raw)  # Retorna a string original se a conversão falhar
 
     products_data = []
 
@@ -471,12 +495,12 @@ def get_ficha_tecnica(product_name, city_id):
     weather_data = get_weather_data(full_city_name)
 
     # 5. Consolida os dados e adiciona campos extras para o DOBRO de informações
+    # Note: As informações 'cultura_atributos' são usadas aqui.
 
     # Campos da Ficha Técnica Base
     base_info = ficha_data.get('ficha_base', {})
-
-    # Campos de Sazonalidade
     sazonalidade = ficha_data.get('sazonalidade', {})
+    atributos = ficha_data.get('cultura_atributos', {})  # Novo: Dados do 4o JSON
 
     # Adiciona todos os resultados
     final_ficha = {
@@ -487,24 +511,29 @@ def get_ficha_tecnica(product_name, city_id):
         # Informações Básicas (4 campos)
         'tipo_solo': base_info.get('tipo_solo'),
         'ciclo_vida_dias': base_info.get('ciclo'),
-        'fertilizante_essencial': 'Fosfato e Potássio (Base)',  # Novo campo extra
-        'status_sustentabilidade': 'Média/Alta',  # Novo campo extra
+        'fertilizante_essencial': atributos.get('fertilizante_essencial', 'Fosfato e Potássio (Base)'),
+        # Puxando do novo JSON, com fallback
+        'status_sustentabilidade': atributos.get('status_sustentabilidade', 'Média/Alta'),
+        # Puxando do novo JSON, com fallback
 
         # Dados Climáticos (4 campos)
         'temperatura_ideal_c': base_info.get('temperatura_c'),
         'precipitacao_min_mm': base_info.get('precipitacao_anual_mm'),
         'periodo_plantio_sugerido': sazonalidade.get('plantio'),
-        'altitude_media_m': '450',  # Novo campo extra (Placeholder)
+        'altitude_media_m': '450',  # Campo extra (Placeholder)
 
         # Produtividade e Recursos (4 campos)
         'produtividade_media_kg_ha': ficha_data.get('Rendimento médio'),
-        'necessidade_hidrica_total_mm': '700-1100',  # Novo campo extra (Placeholder)
+        'necessidade_hidrica_total_mm': atributos.get('necessidade_hidrica_total_mm', '700-1100'),
+        # Puxando do novo JSON, com fallback
         'tempo_colheita_meses': sazonalidade.get('colheita'),
-        'condicao_ideal_colheita': 'Clima Seco e Estável',  # Novo campo extra
+        'condicao_ideal_colheita': atributos.get('condicao_ideal_colheita', 'Clima Seco e Estável'),
+        # Puxando do novo JSON, com fallback
 
         # Condições Locais e Riscos (4 campos)
-        'vulnerabilidade_pragas': 'Baixa (Monitoramento Semanal)',  # Novo campo extra
-        'anos_estudo_local_ibge': '2019-2023',  # Novo campo extra (Placeholder)
+        'vulnerabilidade_pragas': atributos.get('vulnerabilidade_pragas', 'Baixa (Monitoramento Semanal)'),
+        # Puxando do novo JSON, com fallback
+        'anos_estudo_local_ibge': '2019-2023',  # Campo extra (Placeholder)
         'cotacao_pma_rs': ficha_data.get('pma_2024_rs'),
         'ph_solo_ideal': base_info.get('ph_ideal_h2o'),
 
@@ -519,8 +548,6 @@ def get_ficha_tecnica(product_name, city_id):
     return {k: v for k, v in final_ficha.items() if v is not None}
 
 
-# <<<<< INÍCIO DO BLOCO DE CLIMA ADICIONADO
-
 # ==============================================================================
 # 5. FUNÇÃO DE BUSCA DA API DE CLIMA (FINALIZADA)
 # ==============================================================================
@@ -533,13 +560,11 @@ def get_weather_data(city_name):
         return None
 
     try:
-        # Acesso às constantes CLIMA_API_KEY e CLIMA_API_URL
         api_key = CLIMA_API_KEY
         base_url = CLIMA_API_URL
 
         # CORREÇÃO CRÍTICA AQUI: A API de clima não aceita (SP), (RJ), etc.
         # Usa um regex mais forte para limpar o nome.
-        # Se o city_name for 'Bauru (SP)', ele vira 'Bauru'. Se for só 'Bauru', continua 'Bauru'.
         city_search_name = re.sub(r'\s*\([^)]*\)|\s*-\s*[\w\s]+', '', city_name).strip()
 
         params = {
@@ -550,7 +575,6 @@ def get_weather_data(city_name):
         }
 
         response = requests.get(base_url, params=params, timeout=5)
-        # Se a API não encontrar a cidade, raise_for_status() irá para o 'except'.
         response.raise_for_status()
 
         data = response.json()
@@ -572,12 +596,8 @@ def get_weather_data(city_name):
         return weather_info
 
     except requests.exceptions.HTTPError as http_err:
-        # Imprime o erro HTTP para debug (ex: 404 Not Found)
         print(f"Erro na API de Clima (HTTP Error): {http_err} para a cidade: {city_name} (Busca: {city_search_name})")
         return None
     except Exception as e:
-        # Imprime outros erros (ex: falha de conexão ou JSONDecodeError)
         print(f"Erro na API de Clima (Geral): {e} para a cidade: {city_name} (Busca: {city_search_name})")
         return None
-
-# <<<<< FIM DO BLOCO DE CLIMA ADICIONADO

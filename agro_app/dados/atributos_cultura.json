@@ -1,0 +1,506 @@
+[
+  {
+    "cultura_produto": "Abacate",
+    "fertilizante_essencial": "Nitrogênio, Potássio e Boro",
+    "status_sustentabilidade": "Alta (Se manejado corretamente)",
+    "necessidade_hidrica_total_mm": "1000-1500",
+    "condicao_ideal_colheita": "Estádio de maturação fisiológica (colheita de 'vez')",
+    "vulnerabilidade_pragas": "Média (Brocas, Ácaros, Fungos de Raiz)"
+  },
+  {
+    "cultura_produto": "Abacaxi",
+    "fertilizante_essencial": "Nitrogênio, Potássio e Cálcio",
+    "status_sustentabilidade": "Média (Potencial para erosão)",
+    "necessidade_hidrica_total_mm": "800-1200",
+    "condicao_ideal_colheita": "Fruto com 75% da coloração amarela",
+    "vulnerabilidade_pragas": "Alta (Cochonilhas, Nematoides, Murcha Fusariana)"
+  },
+  {
+    "cultura_produto": "Açaí",
+    "fertilizante_essencial": "Nitrogênio e Potássio (Alto requerimento)",
+    "status_sustentabilidade": "Alta (Produção extrativista sustentável)",
+    "necessidade_hidrica_total_mm": "2000-3000",
+    "condicao_ideal_colheita": "Cachos com frutos completamente pretos/roxos",
+    "vulnerabilidade_pragas": "Baixa (Poucas pragas de expressão comercial)"
+  },
+  {
+    "cultura_produto": "Algodão Arbóreo (em caroço)",
+    "fertilizante_essencial": "Nitrogênio, Fósforo e Potássio (similar ao herbáceo)",
+    "status_sustentabilidade": "Média/Alta (Perenidade da cultura)",
+    "necessidade_hidrica_total_mm": "900-1200",
+    "condicao_ideal_colheita": "Bolinhas abertas e fibra seca (Umidade < 10%)",
+    "vulnerabilidade_pragas": "Alta (Bicudo, Curuquerê)"
+  },
+  {
+    "cultura_produto": "Azeitona",
+    "fertilizante_essencial": "Potássio e Nitrogênio",
+    "status_sustentabilidade": "Alta (Resistente à seca)",
+    "necessidade_hidrica_total_mm": "600-800",
+    "condicao_ideal_colheita": "Estádio de maturação específico (verde, 'pintada' ou preta)",
+    "vulnerabilidade_pragas": "Média (Mosca da azeitona, Cochonilhas)"
+  },
+  {
+    "cultura_produto": "Banana (cacho)",
+    "fertilizante_essencial": "Potássio (altíssimo requerimento) e Nitrogênio",
+    "status_sustentabilidade": "Média (Alta demanda de potássio)",
+    "necessidade_hidrica_total_mm": "1200-1500",
+    "condicao_ideal_colheita": "Grau de plenitude (enchimento dos frutos) ideal",
+    "vulnerabilidade_pragas": "Alta (Sigatoka Negra, Nematoides, Broca)"
+  },
+  {
+    "cultura_produto": "Borracha (látex coagulado)",
+    "fertilizante_essencial": "Nitrogênio, Fósforo e Potássio",
+    "status_sustentabilidade": "Alta (Cultura perene de longo prazo)",
+    "necessidade_hidrica_total_mm": "1500-2000",
+    "condicao_ideal_colheita": "Condição da árvore para sangria (Idade e Vigor)",
+    "vulnerabilidade_pragas": "Baixa (Doença das folhas - Microcyclus ulei)"
+  },
+  {
+    "cultura_produto": "Cacau (em amêndoa)",
+    "fertilizante_essencial": "Potássio e Nitrogênio",
+    "status_sustentabilidade": "Alta (Cultivo em sistemas agroflorestais)",
+    "necessidade_hidrica_total_mm": "1500-2500",
+    "condicao_ideal_colheita": "Fruto maduro com cor característica (amarela ou vermelha)",
+    "vulnerabilidade_pragas": "Alta (Vassoura-de-Bruxa, Monilíase)"
+  },
+  {
+    "cultura_produto": "Café Arábica (em grão)",
+    "fertilizante_essencial": "Nitrogênio, Potássio, Boro",
+    "status_sustentabilidade": "Média/Alta (Geralmente em regiões montanhosas)",
+    "necessidade_hidrica_total_mm": "1200-1500",
+    "condicao_ideal_colheita": "Cerejas maduras e alto teor de açúcar (brix)",
+    "vulnerabilidade_pragas": "Média (Bicho-mineiro, Broca do café)"
+  },
+  {
+    "cultura_produto": "Café Canephora (em grão)",
+    "fertilizante_essencial": "Nitrogênio, Potássio, Boro (mais tolerante)",
+    "status_sustentabilidade": "Média (Mais resistente a doenças)",
+    "necessidade_hidrica_total_mm": "1000-1500",
+    "condicao_ideal_colheita": "Maturação uniforme e secagem controlada",
+    "vulnerabilidade_pragas": "Baixa/Média (Mais rústico que o Arábica)"
+  },
+  {
+    "cultura_produto": "Caqui",
+    "fertilizante_essencial": "Nitrogênio e Potássio",
+    "status_sustentabilidade": "Alta (Frutífera perene)",
+    "necessidade_hidrica_total_mm": "800-1200",
+    "condicao_ideal_colheita": "Firmeza e coloração ideais para o mercado",
+    "vulnerabilidade_pragas": "Média (Cochonilhas, Mosca-das-frutas)"
+  },
+  {
+    "cultura_produto": "Castanha-de-caju",
+    "fertilizante_essencial": "Nitrogênio e Potássio",
+    "status_sustentabilidade": "Alta (Cultura adaptada a solos pobres)",
+    "necessidade_hidrica_total_mm": "700-1000",
+    "condicao_ideal_colheita": "Pseudofruto (caju) maduro e seco (queda natural)",
+    "vulnerabilidade_pragas": "Média (Broca-do-tronco, Antracnose)"
+  },
+  {
+    "cultura_produto": "Chá-da-Índia (folha verde)",
+    "fertilizante_essencial": "Nitrogênio (muito importante) e Potássio",
+    "status_sustentabilidade": "Média/Alta (Cultura perene)",
+    "necessidade_hidrica_total_mm": "1200-1800",
+    "condicao_ideal_colheita": "Colheita dos 'brótolos' (ponteiros jovens)",
+    "vulnerabilidade_pragas": "Baixa (Mosca-branca)"
+  },
+  {
+    "cultura_produto": "Coco-da-baía",
+    "fertilizante_essencial": "Cloreto de Potássio e Nitrogênio",
+    "status_sustentabilidade": "Alta (Perene e uso eficiente da terra)",
+    "necessidade_hidrica_total_mm": "1200-1800",
+    "condicao_ideal_colheita": "Estádio de água (coco verde) ou seco (coco maduro)",
+    "vulnerabilidade_pragas": "Média (Broca do coqueiro, Ácaros)"
+  },
+  {
+    "cultura_produto": "Dendê (cacho de coco)",
+    "fertilizante_essencial": "Nitrogênio, Fósforo e Potássio (Alto consumo)",
+    "status_sustentabilidade": "Baixa/Média (Controvérsias de desmatamento)",
+    "necessidade_hidrica_total_mm": "2000-3000",
+    "condicao_ideal_colheita": "Queda natural de alguns frutos do cacho (óleo máximo)",
+    "vulnerabilidade_pragas": "Média (Pulgões, Doença do amarelecimento fatal)"
+  },
+  {
+    "cultura_produto": "Erva-mate (folha verde)",
+    "fertilizante_essencial": "Nitrogênio e Potássio",
+    "status_sustentabilidade": "Alta (Geralmente cultivada em sistemas agroflorestais)",
+    "necessidade_hidrica_total_mm": "1500-2000",
+    "condicao_ideal_colheita": "Estação de repouso vegetativo (inverno) para maior qualidade",
+    "vulnerabilidade_pragas": "Baixa (Geralmente controlada pelo manejo)"
+  },
+  {
+    "cultura_produto": "Figo",
+    "fertilizante_essencial": "Potássio e Cálcio",
+    "status_sustentabilidade": "Alta (Fácil adaptação)",
+    "necessidade_hidrica_total_mm": "600-900",
+    "condicao_ideal_colheita": "Fruto macio e com cor totalmente desenvolvida",
+    "vulnerabilidade_pragas": "Média (Mosca-das-frutas, Ferrugem)"
+  },
+  {
+    "cultura_produto": "Goiaba",
+    "fertilizante_essencial": "Potássio, Fósforo e Cálcio",
+    "status_sustentabilidade": "Alta (Rápido crescimento e produtividade)",
+    "necessidade_hidrica_total_mm": "1000-1500",
+    "condicao_ideal_colheita": "Firmeza da polpa e teor de sólidos solúveis (brix) ideais",
+    "vulnerabilidade_pragas": "Alta (Mosca-das-frutas, Nematoides)"
+  },
+  {
+    "cultura_produto": "Guaraná (semente)",
+    "fertilizante_essencial": "Nitrogênio e Potássio",
+    "status_sustentabilidade": "Alta (Nativa da Amazônia)",
+    "necessidade_hidrica_total_mm": "1500-2000",
+    "condicao_ideal_colheita": "Cápsula do fruto aberta, expondo a semente",
+    "vulnerabilidade_pragas": "Baixa/Média (Antracnose)"
+  },
+  {
+    "cultura_produto": "Laranja",
+    "fertilizante_essencial": "Nitrogênio, Potássio e Cálcio",
+    "status_sustentabilidade": "Média (Alto risco de doenças)",
+    "necessidade_hidrica_total_mm": "900-1200",
+    "condicao_ideal_colheita": "Relação Brix/Acidez ideal (doçura e sabor)",
+    "vulnerabilidade_pragas": "Muito Alta (Greening, Cancro Cítrico, Psilídeo)"
+  },
+  {
+    "cultura_produto": "Limão",
+    "fertilizante_essencial": "Nitrogênio e Potássio",
+    "status_sustentabilidade": "Média (Similar à laranja)",
+    "necessidade_hidrica_total_mm": "900-1200",
+    "condicao_ideal_colheita": "Tamanho, cor verde-claro e teor de suco",
+    "vulnerabilidade_pragas": "Muito Alta (Greening, Cancro Cítrico)"
+  },
+  {
+    "cultura_produto": "Maçã",
+    "fertilizante_essencial": "Potássio, Cálcio e Boro",
+    "status_sustentabilidade": "Média/Alta (Exige poda e manejo complexo)",
+    "necessidade_hidrica_total_mm": "800-1200",
+    "condicao_ideal_colheita": "Firmeza, cor e teor de açúcar (brix) ideais",
+    "vulnerabilidade_pragas": "Alta (Grafolita, Mosca-da-fruta, Sarna)"
+  },
+  {
+    "cultura_produto": "Mamão",
+    "fertilizante_essencial": "Nitrogênio e Potássio (Alto requerimento)",
+    "status_sustentabilidade": "Média (Ciclo curto e suscetibilidade a vírus)",
+    "necessidade_hidrica_total_mm": "1200-1500",
+    "condicao_ideal_colheita": "Estádio de 'pintor' (início da coloração)",
+    "vulnerabilidade_pragas": "Muito Alta (Vírus do Mosaico, Ácaros, Fungos)"
+  },
+  {
+    "cultura_produto": "Manga",
+    "fertilizante_essencial": "Nitrogênio e Potássio",
+    "status_sustentabilidade": "Alta (Perene e adaptação a climas secos)",
+    "necessidade_hidrica_total_mm": "1000-1500",
+    "condicao_ideal_colheita": "Estádio de maturação ideal (firmeza e cor)",
+    "vulnerabilidade_pragas": "Média/Alta (Mosca-das-frutas, Antracnose)"
+  },
+  {
+    "cultura_produto": "Maracujá",
+    "fertilizante_essencial": "Potássio, Cálcio e Boro",
+    "status_sustentabilidade": "Baixa/Média (Alta dependência de controle de vírus)",
+    "necessidade_hidrica_total_mm": "1000-1400",
+    "condicao_ideal_colheita": "Fruto totalmente maduro (colheita de chão)",
+    "vulnerabilidade_pragas": "Muito Alta (Vírus do endurecimento, Broca)"
+  },
+  {
+    "cultura_produto": "Marmelo",
+    "fertilizante_essencial": "Nitrogênio e Potássio",
+    "status_sustentabilidade": "Alta (Frutífera rústica)",
+    "necessidade_hidrica_total_mm": "700-1100",
+    "condicao_ideal_colheita": "Cor amarela intensa e tamanho completo",
+    "vulnerabilidade_pragas": "Média (Grafolita)"
+  },
+  {
+    "cultura_produto": "Noz (fruto seco)",
+    "fertilizante_essencial": "Potássio, Zinco e Boro",
+    "status_sustentabilidade": "Alta (Cultura perene de alto valor)",
+    "necessidade_hidrica_total_mm": "800-1200",
+    "condicao_ideal_colheita": "Casca externa seca e rachada",
+    "vulnerabilidade_pragas": "Média (Traça das nozes)"
+  },
+  {
+    "cultura_produto": "Palmito",
+    "fertilizante_essencial": "Nitrogênio e Potássio",
+    "status_sustentabilidade": "Média (Depende da espécie e manejo)",
+    "necessidade_hidrica_total_mm": "1500-2500",
+    "condicao_ideal_colheita": "Idade ideal do estipe (tronco) para corte",
+    "vulnerabilidade_pragas": "Baixa (Broca da Palmeira)"
+  },
+  {
+    "cultura_produto": "Pêra",
+    "fertilizante_essencial": "Nitrogênio e Potássio",
+    "status_sustentabilidade": "Média/Alta (Similar à maçã)",
+    "necessidade_hidrica_total_mm": "800-1200",
+    "condicao_ideal_colheita": "Firmeza ideal e cor (colheita de 'vez')",
+    "vulnerabilidade_pragas": "Alta (Psilídeo, Bactérias)"
+  },
+  {
+    "cultura_produto": "Pêssego",
+    "fertilizante_essencial": "Nitrogênio, Potássio e Cálcio",
+    "status_sustentabilidade": "Média (Exige frio para produção)",
+    "necessidade_hidrica_total_mm": "800-1200",
+    "condicao_ideal_colheita": "Cor e aroma característicos, firmeza de polpa",
+    "vulnerabilidade_pragas": "Muito Alta (Mosca-das-frutas, Grafolita, Monilíase)"
+  },
+  {
+    "cultura_produto": "Pimenta-do-reino",
+    "fertilizante_essencial": "Nitrogênio e Potássio (Alto requerimento)",
+    "status_sustentabilidade": "Média/Alta (Cultura perene)",
+    "necessidade_hidrica_total_mm": "1800-2500",
+    "condicao_ideal_colheita": "Bagas mudando de verde para amarelo/vermelho",
+    "vulnerabilidade_pragas": "Média (Fusarium - Murcha)"
+  },
+  {
+    "cultura_produto": "Sisal ou Agave (fibra)",
+    "fertilizante_essencial": "Potássio e Cálcio",
+    "status_sustentabilidade": "Alta (Cultura semiárida e rústica)",
+    "necessidade_hidrica_total_mm": "400-600",
+    "condicao_ideal_colheita": "Folhas longas e vigorosas no ponto de corte",
+    "vulnerabilidade_pragas": "Baixa (Broca do Sisal)"
+  },
+  {
+    "cultura_produto": "Uva",
+    "fertilizante_essencial": "Potássio (muito importante) e Nitrogênio",
+    "status_sustentabilidade": "Média (Alto uso de defensivos em algumas regiões)",
+    "necessidade_hidrica_total_mm": "600-900",
+    "condicao_ideal_colheita": "Teor de açúcar (brix) e acidez ideais",
+    "vulnerabilidade_pragas": "Muito Alta (Míldio, Oídio, Pérola-da-terra)"
+  },
+  {
+    "cultura_produto": "Algodão Herbáceo (em caroço)",
+    "fertilizante_essencial": "Nitrogênio, Fósforo, Potássio e Boro",
+    "status_sustentabilidade": "Baixa (Uso intensivo de defensivos e água)",
+    "necessidade_hidrica_total_mm": "700-1300",
+    "condicao_ideal_colheita": "Abertura total das maçãs e umidade da fibra baixa",
+    "vulnerabilidade_pragas": "Muito Alta (Bicudo do algodoeiro, Lagartas, Pulgões)"
+  },
+  {
+    "cultura_produto": "Alho",
+    "fertilizante_essencial": "Potássio e Enxofre",
+    "status_sustentabilidade": "Média (Exigente em nutrientes)",
+    "necessidade_hidrica_total_mm": "300-500",
+    "condicao_ideal_colheita": "Início do secamento da parte aérea (dobra da folha)",
+    "vulnerabilidade_pragas": "Média (Tripes, Doenças de Bulbo)"
+  },
+  {
+    "cultura_produto": "Amendoim (em casca)",
+    "fertilizante_essencial": "Cálcio (para enchimento da vagem) e Potássio",
+    "status_sustentabilidade": "Alta (Fixa Nitrogênio no solo)",
+    "necessidade_hidrica_total_mm": "500-700",
+    "condicao_ideal_colheita": "Ponto de maturação (teste da vagem)",
+    "vulnerabilidade_pragas": "Média (Nematoides, Fungos do solo)"
+  },
+  {
+    "cultura_produto": "Arroz (em casca)",
+    "fertilizante_essencial": "Nitrogênio e Fósforo (Alto requerimento de N)",
+    "status_sustentabilidade": "Baixa (Em cultivos inundados por emissão de metano)",
+    "necessidade_hidrica_total_mm": "1000-2000",
+    "condicao_ideal_colheita": "Grãos no ponto de maturação, campo drenado",
+    "vulnerabilidade_pragas": "Média (Percevejo-do-arroz, Brusone)"
+  },
+  {
+    "cultura_produto": "Aveia (em grão)",
+    "fertilizante_essencial": "Nitrogênio e Fósforo",
+    "status_sustentabilidade": "Alta (Cultura de inverno/rotação)",
+    "necessidade_hidrica_total_mm": "350-550",
+    "condicao_ideal_colheita": "Umidade do grão entre 13% e 15%",
+    "vulnerabilidade_pragas": "Baixa (Pulgões)"
+  },
+  {
+    "cultura_produto": "Batata-doce",
+    "fertilizante_essencial": "Potássio (essencial) e Nitrogênio",
+    "status_sustentabilidade": "Alta (Rústica e nutritiva)",
+    "necessidade_hidrica_total_mm": "500-800",
+    "condicao_ideal_colheita": "Colheita manual, após 90 a 120 dias do plantio",
+    "vulnerabilidade_pragas": "Média (Broca-da-raiz)"
+  },
+  {
+    "cultura_produto": "Batata-inglesa",
+    "fertilizante_essencial": "Potássio e Nitrogênio (Alta demanda)",
+    "status_sustentabilidade": "Baixa/Média (Alto uso de defensivos e água)",
+    "necessidade_hidrica_total_mm": "500-700",
+    "condicao_ideal_colheita": "Maturação das folhas e secagem da rama",
+    "vulnerabilidade_pragas": "Muito Alta (Requeima, Lagartas, Mosca-branca)"
+  },
+  {
+    "cultura_produto": "Cana-de-açúcar",
+    "fertilizante_essencial": "Nitrogênio e Potássio (Alto consumo)",
+    "status_sustentabilidade": "Média (Alto uso de água em algumas fases)",
+    "necessidade_hidrica_total_mm": "1100-1500",
+    "condicao_ideal_colheita": "Época de seca (maior teor de sacarose)",
+    "vulnerabilidade_pragas": "Média (Broca da cana, Cigarrinha)"
+  },
+  {
+    "cultura_produto": "Cebola",
+    "fertilizante_essencial": "Potássio e Enxofre",
+    "status_sustentabilidade": "Média (Exigente em nutrientes)",
+    "necessidade_hidrica_total_mm": "350-550",
+    "condicao_ideal_colheita": "Queda e secamento de 2/3 das folhas",
+    "vulnerabilidade_pragas": "Média (Tripes, Míldio)"
+  },
+  {
+    "cultura_produto": "Centeio (em grão)",
+    "fertilizante_essencial": "Nitrogênio e Fósforo",
+    "status_sustentabilidade": "Alta (Cultura rústica e tolerante ao frio)",
+    "necessidade_hidrica_total_mm": "300-500",
+    "condicao_ideal_colheita": "Grão com umidade entre 13% e 15%",
+    "vulnerabilidade_pragas": "Baixa (Ergot)"
+  },
+  {
+    "cultura_produto": "Cevada (em grão)",
+    "fertilizante_essencial": "Nitrogênio e Fósforo",
+    "status_sustentabilidade": "Alta (Cultura de inverno)",
+    "necessidade_hidrica_total_mm": "350-550",
+    "condicao_ideal_colheita": "Grão com umidade entre 13% e 15%",
+    "vulnerabilidade_pragas": "Média (Manchas foliares)"
+  },
+  {
+    "cultura_produto": "Ervilha (em grão)",
+    "fertilizante_essencial": "Fósforo e Potássio (Fixa Nitrogênio)",
+    "status_sustentabilidade": "Alta (Leguminosa, melhora o solo)",
+    "necessidade_hidrica_total_mm": "350-500",
+    "condicao_ideal_colheita": "Grão no ponto de consumo ou secagem total",
+    "vulnerabilidade_pragas": "Média (Pulgões, Oídio)"
+  },
+  {
+    "cultura_produto": "Fava (em grão)",
+    "fertilizante_essencial": "Fósforo e Potássio (Fixa Nitrogênio)",
+    "status_sustentabilidade": "Alta (Leguminosa)",
+    "necessidade_hidrica_total_mm": "400-600",
+    "condicao_ideal_colheita": "Vagens cheias e verdes ou secagem total",
+    "vulnerabilidade_pragas": "Média (Pulgões)"
+  },
+  {
+    "cultura_produto": "Feijão (em grão)",
+    "fertilizante_essencial": "Fósforo e Potássio (Fixação de N)",
+    "status_sustentabilidade": "Alta (Leguminosa, ciclo rápido)",
+    "necessidade_hidrica_total_mm": "350-500",
+    "condicao_ideal_colheita": "Plantas secas e vagens amareladas/secas",
+    "vulnerabilidade_pragas": "Muito Alta (Mosca-branca, Mosaico, Antracnose)"
+  },
+  {
+    "cultura_produto": "Fumo (em folha)",
+    "fertilizante_essencial": "Potássio e Nitrogênio (Equilíbrio é crucial)",
+    "status_sustentabilidade": "Baixa (Impacto ambiental do cultivo e cura)",
+    "necessidade_hidrica_total_mm": "400-600",
+    "condicao_ideal_colheita": "Colheita folha a folha no ponto de maturação",
+    "vulnerabilidade_pragas": "Muito Alta (Mosaico, Pulgões)"
+  },
+  {
+    "cultura_produto": "Girassol (em grão)",
+    "fertilizante_essencial": "Potássio e Boro (Alto requerimento de B)",
+    "status_sustentabilidade": "Alta (Tolerante à seca e rotação)",
+    "necessidade_hidrica_total_mm": "400-700",
+    "condicao_ideal_colheita": "Dorso do capítulo amarelo/marrom e umidade baixa",
+    "vulnerabilidade_pragas": "Média (Broca do Capitulo)"
+  },
+  {
+    "cultura_produto": "Juta (fibra)",
+    "fertilizante_essencial": "Nitrogênio",
+    "status_sustentabilidade": "Alta (Fibra natural e biodegradável)",
+    "necessidade_hidrica_total_mm": "1500-2500",
+    "condicao_ideal_colheita": "Ponto de floração para obtenção da melhor fibra",
+    "vulnerabilidade_pragas": "Baixa"
+  },
+  {
+    "cultura_produto": "Linho (semente)",
+    "fertilizante_essencial": "Nitrogênio e Potássio",
+    "status_sustentabilidade": "Alta (Cultura de inverno)",
+    "necessidade_hidrica_total_mm": "300-500",
+    "condicao_ideal_colheita": "Cápsula madura e sementes secas",
+    "vulnerabilidade_pragas": "Baixa (Oídio)"
+  },
+  {
+    "cultura_produto": "Malva (fibra)",
+    "fertilizante_essencial": "Nitrogênio",
+    "status_sustentabilidade": "Alta (Fibra natural e rústica)",
+    "necessidade_hidrica_total_mm": "1000-1500",
+    "condicao_ideal_colheita": "Estádio de floração, antes da formação da semente",
+    "vulnerabilidade_pragas": "Baixa"
+  },
+  {
+    "cultura_produto": "Mamona (baga)",
+    "fertilizante_essencial": "Potássio e Fósforo",
+    "status_sustentabilidade": "Alta (Tolerante à seca, óleo industrial)",
+    "necessidade_hidrica_total_mm": "600-900",
+    "condicao_ideal_colheita": "Cápsulas secas e amarronzadas",
+    "vulnerabilidade_pragas": "Média (Murcha de Fusarium)"
+  },
+  {
+    "cultura_produto": "Mandioca",
+    "fertilizante_essencial": "Potássio (muito importante) e Fósforo",
+    "status_sustentabilidade": "Alta (Rústica e tolerante a solos pobres)",
+    "necessidade_hidrica_total_mm": "1000-1500",
+    "condicao_ideal_colheita": "12 a 24 meses após plantio, dependendo da variedade",
+    "vulnerabilidade_pragas": "Média (Bactérias, Ácaros)"
+  },
+  {
+    "cultura_produto": "Melancia",
+    "fertilizante_essencial": "Potássio (muito importante) e Nitrogênio",
+    "status_sustentabilidade": "Média (Alto uso de água em fases críticas)",
+    "necessidade_hidrica_total_mm": "400-600",
+    "condicao_ideal_colheita": "Secagem da gavinha e coloração da mancha de solo",
+    "vulnerabilidade_pragas": "Muito Alta (Moscas, Vírus, Míldio)"
+  },
+  {
+    "cultura_produto": "Melão",
+    "fertilizante_essencial": "Potássio (muito importante) e Cálcio",
+    "status_sustentabilidade": "Média (Cultivo intensivo)",
+    "necessidade_hidrica_total_mm": "400-600",
+    "condicao_ideal_colheita": "Formação de anel de abscisão e teor de brix",
+    "vulnerabilidade_pragas": "Muito Alta (Moscas, Vírus, Míldio)"
+  },
+  {
+    "cultura_produto": "Milho (em grão)",
+    "fertilizante_essencial": "Nitrogênio (em cobertura), Fosfato e Potássio",
+    "status_sustentabilidade": "Média/Alta (Rotação de cultura)",
+    "necessidade_hidrica_total_mm": "450-750",
+    "condicao_ideal_colheita": "Grão com umidade entre 13% e 15% (ponto de corte)",
+    "vulnerabilidade_pragas": "Muito Alta (Cigarrinha, Lagarta do Cartucho, Spodoptera)"
+  },
+  {
+    "cultura_produto": "Rami (fibra)",
+    "fertilizante_essencial": "Nitrogênio e Potássio",
+    "status_sustentabilidade": "Alta (Fibra natural)",
+    "necessidade_hidrica_total_mm": "1000-1500",
+    "condicao_ideal_colheita": "Caule maduro e no ponto ideal de 'descortiçamento'",
+    "vulnerabilidade_pragas": "Baixa"
+  },
+  {
+    "cultura_produto": "Soja (em grão)",
+    "fertilizante_essencial": "Fosfato, Potássio e Calcário (Correção)",
+    "status_sustentabilidade": "Média (Alta demanda por área, mas fixa N)",
+    "necessidade_hidrica_total_mm": "500-800",
+    "condicao_ideal_colheita": "Clima Seco e Estável, Umidade < 14%",
+    "vulnerabilidade_pragas": "Muito Alta (Ferrugem Asiática, Lagartas, Percevejos)"
+  },
+  {
+    "cultura_produto": "Sorgo Granífero (em grão)",
+    "fertilizante_essencial": "Nitrogênio e Fósforo",
+    "status_sustentabilidade": "Alta (Tolerante à seca e rústico)",
+    "necessidade_hidrica_total_mm": "350-600",
+    "condicao_ideal_colheita": "Grão duro e umidade de 13% a 15%",
+    "vulnerabilidade_pragas": "Média (Pulgões, Lagarta-da-espiga)"
+  },
+  {
+    "cultura_produto": "Tomate",
+    "fertilizante_essencial": "Cálcio, Potássio e Nitrogênio",
+    "status_sustentabilidade": "Média (Alta demanda de manejo)",
+    "necessidade_hidrica_total_mm": "400-600",
+    "condicao_ideal_colheita": "Cor vermelha uniforme, sem chuvas fortes (mesa)",
+    "vulnerabilidade_pragas": "Muito Alta (Vírus, Fungos, Traça do tomateiro)"
+  },
+  {
+    "cultura_produto": "Trigo (em grão)",
+    "fertilizante_essencial": "Nitrogênio e Fósforo",
+    "status_sustentabilidade": "Alta (Cultura de inverno/rotação)",
+    "necessidade_hidrica_total_mm": "300-500",
+    "condicao_ideal_colheita": "Umidade do grão entre 13% e 15%",
+    "vulnerabilidade_pragas": "Média (Ferrugem, Giberela)"
+  },
+  {
+    "cultura_produto": "Triticale (em grão)",
+    "fertilizante_essencial": "Nitrogênio e Fósforo",
+    "status_sustentabilidade": "Alta (Híbrido rústico)",
+    "necessidade_hidrica_total_mm": "300-500",
+    "condicao_ideal_colheita": "Umidade do grão entre 13% e 15%",
+    "vulnerabilidade_pragas": "Baixa/Média (Similar ao Trigo, mas mais resistente)"
+  }
+]
