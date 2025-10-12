@@ -14,8 +14,6 @@ from agro_app.models import PlanoPlantio, EtapaPlantio, Terreno, Produto
 from .forms import PlanoPlantioForm, EtapaPlantioForm
 
 # Importa serviços do data_service (fichatecnica_app)
-# Assumindo que Terreno e Produto podem ser importados aqui se não estiverem no .models
-# Se Terreno/Produto estiverem no agro_app.models, a importação no topo está correta.
 from fichatecnica_app.data_service import get_city_name_by_id, get_products_for_city, get_ficha_tecnica
 
 
@@ -115,7 +113,18 @@ def criar_plano(request):
         else:
             messages.error(request, "Erro ao criar plano. Verifique o formulário.")
     else:
-        form = PlanoPlantioForm(terrenos_queryset=terrenos_do_usuario)
+        # Pega um ID de terreno se vier via GET (do Bloco 7)
+        initial_terreno_id = request.GET.get('terreno_id')
+        initial_data = {}
+        if initial_terreno_id:
+            try:
+                # Tenta pré-selecionar o terreno no formulário
+                initial_data['terreno'] = Terreno.objects.get(pk=initial_terreno_id, proprietario=request.user)
+            except Terreno.DoesNotExist:
+                # Se o terreno não existir ou não pertencer ao user, ignora
+                pass
+
+        form = PlanoPlantioForm(initial=initial_data, terrenos_queryset=terrenos_do_usuario)
 
     context = {
         'form': form,
@@ -223,7 +232,12 @@ def adicionar_etapa(request, plano_id):
     Adiciona uma nova etapa a um plano de plantio.
     CORRIGIDO: Parâmetro plano_pk alterado para plano_id (UUID)
     """
-    plano = get_object_or_404(PlanoPlantio, pk=plano_id, proprietario=request.user)
+    # Garante que o usuário é o proprietário do plano (que, por sua vez, é proprietário do terreno)
+    plano = get_object_or_404(
+        PlanoPlantio.objects.select_related('terreno'),
+        pk=plano_id,
+        terreno__proprietario=request.user
+    )
 
     if request.method == 'POST':
         form = EtapaPlantioForm(request.POST)
@@ -339,25 +353,44 @@ def buscar_produtos_por_cidade(request, cidade_id):
     return JsonResponse({'products': products})
 
 
-# Função placeholder para API de terrenos (necessária para bloco7.html)
 @login_required
 def api_terrenos(request):
     """
     Endpoint AJAX para listar os terrenos do usuário, usado na dashboard (bloco7.html).
+    CORRIGIDO: Adicionado tratamento de erro robusto.
     Retorna JSON.
     """
-    terrenos = Terreno.objects.filter(proprietario=request.user)
+    try:
+        terrenos = Terreno.objects.filter(proprietario=request.user).order_by('nome')
 
-    terrenos_data = []
-    for terreno in terrenos:
-        full_name, _ = get_city_name_by_id(terreno.cidade)
-        terrenos_data.append({
-            'id': str(terreno.pk),
-            'nome': terreno.nome,
-            'area_total': str(terreno.area_total),
-            'unidade_area': terreno.unidade_area,
-            'localizacao': full_name if full_name else terreno.cidade,
-            'cidade_id': terreno.cidade,
-        })
+        terrenos_data = []
+        for terreno in terrenos:
+            # Váriavel padrão em caso de falha da API
+            localizacao = f"Cód. IBGE: {terreno.cidade}"
 
-    return JsonResponse({'terrenos': terrenos_data})
+            try:
+                # Tenta buscar o nome completo da cidade via API
+                full_name, _ = get_city_name_by_id(terreno.cidade)
+                if full_name:
+                    localizacao = full_name
+            except Exception as e:
+                # Em caso de falha da API, imprime no console do servidor e usa o valor padrão
+                print(f"Erro ao buscar nome da cidade {terreno.cidade} via IBGE: {e}")
+
+            terrenos_data.append({
+                'id': str(terreno.pk),
+                'nome': terreno.nome,
+                'area_total': str(terreno.area_total),
+                'unidade_area': terreno.unidade_area,
+                'localizacao': localizacao,
+                'cidade_id': terreno.cidade,
+            })
+
+        # Retorna a lista de terrenos formatada
+        return JsonResponse({'terrenos': terrenos_data}, status=200)
+
+    except Exception as e:
+        # Se falhar em qualquer etapa (ex: erro de banco de dados na consulta inicial),
+        # retorna um erro 500 para o frontend.
+        print(f"Erro CRÍTICO no endpoint api_terrenos: {e}")
+        return JsonResponse({'error': 'Erro crítico na API ao listar terrenos.'}, status=500)
