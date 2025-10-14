@@ -23,10 +23,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-+3$=4#zfr_u1-9jgpxrt(!au5%oo=lifi9ak(q*6x38-8t5+cm'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+# ------------------------------------------------------------------
+# AMBIENTE: CONFIGURAÇÕES DE PRODUÇÃO
+# ------------------------------------------------------------------
+
+# 1. DEBUG: Deve ser False em produção.
+#    DEBUG = True  # <-- Configuração de Desenvolvimento
+DEBUG = False    # <-- Configuração de Produção
+
+# 2. ALLOWED_HOSTS: Deve listar os domínios em produção.
+#    ALLOWED_HOSTS = []  # <-- Configuração de Desenvolvimento
+ALLOWED_HOSTS = ['codando.site', 'www.codando.site']  # <-- Configuração de Produção
 
 
 # Application definition
@@ -125,8 +133,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# 3. STATIC_ROOT: É OBRIGATÓRIO em Produção, usado pelo 'collectstatic'
+#    Em produção, o Apache serve arquivos estáticos diretamente deste diretório.
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# 4. STATICFILES_DIRS: Usado SOMENTE no modo de desenvolvimento (DEBUG=True)
+#    Em produção, deve ser comentado ou removido, pois STATIC_ROOT é usado.
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static') # <-- Ajustado para a pasta raiz
+    # os.path.join(BASE_DIR, 'static')  # <-- Configuração de Desenvolvimento (DESATIVADO em Produção)
 ]
 
 # Default primary key field type
