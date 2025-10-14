@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}AgroData - Plano de Plantio - Resumo{% endblock %}
+
+{% block content %}
+    <div class="dash-card mx-auto max-w-7xl" style="margin-top: 20px; margin-bottom: 30px;">
+        <h1 class="main-title text-green-700">Plano de Plantio Criado!</h1>
+        <h2 class="sub-title">Resumo da Configuração Inicial</h2>
+
+        <div class="terreno-info-box-status bg-green-50 border-green-300">
+            <p>Status do Plano: <strong>{{ plano.status }} (Cultivo Definido)</strong></p>
+            <p>Produto Selecionado: <strong>{{ plano.produto.nome }}</strong></p>
+            <p>Terreno: <strong>{{ terreno.nome }}</strong></p>
+
+            <p>Local: <strong>{{ localizacao_display }}</strong></p>
+
+            <p>Início Estimado: <strong>{{ plano.data_inicio|date:"d/m/Y" }}</strong></p>
+        </div>
+
+        <div class="plan-wizard-grid mt-6">
+            <div class="dash-card">
+                <h3>Próximos Passos e Ações</h3>
+                <p class="text-gray-600 mb-4">
+                    O cultivo para o terreno foi selecionado com sucesso. O plano agora está no status **ANDAMENTO**.
+                </p>
+
+                <ul class="space-y-4">
+                    <li>
+                        <a href="/dashboard/" class="plan-action-btn-secondary">
+                            Voltar para o Dashboard
+                        </a>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Acesse o dashboard para visualizar e gerenciar este e outros planos.
+                        </p>
+                    </li>
+                    <li>
+                        <a href="#" class="plan-action-btn-main disabled:opacity-50" disabled>
+                            Detalhes e Cronograma do Plano (Em Breve)
+                        </a>
+                        <p class="text-xs text-gray-500 mt-1">
+                            A próxima etapa seria definir datas e entradas (insumos/custos).
+                        </p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="dash-card">
+                <h3>Ficha Técnica do Cultivo Selecionado</h3>
+                <p class="text-sm text-gray-600 mb-3">
+                    Revisão rápida dos dados técnicos de **{{ plano.produto.nome }}** para a sua região.
+                </p>
+                <div id="plan-preview-display">
+                    {% if ficha_data %}
+                        {% for section_title, section_data in ficha_data.items %}
+                            <section class="ficha-detail-section">
+                                <h4 class="ficha-detail-title">{{ section_title }}</h4>
+                                <dl class="ficha-detail-grid">
+                                    {% for detail_name, detail_value in section_data.items %}
+                                        <div class="ficha-detail-item">
+                                            <dt>{{ detail_name }}</dt>
+                                            <dd>{{ detail_value }}</dd>
+                                        </div>
+                                    {% endfor %}
+                                </dl>
+                            </section>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center text-red-500">
+                            Não foi possível carregar a Ficha Técnica para revisão.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
