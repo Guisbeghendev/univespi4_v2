@@ -8,7 +8,10 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
 """
 
 import os
+import sys
 
+sys.path.insert(0, '/var/www/univesp/venv/lib/python3.10/site-packages')
+sys.path.insert(0, '/var/www/univesp')
 
 from django.core.wsgi import get_wsgi_application
 
