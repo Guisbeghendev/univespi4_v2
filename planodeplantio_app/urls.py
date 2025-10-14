@@ -15,6 +15,9 @@ urlpatterns = [
     # 2. Ponto de entrada do Wizard: Cria o RASCUNHO do Plano e redireciona (GET)
     path('iniciar/', views.iniciar_wizard, name='iniciar_wizard'),
 
+    # NOVO: API para listagem de Planos de Plantio (para o novo card do Dashboard)
+    path('api/planos/', views.api_lista_planos, name='api_lista_planos'),  # <--- NOVO
+
     # -----------------------------------------------------------
     # WIZARD - ETAPA 1: SELEÇÃO DE CULTIVO
     # -----------------------------------------------------------

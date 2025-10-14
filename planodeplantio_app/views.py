@@ -14,13 +14,11 @@ from datetime import date
 from decimal import Decimal
 
 # IMPORTAÇÃO DA LÓGICA DE TRADUÇÃO (que está em agro_app.views)
-# IMPORTANTE: Garanta que essas funções existam em agro_app.views
 from agro_app.views import get_city_name_from_id, get_state_name_from_id
 
 
 # ======================================================================
 # FUNÇÃO AUXILIAR GLOBAL
-# MOVIDA DO API_BUSCAR_FICHA PARA O TOPO
 # ======================================================================
 def convert_decimal_and_clean(obj):
     """Converte Decimal para str, None para string vazia, e limpa recursivamente."""
@@ -77,15 +75,62 @@ def api_terrenos(request):
 
 
 # ----------------------------------------------------------------------
+# API PARA LISTAGEM DE PLANOS (NOVA)
+# ----------------------------------------------------------------------
+
+@login_required
+@require_http_methods(["GET"])
+def api_lista_planos(request):
+    """
+    API endpoint que retorna a lista dos Planos de Plantio mais recentes do usuário
+    (limitado a 5, excluindo RASCUNHOS).
+    """
+    try:
+        # Busca os 5 planos mais recentes que não estão em RASCUNHO
+        # Garante que o produto não é NULL
+        planos = PlanoPlantio.objects.filter(
+            proprietario=request.user
+        ).exclude(
+            status='RASCUNHO'
+        ).filter(
+            produto__isnull=False
+        ).select_related(
+            'terreno', 'produto'
+        ).order_by(
+            '-data_inicio'
+        )[:5] # Limita a 5
+
+        planos_list = []
+        for plano in planos:
+            # Tradução dos IDs do terreno para exibição
+            cidade_nome = get_city_name_from_id(plano.terreno.cidade)
+            estado_sigla = get_state_name_from_id(plano.terreno.estado)
+
+            planos_list.append({
+                'id': plano.id,
+                'nome': plano.nome,
+                'terreno_nome': plano.terreno.nome,
+                'produto_nome': plano.produto.nome if plano.produto else 'A definir',
+                'data_inicio': plano.data_inicio.strftime('%d/%m/%Y'),
+                'status': plano.get_status_display(), # Usa a tradução legível do status
+                'localizacao_display': f"{cidade_nome or 'N/A'} / {estado_sigla or 'N/A'}"
+            })
+
+        # Adiciona json_dumps_params={'ensure_ascii': False} para evitar problemas de codificação
+        return JsonResponse({'planos': planos_list}, status=200, json_dumps_params={'ensure_ascii': False})
+
+    except Exception as e:
+        return JsonResponse({'error': f'Erro interno ao listar planos: {str(e)}'}, status=500)
+
+
+# ----------------------------------------------------------------------
 # WIZARD DE PLANO DE PLANTIO - PONTO DE INÍCIO
 # ----------------------------------------------------------------------
 
 @login_required
 @require_http_methods(["GET"])
 def iniciar_wizard(request):
-    """
-    Inicia um novo Plano de Plantio (RASCUNHO) e redireciona para a Etapa 1.
-    """
+# ... (restante do código da view iniciar_wizard)
     try:
         terreno_id = request.GET.get('terreno_id')
 
@@ -130,6 +175,7 @@ def iniciar_wizard(request):
 @login_required
 @require_http_methods(["GET"])
 def etapa1_plano(request, plano_id):
+# ... (restante do código da view etapa1_plano)
     """
     Renderiza o template para a Seleção de Produto.
     """
@@ -190,6 +236,7 @@ def etapa1_plano(request, plano_id):
 @login_required
 @require_http_methods(["GET"])
 def api_buscar_ficha(request):
+# ... (restante do código da view api_buscar_ficha)
     """
     API para buscar os dados da Ficha Técnica (usada no planoplantio.html).
     CORREÇÃO: Estrutura o resultado plano do data_service em seções para o frontend.
@@ -258,6 +305,7 @@ def api_buscar_ficha(request):
 @login_required
 @require_http_methods(["POST"])
 def api_salvar_etapa1(request, plano_id):
+# ... (restante do código da view api_salvar_etapa1)
     """
     API para salvar a Etapa 1 (Seleção de Produto APENAS) e redirecionar para a página final.
     """
@@ -309,12 +357,12 @@ def api_salvar_etapa1(request, plano_id):
 
 # ----------------------------------------------------------------------
 # FASE 2: VIEW FINAL DE VISUALIZAÇÃO (planofinal.html)
-# CORRIGIDO: Agora estrutura a ficha_data
 # ----------------------------------------------------------------------
 
 @login_required
 @require_http_methods(["GET"])
 def planofinal_plano(request, plano_id):
+# ... (restante do código da view planofinal_plano)
     """
     Renderiza a página final de visualização do plano salvo (planofinal.html).
     CORRIGIDO: Estrutura os dados da Ficha Técnica e garante que a localização seja passada.

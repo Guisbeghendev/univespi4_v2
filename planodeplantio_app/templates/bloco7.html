@@ -1,46 +1,71 @@
 {% load static %}
 
-<!-- Bloco 7: Iniciar Plano de Plantio -->
-<div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-    <div class="flex items-center justify-between mb-4">
-        <h4 class="text-xl font-bold text-gray-800 flex items-center">
+<div class="dash-card">
+    <div style="margin-bottom: 15px;">
+        <h4 class="sub-title" style="text-align: left; margin: 0; border-bottom: 2px solid #2196F3; padding-bottom: 5px;">
             Iniciar Novo Plano de Plantio
         </h4>
     </div>
 
-    <p class="text-gray-600 mb-6">
+    <p style="color: #5D4037; margin-bottom: 20px; font-size: 1em;">
         Selecione um terreno cadastrado para iniciar a configuração detalhada do seu plano de safra.
     </p>
 
-    <div class="mb-5">
-        <label for="terrenoSelect" class="block text-sm font-medium text-gray-700 mb-2">Terrenos disponíveis:</label>
-        <select id="terrenoSelect" class="block w-full px-3 py-2 border border-gray-300 bg-gray-50 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition duration-150">
+    <div class="form-field">
+        <label for="terrenoSelect">Terrenos disponíveis:</label>
+        <select id="terrenoSelect" class="form-field-input">
             <option value="" disabled selected>Carregando terrenos...</option>
         </select>
     </div>
 
-    <div id="terrenoDetails" class="bg-gray-50 p-4 rounded-lg border border-dashed border-gray-300 mb-6 text-sm text-gray-700">
-        <p class="font-semibold mb-1">Detalhes do Terreno Selecionado:</p>
-        <ul class="space-y-1">
-            <li class="flex justify-between">
-                <span>Nome:</span> <span id="detailNome" class="font-medium text-gray-900">N/A</span>
+    <div id="terrenoDetails" class="terreno-details-box">
+        <p style="font-weight: bold; margin-bottom: 5px; font-size: 1em;">Detalhes do Terreno Selecionado:</p>
+        <ul style="list-style: none; padding: 0;">
+            <li style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9em;">
+                <span>Nome:</span> <span id="detailNome" style="font-weight: bold; color: #333;">N/A</span>
             </li>
-            <li class="flex justify-between">
-                <span>Tamanho:</span> <span id="detailTamanho" class="font-medium text-gray-900">0 ha</span>
+            <li style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9em;">
+                <span>Tamanho:</span> <span id="detailTamanho" style="font-weight: bold; color: #333;">0 ha</span>
             </li>
-            <li class="flex justify-between">
-                <span>Localização (Cidade):</span> <span id="detailLocalizacao" class="font-medium text-gray-900">N/A</span>
+            <li style="display: flex; justify-content: space-between; font-size: 0.9em;">
+                <span>Localização (Cidade):</span> <span id="detailLocalizacao" style="font-weight: bold; color: #333;">N/A</span>
             </li>
         </ul>
     </div>
 
-    <div>
-        <button id="selecionarBtn" disabled
-                class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out">
+    <div style="margin-top: 20px;">
+        <button id="selecionarBtn" type="submit" disabled
+                style="display: flex; align-items: center; justify-content: center;">
             <span id="btnText">Selecione um Terreno</span>
-            <span id="loadingSpinner" class="hidden ml-2 h-5 w-5 border-2 border-t-white border-green-200 rounded-full animate-spin"></span>
+            <span id="loadingSpinner" class="spinner hidden" style="margin: 0 0 0 10px; width: 20px; height: 20px;"></span>
         </button>
-        <p id="messageBox" class="text-center"></p>
+        <p id="messageBox"></p>
+    </div>
+</div>
+
+<div class="dash-card" style="margin-top: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #2196F3; padding-bottom: 5px;">
+        <h4 class="sub-title" style="text-align: left; margin: 0; font-size: 1.5em;">
+            Planos de Plantio Recentes
+        </h4>
+        <a href="{% url 'plano:api_lista_planos' %}" style="color: #4CAF50; text-decoration: none; font-weight: bold; transition: color 0.3s ease; font-size: 0.9em;">
+            Ver Todos &rarr;
+        </a>
+    </div>
+
+    <div id="planosListContainer" style="margin-top: 15px;">
+        <div id="planosLoading" style="text-align: center; padding: 15px; color: #5D4037;">
+            <span class="spinner" style="width: 25px; height: 25px; margin: 0 auto 10px;"></span>
+            <p style="font-size: 0.9em; margin: 0;">Carregando planos...</p>
+        </div>
+
+        <div id="planosEmpty" class="hidden" style="text-align: center; padding: 15px; border: 1px dashed #ccc; border-radius: 5px; background-color: #f9f9f9;">
+            <p style="font-weight: bold; color: #5D4037; margin-bottom: 5px;">Nenhum plano ativo encontrado.</p>
+            <p style="font-size: 0.8em; color: #666; margin: 0;">Use a seção acima para iniciar um novo plano.</p>
+        </div>
+
+        <ul id="planosList" style="list-style: none; padding: 0;">
+            </ul>
     </div>
 </div>
 
@@ -48,6 +73,10 @@
     // Definição das URLs do Django, antes do carregamento do arquivo JS
     const API_TERRENOS_URL = "{% url 'plano:api_terrenos' %}";
     const WIZARD_START_URL = "{% url 'plano:iniciar_wizard' %}";
+    // NOVO URL: API para listar planos
+    const API_LISTA_PLANOS_URL = "{% url 'plano:api_lista_planos' %}";
+    // URL para visualização do plano (para os links da lista)
+    // Usamos um placeholder '0' para ser substituído pelo JS
+    const PLANO_VISUALIZACAO_URL = "{% url 'plano:planofinal_plano' plano_id=0 %}";
 </script>
-<!-- CORREÇÃO: Removido o atributo 'defer' para garantir que o script só execute após a definição das URLs -->
 <script src="{% static 'planodeplantio_app/js/bloco7.js' %}"></script>
