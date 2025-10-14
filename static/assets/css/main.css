@@ -555,20 +555,28 @@ button[type="submit"]:disabled {
     }
 }
 
+/* CORREÇÃO: Usar Flexbox para empilhar DT e DD no mobile, garantindo largura total */
 .ficha-detail-item {
+    display: flex; /* Adicionado */
+    flex-direction: column; /* Adicionado: Empilha o rótulo (dt) e o valor (dd) */
     padding: 5px 0;
+    width: 100%; /* Garante que o item utilize 100% do seu slot no grid */
 }
 
 .ficha-detail-item dt {
     font-weight: bold;
     color: #4CAF50; /* Verde */
     margin-bottom: 2px;
+    width: 100%; /* Adicionado: Garante largura total */
 }
 
 .ficha-detail-item dd {
     margin-left: 0;
     font-size: 1em;
     color: #333;
+    width: 100%; /* Adicionado: Garante largura total */
+    word-break: break-word; /* Adicionado/Reforçado: Garante a quebra de palavras longas */
+    overflow-wrap: break-word; /* Adicionado/Reforçado: Garante a quebra de palavras longas */
 }
 
 

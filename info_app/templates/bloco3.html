@@ -9,36 +9,37 @@
          data-ficha-base-url="{% url 'info_app:api_ficha_tecnica_data' '__PRODUCT_NAME__' 0 %}"
          style="display: none;">
     </div>
+
     {# Card 5 - Filtros de Agropecuária #}
-<div class="dash-card">
-<h4>Filtros de Agropecuária</h4>
-<p>Selecione um produto para começar:</p>
+    <div class="filter-card-content">
+        <h4>Filtros de Agropecuária</h4>
+        <p>Selecione um produto para começar:</p>
 
-    <p>1. Selecione o Estado:</p>
-    <select id="state-select-info" class="form-field">
-        <option value="">Carregando estados...</option>
-    </select>
+        <p>1. Selecione o Estado:</p>
+        <select id="state-select-info" class="form-field">
+            <option value="">Carregando estados...</option>
+        </select>
 
-    <p>2. Selecione a Cidade:</p>
-    <select id="city-select-info" class="form-field" disabled>
-        <option value="">Selecione um estado primeiro</option>
-    </select>
+        <p>2. Selecione a Cidade:</p>
+        <select id="city-select-info" class="form-field" disabled>
+            <option value="">Selecione um estado primeiro</option>
+        </select>
 
-    <p>3. Selecione o Tipo de Cultivo:</p>
-    <select id="produto-select-info" class="form-field" disabled>
-        <option value="">Selecione uma cidade primeiro</option>
-    </select>
-    <div id="produto-error-message" style="color: red; margin-top: 5px; display: none;"></div>
-</div>
-{# Fim card5 #}
+        <p>3. Selecione o Tipo de Cultivo:</p>
+        <select id="produto-select-info" class="form-field" disabled>
+            <option value="">Selecione uma cidade primeiro</option>
+        </select>
+        <div id="produto-error-message" style="color: red; margin-top: 5px; display: none;"></div>
+    </div>
+    {# Fim card5 #}
 
-{# Card de Resultados #}
-<div class="dash-card">
-    <h4>Dados Detalhados (Ficha Técnica Completa)</h4>
-    <div id="results-display">
-        <p>Selecione um estado, cidade e cultivo para ver os dados.</p>
+    {# Card de Resultados #}
+    <div class="dash-card">
+        <h4>Dados Detalhados (Ficha Técnica Completa)</h4>
+        <div id="results-display">
+            <p>Selecione um estado, cidade e cultivo para ver os dados.</p>
         </div>
-</div>
-{# Fim card de Resultados #}
+    </div>
+    {# Fim card de Resultados #}
 
 </div>
