@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}AgroData - Configurar Plano de Plantio{% endblock %}
+
+{% block content %}
+    <div class="dash-card mx-auto max-w-7xl" style="margin-top: 20px; margin-bottom: 30px;">
+        <h1 class="main-title">Configurar Plano de Plantio</h1>
+
+        <!-- 1. Detalhes do Terreno Selecionado (Carregados via Contexto Django) -->
+        <div id="terreno-info-container" class="terreno-info-box-status">
+            {% if terreno_obj %}
+                <p><strong>Terreno:</strong> <span id="terreno-nome">{{ terreno_obj.nome|default:"N/A" }}</span></p>
+                <p><strong>Localização:</strong> <span id="terreno-cidade">{{ terreno_obj.cidade_nome_completo|default:'N/A' }}</span></p>
+                <p><strong>Tamanho:</strong> <span id="terreno-tamanho">{{ terreno_obj.area_total|default:'N/A' }} ha</span></p>
+                <p><strong>ID:</strong> <span id="terreno-id-display">{{ terreno_obj.pk|default:'N/A' }}</span></p>
+
+                <!-- Váriáveis para o JavaScript usar -->
+                <script>
+                    const INITIAL_TERRENO_DATA = {
+                        id: '{{ terreno_obj.pk|default:"null" }}',
+                        nome: '{{ terreno_obj.nome|default:"N/A" }}',
+                        cidade_id: '{{ terreno_obj.cidade|default:"null" }}', // ID IBGE
+                        cidade: '{{ terreno_obj.cidade_nome_completo|default:'N/A' }}',
+                        tamanho: '{{ terreno_obj.area_total|default:'N/A' }} ha'
+                    };
+                </script>
+            {% else %}
+                <!-- Fallback (caso o objeto não seja passado corretamente) -->
+                <p><strong>Terreno:</strong> <span id="terreno-nome">Erro ao carregar dados do Terreno.</span></p>
+                <p><strong>Localização:</strong> <span id="terreno-cidade">...</span></p>
+                <p><strong>Tamanho:</strong> <span id="terreno-tamanho">...</span></p>
+                <p><strong>ID:</strong> <span id="terreno-id-display">...</span></p>
+            {% endif %}
+        </div>
+
+        <!-- Container do Wizard (Esconde/Mostra as Etapas) -->
+        <div id="wizard-container">
+
+            <!-- ETAPA 1: SELEÇÃO DE CULTIVO -->
+            <div id="step-selection">
+
+                <!-- O Formulário será submetido ao view 'criar_plano_plantio' -->
+                <form id="plan-form" method="POST" action="{% url 'plano:criar_plano_plantio' %}">
+                    {% csrf_token %}
+                    <!-- Campos Ocultos para Submissão no Django -->
+                    <input type="hidden" name="terreno_id" id="hidden-terreno-id" value="{{ terreno_obj.pk|default:'' }}">
+                    <input type="hidden" name="produto_id" id="hidden-produto-id">
+
+                    <div class="plan-wizard-grid">
+
+                        <!-- Coluna 1: Filtros de Seleção de Produto -->
+                        <div class="filter-card">
+                            <h2 class="sub-title" style="text-align: left; margin-top: 0;">1. Escolha o Cultivo</h2>
+                            <p class="text-sm text-gray-600 mb-4" style="color: #5D4037;">
+                                Filtros automáticos aplicados para: <span id="cidade-nome-filtros" style="font-weight: bold; color: #4CAF50;">{{ terreno_obj.cidade_nome_completo|default:'N/A' }}</span>
+                            </p>
+
+                            <div class="form-field">
+                                <label for="produto-select-plano">Selecione o Tipo de Cultivo:</label>
+                                <select id="produto-select-plano" class="form-field-input" disabled>
+                                    <option value="">-- Carregando Cultivos Disponíveis --</option>
+                                    {% if produtos_disponiveis %}
+                                        {% for produto in produtos_disponiveis %}
+                                            <!-- Espera-se que produto seja um objeto com .id e .nome -->
+                                            <option value="{{ produto.id }}">{{ produto.nome }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <div id="produto-error-message" style="display: none;"></div>
+
+                            <button type="button" id="gerar-plano-btn" class="plan-action-btn-main" disabled>
+                                Pré-visualizar e Salvar Plano
+                            </button>
+
+                            <div id="loading-spinner" class="spinner" style="display: none;"></div>
+                        </div>
+
+                        <!-- Coluna 2: Visualização da Ficha Técnica (Auxílio à Decisão) -->
+                        <div class="dash-card">
+                            <h2 class="sub-title" style="text-align: left; margin-top: 0;">2. Detalhes da Ficha Técnica</h2>
+                            <div id="results-display">
+                                <p style="color: #666;">Selecione um cultivo para visualizar sua ficha técnica completa (Clima, Solo, Manejo).</p>
+                                <!-- A Ficha Técnica será injetada aqui -->
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div> <!-- Fim step-selection -->
+
+            <!-- ETAPA 2: PREVIEW FINAL (Visível após salvar/gerar) -->
+            <div id="step-preview" class="hidden" style="margin-top: 40px;">
+                <h2 class="main-title" style="font-size: 2.5em; text-decoration: none;">Plano de Plantio Criado com Sucesso!</h2>
+
+                <div id="plan-status-message" class="success-message-box">
+                    O plano foi salvo no sistema. Abaixo está a ficha técnica final associada ao seu terreno para revisão.
+                </div>
+
+                <h3 class="sub-title" style="text-align: left; margin-top: 0;">Preview do Plano Final:</h3>
+                <div id="plan-preview-display">
+                    <!-- A Ficha Técnica do cultivo escolhido será exibida aqui para revisão -->
+                </div>
+
+                <div id="final-controls" class="nav-control-buttons">
+                    <button onclick="handleEditPlan()">
+                        &#9998; Editar Plano (Voltar à Seleção)
+                    </button>
+                    <!-- Link para o Dashboard, conforme URL definida -->
+                    <a href="{% url 'agro_app:dashboard' %}" class="finalizar-btn">
+                        &#10003; Finalizar e Ir para Dashboard
+                    </a>
+                </div>
+            </div> <!-- Fim step-preview -->
+
+        </div> <!-- Fim wizard-container -->
+
+    </div>
+
+    <script>
+        // --------------------------------------------------------------------------
+        // Variáveis e Constantes
+        // --------------------------------------------------------------------------
+
+        // Variáveis globais (Inicialização via contexto Django ou fallback)
+        let currentTerreno = typeof INITIAL_TERRENO_DATA !== 'undefined' ? INITIAL_TERRENO_DATA : null;
+        let selectedFichaTecnica = null;
+
+        // Elementos DOM
+        const produtoSelect = document.getElementById('produto-select-plano');
+        const resultsDisplay = document.getElementById('results-display');
+        const gerarPlanoBtn = document.getElementById('gerar-plano-btn');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const planPreviewDisplay = document.getElementById('plan-preview-display');
+        const stepSelection = document.getElementById('step-selection');
+        const stepPreview = document.getElementById('step-preview');
+        const hiddenProdutoId = document.getElementById('hidden-produto-id');
+        const planForm = document.getElementById('plan-form');
+        const produtoErrorMessage = document.getElementById('produto-error-message');
+
+        // --------------------------------------------------------------------------
+        // MOCK DE DADOS DA FICHA TÉCNICA (Substitua por chamada AJAX real no Django)
+        // --------------------------------------------------------------------------
+
+        // Este mock simula o que o Django retornaria ao selecionar um produto
+        // Note: As expressões LaTeX para notação científica/matemática (ex: $20^\circ$C) são usadas conforme instrução.
+        const MOCK_DATA = {
+            fichaTecnica: {
+                'soja': { nome_cultivo: "Soja", ciclo_dias: "100-140 dias", melhor_epoca: "Outubro a Dezembro", necessidades_clima: "Temperatura ideal de $20^\circ$C a $30^\circ$C. Chuvas de $450$mm a $800$mm.", necessidades_solo: "Profundo, bem drenado, $pH$ entre $6.0$ e $7.0$.", pragas_e_doencas: ["Ferrugem Asiática (Phakopsora pachyrhizi)", "Mosca Branca (Bemisia tabaci)"], tecnicas_manejo: ["Rotação de culturas", "Monitoramento de pragas e doenças com aplicação de fungicidas específicos."] },
+                'cafe': { nome_cultivo: "Café Arábica", ciclo_dias: "Perene (produz após $3-5$ anos)", melhor_epoca: "Plantio em Outubro/Novembro", necessidades_clima: "Altitude elevada, temperatura média de $18^\circ$C a $22^\circ$C. Chuvas bem distribuídas.", necessidades_solo: "Rico em matéria orgânica, profundo e ácido.", pragas_e_doencas: ["Bicho Mineiro (Leucoptera coffeella)", "Cercospora (Cercospora coffeicola)"], tecnicas_manejo: ["Poda periódica para renovação", "Adubação balanceada e correção do solo (calagem)."] },
+                'milho': { nome_cultivo: "Milho (Safra)", ciclo_dias: "120-150 dias", melhor_epoca: "Setembro a Novembro (1ª Safra)", necessidades_clima: "Alta demanda hídrica, temperatura de $24^\circ$C a $30^\circ$C.", necessidades_solo: "Fértil, profundo, com boa retenção de umidade.", pragas_e_doencas: ["Lagarta do Cartucho (Spodoptera frugiperda)", "Cigarrinha do Milho (Dalbulus maidis)"], tecnicas_manejo: ["Tratamento de sementes com inseticidas", "Controle de plantas daninhas (mato)."] }
+            }
+        };
+
+        // Simula busca da Ficha Técnica via AJAX (DEVE SER AJUSTADO PARA O ENDPOINT REAL)
+        function fetchFichaTecnica(productId) {
+            // No ambiente Django real, você faria um `fetch` para uma view que retorna um JSON da ficha técnica.
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve(MOCK_DATA.fichaTecnica[productId] || null);
+                }, 400);
+            });
+        }
+
+        // --------------------------------------------------------------------------
+        // 1. FUNÇÕES DE RENDERIZAÇÃO
+        // --------------------------------------------------------------------------
+
+        /**
+         * Renderiza a Ficha Técnica no painel de resultados ou no preview.
+         */
+        function renderFichaTecnica(data, targetElement) {
+            if (!data || !data.nome_cultivo) {
+                targetElement.innerHTML = '<p style="color: #666;">Ficha técnica não encontrada.</p>';
+                return;
+            }
+
+            // Garante que o texto em português seja usado
+            const pragas = Array.isArray(data.pragas_e_doencas) ? data.pragas_e_doencas.map(p => `<li>${p}</li>`).join('') : '';
+            const manejo = Array.isArray(data.tecnicas_manejo) ? data.tecnicas_emanejo.map(t => `<li>${t}</li>`).join('') : '';
+
+            let html = `
+                <h3 style="color: #5D4037; margin-top: 0; padding-bottom: 10px; border-bottom: 1px dashed #ccc; font-size: 1.3em;">
+                    Cultivo Selecionado: ${data.nome_cultivo}
+                </h3>
+
+                <div class="ficha-detail-section">
+                    <div class="ficha-detail-title">Informações Gerais</div>
+                    <dl class="ficha-detail-grid">
+                        <div class="ficha-detail-item">
+                            <dt>Ciclo Estimado:</dt>
+                            <dd>${data.ciclo_dias}</dd>
+                        </div>
+                        <div class="ficha-detail-item">
+                            <dt>Época de Plantio Ideal:</dt>
+                            <dd>${data.melhor_epoca}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <div class="ficha-detail-section">
+                    <div class="ficha-detail-title">Necessidades de Clima e Solo</div>
+                    <dl class="ficha-detail-grid">
+                        <div class="ficha-detail-item full-width">
+                            <dt>Clima Ideal:</dt>
+                            <dd>${data.necessidades_clima}</dd>
+                        </div>
+                        <div class="ficha-detail-item full-width">
+                            <dt>Características do Solo:</dt>
+                            <dd>${data.necessidades_solo}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <div class="ficha-detail-section">
+                    <div class="ficha-detail-title">Manejo e Defesa</div>
+                    <div class="ficha-detail-item full-width">
+                        <dt>Principais Pragas/Doenças:</dt>
+                        <dd><ul>${pragas}</ul></dd>
+                    </div>
+                    <div class="ficha-detail-item full-width">
+                        <dt>Técnicas de Manejo Recomendadas:</dt>
+                        <dd><ul>${manejo}</ul></dd>
+                    </div>
+                </div>
+            `;
+            targetElement.innerHTML = html;
+        }
+
+
+        // --------------------------------------------------------------------------
+        // 2. FUNÇÕES DE LÓGICA E EVENTOS
+        // --------------------------------------------------------------------------
+
+        /**
+         * Lida com a seleção de um novo produto (cultivo).
+         */
+        async function handleProductSelection() {
+            const selectedProductId = produtoSelect.value;
+            selectedFichaTecnica = null;
+            resultsDisplay.innerHTML = '';
+            gerarPlanoBtn.disabled = true;
+            produtoErrorMessage.style.display = 'none';
+
+            if (selectedProductId) {
+                loadingSpinner.style.display = 'block';
+
+                try {
+                    const ficha = await fetchFichaTecnica(selectedProductId);
+
+                    if (ficha) {
+                        selectedFichaTecnica = ficha;
+                        // Armazena o ID do produto no campo oculto para submissão
+                        hiddenProdutoId.value = selectedProductId;
+                        renderFichaTecnica(ficha, resultsDisplay);
+                        gerarPlanoBtn.disabled = false;
+                    } else {
+                        resultsDisplay.innerHTML = '<p style="color: red;">Ficha técnica indisponível para este produto.</p>';
+                    }
+                } catch (error) {
+                    resultsDisplay.innerHTML = '<p style="color: red;">Erro ao carregar dados.</p>';
+                    console.error("Erro ao buscar ficha técnica:", error);
+                } finally {
+                    loadingSpinner.style.display = 'none';
+                }
+            } else {
+                resultsDisplay.innerHTML = '<p style="color: #666;">Selecione um cultivo para visualizar sua ficha técnica completa (Clima, Solo, Manejo).</p>';
+            }
+        }
+
+        /**
+         * Lida com a submissão do formulário/botão de Geração de Plano.
+         * No Django, isso faria o POST para salvar o plano e retornar.
+         * Aqui, simulamos o sucesso e avançamos para o Preview.
+         */
+        function handleGeneratePlan(event) {
+            // Em um ambiente Django real, o formulário seria submetido aqui via POST (planForm.submit())
+
+            // SIMULAÇÃO DO POST e sucesso
+            event.preventDefault(); // Impede submissão real para a URL
+
+            if (!selectedFichaTecnica) {
+                produtoErrorMessage.textContent = "Por favor, selecione um produto antes de gerar o plano.";
+                produtoErrorMessage.style.display = 'block';
+                return;
+            }
+
+            loadingSpinner.style.display = 'block';
+            gerarPlanoBtn.disabled = true;
+
+            // Simula latência de salvamento no backend/BD
+            setTimeout(() => {
+                loadingSpinner.style.display = 'none';
+
+                // 1. Exibe a Ficha Técnica no Preview
+                renderFichaTecnica(selectedFichaTecnica, planPreviewDisplay);
+
+                // 2. Transiciona para a Etapa de Preview
+                stepSelection.classList.add('hidden');
+                stepPreview.classList.remove('hidden');
+
+                alert("Plano de Plantio Criado e Salvo com Sucesso!"); // Alerta temporário para feedback
+            }, 1000);
+        }
+
+        /**
+         * Retorna à etapa de seleção (Edição do Plano).
+         */
+        function handleEditPlan() {
+            stepPreview.classList.add('hidden');
+            stepSelection.classList.remove('hidden');
+            gerarPlanoBtn.disabled = false; // Permite nova submissão/geração
+        }
+
+
+        // --------------------------------------------------------------------------
+        // 3. INICIALIZAÇÃO DE EVENT LISTENERS
+        // --------------------------------------------------------------------------
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Carregar o estado inicial (caso o produto já esteja selecionado via contexto Django,
+            // embora neste template ele não esteja, é bom ter o listener)
+
+            // Ativa o botão de seleção após o carregamento simulado (MOCK)
+            produtoSelect.disabled = false;
+            produtoSelect.options[0].textContent = "-- Selecione o Tipo de Cultivo --";
+
+            // Adiciona listeners
+            produtoSelect.addEventListener('change', handleProductSelection);
+            gerarPlanoBtn.addEventListener('click', handleGeneratePlan);
+        });
+    </script>
+{% endblock %}

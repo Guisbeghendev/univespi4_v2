@@ -13,6 +13,6 @@ urlpatterns = [
     path('clima/', include('climalocal_app.urls')),
     path('info/', include('info_app.urls')),
     path('api/terrenos/', include('terreno_app.urls', namespace='terreno_app')),
-    path('plano/', include('planodeplantio_app.urls')),
+    path('plano/', include('planodeplantio_app.urls', namespace='plano')),
 
 ]

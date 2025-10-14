@@ -496,3 +496,195 @@ button[type="submit"]:disabled {
     color: #dc3545; /* Vermelho padrão para mensagens de erro */
     font-weight: bold;
 }
+/* Novo estilo para o spinner de carregamento (CSS puro) */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #4CAF50; /* Cor primária do projeto (verde) */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 10px auto;
+}
+
+/* --- Estilos para o Bloco 3: Ficha Técnica de Cultivo (Renderizada por JS) --- */
+
+#produto-error-message {
+    color: #dc3545; /* Vermelho */
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    display: none; /* O JS controla a exibição */
+}
+
+.ficha-detail-section {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+
+.ficha-detail-title {
+    font-size: 1.2em;
+    color: #5D4037; /* Marrom */
+    border-bottom: 2px solid #5D4037;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.ficha-detail-grid {
+    display: grid;
+    /* Padrão Mobile: 1 coluna para legibilidade */
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+}
+
+@media (min-width: 600px) {
+    .ficha-detail-grid {
+        /* Desktop/Tablet: 2 colunas */
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.ficha-detail-item {
+    padding: 5px 0;
+}
+
+.ficha-detail-item dt {
+    font-weight: bold;
+    color: #4CAF50; /* Verde */
+    margin-bottom: 2px;
+}
+
+.ficha-detail-item dd {
+    margin-left: 0;
+    font-size: 1em;
+    color: #333;
+}
+
+
+/* -------------------------------------------------------------------------------------------------------------------
+   NOVAS CLASSES DE ESTILO PARA O WIZARD (planoplantio.html)
+   Utiliza a paleta de cores definida: #5D4037 (Marrom), #4CAF50 (Verde), #FFD700 (Amarelo), #2196F3 (Azul).
+------------------------------------------------------------------------------------------------------------------- */
+
+/* 1. Grid Layout para Seleção/Preview (1fr / 2fr split) */
+.plan-wizard-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Mobile First: Coluna única */
+    gap: 20px;
+}
+@media (min-width: 992px) {
+    .plan-wizard-grid {
+        grid-template-columns: 1fr 2fr; /* Desktop: 1/3 e 2/3 */
+    }
+}
+
+/* 2. Terreno Info Box (Baseado na paleta Azul Pastel) */
+.terreno-info-box-status {
+    background-color: #E0F7FA; /* Azul Pastel */
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border-left: 5px solid #2196F3; /* Azul de destaque */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+}
+.terreno-info-box-status p {
+    margin: 5px 10px;
+    color: #5D4037; /* Marrom */
+}
+.terreno-info-box-status strong {
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+/* 3. Botão de Ação Principal (Verde/Amarelo Hover) */
+.plan-action-btn-main {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50; /* Verde */
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+    margin-top: 20px;
+}
+.plan-action-btn-main:hover:not(:disabled) {
+    background-color: #FFD700; /* Amarelo */
+    color: #5D4037; /* Marrom */
+    transform: translateY(-2px);
+}
+.plan-action-btn-main:disabled {
+    background-color: #ccc !important;
+    cursor: not-allowed;
+    opacity: 0.8;
+    transform: none;
+}
+
+/* 4. Controles de Navegação Final (Voltar/Finalizar) */
+.nav-control-buttons {
+    margin-top: 30px;
+    text-align: center;
+}
+.nav-control-buttons button,
+.nav-control-buttons a {
+    padding: 10px 20px;
+    border: 1px solid #5D4037; /* Marrom */
+    border-radius: 5px;
+    background-color: #fff;
+    color: #5D4037;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 10px;
+    display: inline-block;
+    text-decoration: none;
+    font-family: inherit; /* Garante que os botões usem a fonte Ubuntu */
+}
+.nav-control-buttons a.finalizar-btn,
+.nav-control-buttons button.finalizar-btn {
+    background-color: #4CAF50; /* Verde */
+    color: #fff;
+    border-color: #4CAF50;
+}
+.nav-control-buttons a.finalizar-btn:hover,
+.nav-control-buttons button.finalizar-btn:hover {
+    background-color: #FFD700; /* Amarelo */
+    color: #5D4037;
+}
+
+/* 5. Estilização específica do Display da Ficha Técnica (Reuso de estilos existentes do main.css) */
+#results-display, #plan-preview-display {
+    min-height: 200px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    border: 1px dashed #ccc;
+}
+
+/* Classe para mensagem de sucesso (preview) */
+.success-message-box {
+    background-color: #e8f5e9; /* Um verde bem suave */
+    color: #2e7d32; /* Um verde escuro */
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid #4CAF50; /* Verde */
+    margin-bottom: 25px;
+    font-weight: bold;
+}

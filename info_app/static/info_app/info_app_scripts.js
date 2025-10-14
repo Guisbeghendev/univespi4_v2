@@ -1,71 +1,83 @@
-// scripts/info_app_scripts.js
 // Lógica de AJAX para o Bloco 3: Filtros de Consulta e Exibição da Ficha Técnica.
 
 document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------------------------
-    // 1. Definição dos Elementos DOM (Usando IDs com -info para evitar conflito)
+    // 1. Definição dos Elementos DOM e Extração de URLs Dinâmicas (Django)
     // --------------------------------------------------------------------------
     const stateSelect = document.getElementById('state-select-info');
     const citySelect = document.getElementById('city-select-info');
     const produtoSelect = document.getElementById('produto-select-info');
     const resultsDisplay = document.getElementById('results-display');
     const produtoError = document.getElementById('produto-error-message');
+    const apiUrlsDiv = document.getElementById('api-urls');
 
-    // Função auxiliar para buscar o CSRF token
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
+    // ** CORREÇÃO CRÍTICA: Adicionar verificação para evitar erro de runtime **
+    if (!apiUrlsDiv) {
+        console.error("ERRO CRÍTICO: Elemento #api-urls não encontrado. O script não pode iniciar. Verifique sua template HTML.");
+        if (stateSelect) {
+            stateSelect.innerHTML = '<option value="">Erro de Configuração (HTML missing #api-urls)</option>';
+            stateSelect.disabled = true;
         }
-        return cookieValue;
+        return; // Encerra a execução do script se o elemento de configuração base falhar.
     }
 
-    // --------------------------------------------------------------------------
-    // 2. Funções de Carregamento de Dados
-    // --------------------------------------------------------------------------
+    // Extrai as URLs dinâmicas do Django (Corrigido para usar os atributos do DOM)
+    const statesUrl = apiUrlsDiv.getAttribute('data-states-url');
+    const citiesBaseUrl = apiUrlsDiv.getAttribute('data-cities-base-url');
+    const productsBaseUrl = apiUrlsDiv.getAttribute('data-products-base-url');
+    const fichaBaseUrl = apiUrlsDiv.getAttribute('data-ficha-base-url');
+
+
+    // Função utilitária para exibir mensagens de status e loading
+    function updateResultsStatus(message, isError = false) {
+        let style = isError ? "color: #dc3545; font-weight: bold;" : "color: #5D4037;";
+        let spinner = '';
+
+        if (message.includes('Carregando') || message.includes('Buscando')) {
+            // Reutiliza o estilo de spinner do CSS global (necessário que este CSS esteja carregado no HTML)
+            spinner = '<div class="spinner"></div>';
+            style += ' text-align: center;';
+        }
+        resultsDisplay.innerHTML = `<div style="${style}">${spinner}<p>${message}</p></div>`;
+    }
 
     /**
      * Limpa e preenche um <select> com novas opções.
-     * @param {HTMLElement} selectElement - O elemento <select> a ser preenchido.
-     * @param {Array} data - Array de objetos {id: ..., nome: ...}.
-     * @param {string} defaultMessage - Mensagem padrão.
-     * @param {boolean} disable - Se o select deve ser desativado.
      */
     function populateSelect(selectElement, data, defaultMessage, disable = false) {
         selectElement.innerHTML = '';
         selectElement.disabled = disable;
+        // Adiciona um estilo leve para indicar estado desabilitado
+        selectElement.style.backgroundColor = disable ? '#eee' : '#fff';
 
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = defaultMessage;
+        defaultOption.selected = true;
         selectElement.appendChild(defaultOption);
 
         data.forEach(item => {
             const option = document.createElement('option');
-            option.value = item.id;
+            // Para Produtos, o ID é o NOME do produto (string) no template original
+            option.value = item.id || item.nome;
             option.textContent = item.nome;
             selectElement.appendChild(option);
         });
     }
 
+    // --------------------------------------------------------------------------
+    // 2. Funções de Carregamento de Dados (Usando as URLs Dinâmicas)
+    // --------------------------------------------------------------------------
+
     /**
-     * Busca os estados na API do IBGE (via view do agro_app) e preenche o select.
+     * Busca os estados e preenche o select.
      */
     async function loadStates() {
-        // CORREÇÃO: Usando o prefixo /dashboard/ conforme o mapeamento do urls.py principal
-        const url = "/dashboard/api/states/";
         stateSelect.innerHTML = '<option value="">Carregando estados...</option>';
+        stateSelect.disabled = true;
 
         try {
-            const response = await fetch(url);
+            const response = await fetch(statesUrl);
             if (!response.ok) throw new Error(`Falha ao carregar estados. Status: ${response.status}`);
             const states = await response.json();
 
@@ -74,21 +86,21 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Erro ao carregar estados:", error);
             stateSelect.innerHTML = '<option value="">Erro ao carregar</option>';
-            stateSelect.disabled = true;
         }
     }
 
     /**
-     * Busca as cidades na API do IBGE (via view do agro_app) e preenche o select.
-     * @param {number} stateId - ID do estado selecionado.
+     * Busca as cidades e preenche o select.
      */
     async function loadCities(stateId) {
-        // CORREÇÃO: Usando o prefixo /dashboard/
-        const url = `/dashboard/api/cities/${stateId}/`;
+        // Usa a URL base e substitui o placeholder dinâmico '0' pelo ID do estado
+        const url = citiesBaseUrl.replace('/0/', `/${stateId}/`);
+
         citySelect.innerHTML = '<option value="">Carregando cidades...</option>';
         citySelect.disabled = true;
-        produtoSelect.innerHTML = '<option value="">Selecione uma cidade primeiro</option>';
-        produtoSelect.disabled = true;
+
+        // Reset dos selects dependentes
+        populateSelect(produtoSelect, [], "Selecione uma cidade primeiro", true);
 
         if (!stateId) {
             populateSelect(citySelect, [], "Selecione um estado primeiro", true);
@@ -105,21 +117,19 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(`Erro ao carregar cidades para o estado ${stateId}:`, error);
             citySelect.innerHTML = '<option value="">Erro ao carregar</option>';
-            citySelect.disabled = true;
         }
     }
 
     /**
-     * Busca os produtos/cultivos no serviço de dados (via view do info_app) e preenche o select.
-     * Esta view usa a nova rota do info_app.
-     * @param {number} cityId - ID da cidade selecionada.
+     * Busca os produtos/cultivos e preenche o select.
      */
     async function loadProducts(cityId) {
-        // Rota API do NOVO info_app (O prefixo /info/ está correto, pois está mapeado no urls.py principal)
-        const url = `/info/api/products/${cityId}/`;
+        // Usa a URL base e substitui o placeholder dinâmico '0' pelo ID da cidade
+        const url = productsBaseUrl.replace('/0/', `/${cityId}/`);
+
         produtoSelect.innerHTML = '<option value="">Carregando produtos...</option>';
         produtoSelect.disabled = true;
-        resultsDisplay.innerHTML = '<p>Selecione um estado, cidade e cultivo para ver os dados.</p>';
+        updateResultsStatus('Selecione um estado, cidade e cultivo para ver os dados.');
         produtoError.style.display = 'none';
 
         if (!cityId) {
@@ -137,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 produtoError.style.display = 'block';
                 populateSelect(produtoSelect, [], "Nenhum produto disponível", true);
             } else {
+                // Nota: O campo .id ou .nome do produto deve ser o nome (string) do produto
                 populateSelect(produtoSelect, products, "Selecione o Cultivo", false);
             }
 
@@ -145,7 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
             produtoError.textContent = "Erro ao conectar com o serviço de dados.";
             produtoError.style.display = 'block';
             produtoSelect.innerHTML = '<option value="">Erro ao carregar</option>';
-            produtoSelect.disabled = true;
         }
     }
 
@@ -154,47 +164,50 @@ document.addEventListener('DOMContentLoaded', () => {
      * Busca e exibe os dados completos da Ficha Técnica.
      */
     async function loadFichaTecnica() {
-        const productId = produtoSelect.value;
+        const productName = produtoSelect.value;
         const cityId = citySelect.value;
 
-        if (!productId || !cityId) {
-            resultsDisplay.innerHTML = '<p>Selecione um estado, cidade e cultivo para ver os dados.</p>';
+        if (!productName || !cityId) {
+            updateResultsStatus('Selecione um estado, cidade e cultivo para ver os dados.');
             return;
         }
 
-        // Rota API do NOVO info_app para a Ficha Técnica (O prefixo /info/ está correto)
-        const url = `/info/api/ficha/${productId}/${cityId}/`;
-        resultsDisplay.innerHTML = '<p class="text-center">Carregando Ficha Técnica...</p>';
+        // O nome do produto deve ser URI-encoded para ser seguro na URL
+        const encodedProductName = encodeURIComponent(productName);
+
+        // Substitui o placeholder '__PRODUCT_NAME__' e o ID da cidade
+        const url = fichaBaseUrl
+            .replace('__PRODUCT_NAME__', encodedProductName)
+            .replace('/0/', `/${cityId}/`);
+
+        updateResultsStatus('Carregando Ficha Técnica...');
 
         try {
             const response = await fetch(url);
 
-            if (!response.ok) {
-                // Se o servidor retornar 404 (Not Found) ou 500 (Server Error)
-                resultsDisplay.innerHTML = '<p style="color: red;">Erro: Ficha Técnica não encontrada para a seleção.</p>';
+            if (response.status === 404) {
+                updateResultsStatus('Erro: Ficha Técnica não encontrada para a seleção.', true);
                 return;
+            }
+            if (!response.ok) {
+                throw new Error(`Erro ${response.status}`);
             }
 
             const fichaData = await response.json();
 
-            // --------------------------------------------------------
-            // 3. Renderização da Ficha Técnica Completa
-            // --------------------------------------------------------
-
+            // Renderização da Ficha Técnica Completa
             const html = renderFichaTecnica(fichaData);
             resultsDisplay.innerHTML = html;
 
         } catch (error) {
             console.error("Erro ao buscar Ficha Técnica:", error);
-            resultsDisplay.innerHTML = '<p style="color: red;">Erro de conexão ao buscar os dados detalhados.</p>';
+            updateResultsStatus('Erro de conexão ao buscar os dados detalhados.', true);
         }
     }
 
     /**
-     * Converte o objeto Ficha Técnica em HTML formatado.
-     * (Esta função exibirá o DOBRO dos dados, conforme a sua instrução)
-     * @param {Object} data - Objeto contendo os dados da Ficha Técnica.
-     * @returns {string} HTML formatado.
+     * Converte o objeto Ficha Técnica em HTML formatado, utilizando as classes CSS
+     * específicas definidas no template para manter a separação de estilos.
      */
     function renderFichaTecnica(data) {
         const product_name = data.produto || 'N/A';
@@ -214,19 +227,19 @@ document.addEventListener('DOMContentLoaded', () => {
             {
                 title: 'Dados Climáticos e de Cultivo',
                 fields: [
-                    { label: 'Temperatura Ideal (Média °C)', value: `${data.temperatura_ideal_c || 'N/A'} °C` },
-                    { label: 'Precipitação Mínima (mm)', value: `${data.precipitacao_min_mm || 'N/A'} mm` },
-                    { label: 'Altitude Média Ideal (m)', value: `${data.altitude_media_m || 'N/A'} m` },
-                    { label: 'Período de Plantio (Sugestão)', value: data.periodo_plantio_sugerido || 'N/A' }
+                    { label: 'Temperatura Ideal (Média)', value: `${data.temperatura_ideal_c || 'N/A'} °C` },
+                    { label: 'Precipitação Mínima', value: `${data.precipitacao_min_mm || 'N/A'} mm` },
+                    { label: 'Altitude Média Ideal', value: `${data.altitude_media_m || 'N/A'} m` },
+                    { label: 'Período de Plantio', value: data.periodo_plantio_sugerido || 'N/A' }
                 ]
             },
             {
                 title: 'Produtividade e Recursos',
                 fields: [
-                    { label: 'Produtividade Média (kg/ha)', value: `${data.produtividade_media_kg_ha || 'N/A'} kg/ha` },
-                    { label: 'Necessidade Hídrica (Total mm)', value: `${data.necessidade_hidrica_total_mm || 'N/A'} mm` },
+                    { label: 'Produtividade Média', value: `${data.produtividade_media_kg_ha || 'N/A'} kg/ha` },
+                    { label: 'Necessidade Hídrica Total', value: `${data.necessidade_hidrica_total_mm || 'N/A'} mm` },
                     { label: 'Fertilizante Essencial', value: data.fertilizante_essencial || 'Não especificado' },
-                    { label: 'Tempo de Colheita (Meses)', value: `${data.tempo_colheita_meses || 'N/A'} meses` }
+                    { label: 'Tempo de Colheita', value: `${data.tempo_colheita_meses || 'N/A'} meses` }
                 ]
             },
             {
@@ -240,18 +253,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         ];
 
-        let htmlContent = `<h5 class="sub-title">${product_name} em ${city_name}</h5>`;
+        let htmlContent = `<h5 class="sub-title" style="font-size: 1.5em;">${product_name} em ${city_name}</h5>`;
 
         sections.forEach(section => {
-            htmlContent += `<div style="margin-top: 20px; padding-top: 10px; border-top: 1px dashed #ccc;">`;
-            htmlContent += `<h6 style="color: #5D4037; font-weight: bold; margin-bottom: 10px;">${section.title}</h6>`;
-            htmlContent += `<dl style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">`;
+            htmlContent += `<div class="ficha-detail-section">`;
+            htmlContent += `<h6 class="ficha-detail-title">${section.title}</h6>`;
+            // Aplica a classe de grid responsiva do template
+            htmlContent += `<dl class="ficha-detail-grid">`;
 
             section.fields.forEach(field => {
+                // Aplica a classe de item de detalhe do template
                 htmlContent += `
-                    <div style="padding: 5px; background-color: #f0f0f0; border-radius: 5px;">
-                        <dt style="font-weight: 600; color: #4CAF50; font-size: 0.9em;">${field.label}:</dt>
-                        <dd style="margin-left: 0; font-size: 1em;">${field.value}</dd>
+                    <div class="ficha-detail-item">
+                        <dt>${field.label}:</dt>
+                        <dd>${field.value}</dd>
                     </div>
                 `;
             });
@@ -263,34 +278,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --------------------------------------------------------------------------
-    // 4. Configuração dos Event Listeners
+    // 3. Configuração dos Event Listeners e Inicialização
     // --------------------------------------------------------------------------
 
-    // Ao selecionar um estado, carrega as cidades
     stateSelect.addEventListener('change', (e) => {
         const stateId = e.target.value;
         loadCities(stateId);
         // Reseta os demais selects e o display de resultados ao mudar o estado
         populateSelect(produtoSelect, [], "Selecione uma cidade primeiro", true);
-        resultsDisplay.innerHTML = '<p>Selecione um estado, cidade e cultivo para ver os dados.</p>';
+        updateResultsStatus('Selecione um estado, cidade e cultivo para ver os dados.');
         produtoError.style.display = 'none';
     });
 
-    // Ao selecionar uma cidade, carrega os produtos
     citySelect.addEventListener('change', (e) => {
         const cityId = e.target.value;
         loadProducts(cityId);
         // Reseta o display de resultados ao mudar a cidade
-        resultsDisplay.innerHTML = '<p>Selecione um estado, cidade e cultivo para ver os dados.</p>';
+        updateResultsStatus('Selecione um estado, cidade e cultivo para ver os dados.');
     });
 
-    // Ao selecionar um produto, carrega a Ficha Técnica
     produtoSelect.addEventListener('change', () => {
-        loadFichaTecnica();
+        if (produtoSelect.value) {
+            produtoError.style.display = 'none';
+            loadFichaTecnica();
+        }
     });
 
-    // --------------------------------------------------------------------------
-    // 5. Inicialização
-    // --------------------------------------------------------------------------
+    // Inicialização: carrega os estados ao iniciar a página
     loadStates();
 });

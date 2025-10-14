@@ -1,22 +1,26 @@
 from django.urls import path
 from . import views
 
+# Define o namespace do aplicativo. É obrigatório para o uso de {% url 'info_app:...' %}
 app_name = 'info_app'
 
 urlpatterns = [
-    # Rota principal para a página de consulta de dados agropecuários (Onde fica o Bloco 3)
+    # Rota principal que carrega o template HTML (onde o JS roda)
     path('consulta/', views.info_consulta, name='info_consulta'),
 
     # ----------------------------------------------------------------------
-    # Rotas de API para AJAX
+    # Rotas de API para o JavaScript consumir
     # ----------------------------------------------------------------------
 
-    # API para carregar dinamicamente o select de 'Cultivo' (produto)
-    # Ex: /info/api/products/123456/
+    # 1. Busca todos os estados (não precisa de argumentos dinâmicos)
+    path('api/states/', views.get_all_states, name='api_states'),
+
+    # 2. Busca cidades de um estado específico (usa o ID do estado)
+    path('api/cities/<int:state_id>/', views.get_cities_for_state, name='api_cities'),
+
+    # 3. Busca produtos disponíveis em uma cidade (usa o ID da cidade)
     path('api/products/<int:city_id>/', views.get_products_for_filter, name='api_products_for_filter'),
 
-    # API para buscar os dados COMPLETOS da Ficha Técnica (Resultado final da pesquisa)
-    # CORREÇÃO: product_id alterado para product_name (string) para aceitar 'LARANJA', 'BORRACHA', etc.
-    # Ex: /info/api/ficha/LARANJA/123456/ (product_name / city_id)
+    # 4. Busca os dados da Ficha Técnica (usa o nome do produto e o ID da cidade)
     path('api/ficha/<str:product_name>/<int:city_id>/', views.get_ficha_tecnica_data, name='api_ficha_tecnica_data'),
 ]
