@@ -2,44 +2,53 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
 from .forms import CustomUserCreationForm
-from django.db import IntegrityError  # Necessário para debug de erro de DB/Signal
+from django.db import IntegrityError
+import sys  # Importe o módulo sys para forçar a saída de log no WSGI
 
 
 def index(request):
     """
     Renderiza a página inicial do site.
     """
-    # Usando 'index.html' conforme a sua nota
     return render(request, 'index.html')
 
 
 @require_http_methods(["GET", "POST"])
 def signup_view(request):
+    # Função auxiliar para escrever no log do Apache via sys.stderr
+    def log_error(message):
+        sys.stderr.write(f"[AGRODATA-DEBUG] {message}\n")
+
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
 
-            # --- BLOCO DE DEBUG PARA SALVAMENTO ---
+        if form.is_valid():
+            # 1. VALIDAÇÃO OK. Tenta salvar (BLOCO QUE DEVE EXECUTAR O LOG)
             try:
                 # Tenta salvar o usuário (disparando o signal)
                 user = form.save()
 
-                # Se o salvamento for bem-sucedido, redireciona
-                # Esta mensagem aparece no console do servidor
-                print(f"SUCESSO: Usuário '{user.username}' cadastrado. Redirecionando...")
+                # LOG DE SUCESSO
+                log_error(f"SUCESSO: Usuário '{user.username}' cadastrado. Redirecionando...")
                 return redirect(reverse('login'))
 
             except IntegrityError as e:
-                # Captura erros de banco de dados (ex: NOT NULL constraint falha no Profile)
-                print("ERRO CRÍTICO (IntegrityError): Falha ao salvar no banco de dados. Detalhe:", e)
+                # LOG DE ERRO CRÍTICO DE BANCO DE DADOS
+                log_error(f"ERRO CRÍTICO (IntegrityError): Falha ao salvar no DB. Detalhe: {e}")
 
             except Exception as e:
-                # Captura qualquer outro erro, geralmente do signal de Profile
-                print("ERRO CRÍTICO (Geral): Falha no processo de salvamento. Detalhe:", e)
+                # LOG DE ERRO GERAL (Geralmente no signal de Profile)
+                log_error(f"ERRO CRÍTICO (Geral): Falha no processo de salvamento. Detalhe: {e}")
 
-            # Se o try/except capturar um erro, o código continua e o formulário é reexibido.
-            print("Tentativa de cadastro falhou. Favor verificar o log para o erro.")
-            # --- FIM DO BLOCO DE DEBUG ---
+            # Se o try/except capturar um erro
+            log_error("Tentativa de cadastro falhou no TRY/EXCEPT. Formulário reexibido.")
+
+        else:
+            # 2. SE A VALIDAÇÃO FALHAR (O PONTO DE FALHA MAIS PROVÁVEL)
+            # Imprime os erros do formulário diretamente no log do Apache
+            log_error("--- ERRO DE VALIDAÇÃO DO FORMULÁRIO ---")
+            log_error(str(form.errors))
+            log_error("---------------------------------------")
 
     else:
         form = CustomUserCreationForm()
