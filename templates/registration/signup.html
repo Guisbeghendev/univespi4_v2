@@ -7,6 +7,14 @@
     <form method="post">
         {% csrf_token %}
 
+        {% if form.non_field_errors %}
+            <div id="messageBox" style="margin-bottom: 20px;">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <div class="form-field">
             {{ form.username.label_tag }}
             {{ form.username }}
