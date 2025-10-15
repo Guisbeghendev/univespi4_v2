@@ -5,7 +5,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         labels = {
             'username': 'Nome de Usuário',
-            'password': 'Senha',
+            # A linha 'password': 'Senha' foi removida.
             'password2': 'Confirme a Senha',
         }
         help_texts = {
