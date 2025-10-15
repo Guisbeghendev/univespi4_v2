@@ -15,13 +15,10 @@ def index(request):
 
 @require_http_methods(["GET", "POST"])
 def signup_view(request):
-    """
-    View para cadastro de usuário usando CustomUserCreationForm.
-    """
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            form.save() # Deve funcionar AGORA que models.py está corrigido
             return redirect(reverse('login'))
     else:
         form = CustomUserCreationForm()

@@ -80,17 +80,20 @@ class Profile(models.Model):
 # Sinal para criar/salvar automaticamente o Profile quando um User é criado/salvo
 @receiver(post_save, sender=User)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
-    # CORREÇÃO: Apenas cria se for a primeira vez (created=True)
+    # 1. Cria o Profile APENAS se o usuário for novo (created=True)
     if created:
         Profile.objects.create(user=instance)
-    # CORREÇÃO: Apenas salva o perfil se não foi criado (updates)
-    else:
-        # Verifica se o atributo 'profile' existe antes de tentar salvar
-        if hasattr(instance, 'profile'):
-            instance.profile.save()
+
+    # 2. Em ambos os casos (criação ou atualização), garante que o Profile seja salvo.
+    # O Django é inteligente o suficiente para gerenciar isso sem causar recursão
+    # no post_save do User.
+    # O check 'if hasattr(instance, 'profile')' não é estritamente necessário
+    # aqui, mas adicioná-lo torna o código mais seguro em alguns cenários.
+    if hasattr(instance, 'profile'):
+        instance.profile.save()
 
 
-# --- MODELO TERRENO (LAND/PLOT) ---
+    # --- MODELO TERRENO (LAND/PLOT) ---
 # Registra as áreas de plantio e armazena sua localização específica.
 class Terreno(models.Model):
     """
