@@ -80,11 +80,14 @@ class Profile(models.Model):
 # Sinal para criar/salvar automaticamente o Profile quando um User é criado/salvo
 @receiver(post_save, sender=User)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
+    # CORREÇÃO: Apenas cria se for a primeira vez (created=True)
     if created:
         Profile.objects.create(user=instance)
-    # Garante que, se o perfil existir, ele seja salvo
-    if hasattr(instance, 'profile'):
-        instance.profile.save()
+    # CORREÇÃO: Apenas salva o perfil se não foi criado (updates)
+    else:
+        # Verifica se o atributo 'profile' existe antes de tentar salvar
+        if hasattr(instance, 'profile'):
+            instance.profile.save()
 
 
 # --- MODELO TERRENO (LAND/PLOT) ---
