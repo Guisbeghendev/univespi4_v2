@@ -1,25 +1,25 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
-from django.forms import PasswordInput  # Adicionar esta importação
+from django.forms import PasswordInput
 
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
-        fields = ('username', 'password', 'password2')  # Manter esta linha
+        # CORREÇÃO: UserCreationForm usa 'password1' e 'password2'
+        fields = ('username', 'password1', 'password2')
 
         labels = {
             'username': 'Nome de Usuário',
-            # 'password' (Senha) continua fora para evitar a falha de renderização.
+            # CORREÇÃO: Definindo o label para o campo 'password1'
+            'password1': 'Senha',
             'password2': 'Confirme a Senha',
         }
         help_texts = {
             'username': 'Obrigatório. 150 caracteres ou menos. Apenas letras, dígitos e @/./+/-/_.',
         }
 
-        # NOVO: FORÇA O TIPO DE INPUT PARA PASSWORD
         widgets = {
-            # O nome do campo no UserCreationForm é 'password'
-            'password': PasswordInput(),
-            # Garantir que password2 também use o widget correto, embora já estivesse funcionando
+            # CORREÇÃO: O widget deve ser aplicado ao campo 'password1'
+            'password1': PasswordInput(),
             'password2': PasswordInput(),
         }
