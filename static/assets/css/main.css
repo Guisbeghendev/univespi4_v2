@@ -868,3 +868,28 @@ button[type="submit"]:disabled {
     margin-bottom: 25px;
     font-weight: bold;
 }
+
+/* --- Estilos Adicionais para o Footer --- */
+
+/* Estiliza os links no footer (já definido para ser branco no pai, mas reforçamos) */
+footer .footer-link {
+    color: #fff;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+/* Aplica o hover amarelo para consistência */
+footer .footer-link:hover {
+    color: #FFD700;
+}
+
+/* Container de detalhes para centralizar o texto (opcional, mas limpa o HTML) */
+.footer-details {
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+/* Garante que os parágrafos internos tenham margem mínima */
+.footer-details p {
+    margin: 5px 0;
+}
