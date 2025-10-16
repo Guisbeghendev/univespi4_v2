@@ -140,14 +140,14 @@ def load_and_cache_agro_data():
             data_store[key] = df.drop(columns=['ANO'], errors='ignore')
 
 
-            except Exception as e:
-                normalized_file_name = normalize_text(file_name)
-                # NOVO: Codifica a string de erro para evitar falha no WSGI
-                log_message = f"Erro CRÍTICO ao processar CSV {normalized_file_name} (Nome do Arquivo): {e}"
-                # Codifica a mensagem de log para ASCII/UTF-8 antes de imprimir
-                print(log_message.encode('ascii', 'ignore').decode('utf-8'))
-                data_store[key] = pd.DataFrame()
-                data_store[f'{key}_header_map'] = {}
+        except Exception as e:
+            normalized_file_name = normalize_text(file_name)
+            # NOVO: Codifica a string de erro para evitar falha no WSGI
+            log_message = f"Erro CRÍTICO ao processar CSV {normalized_file_name} (Nome do Arquivo): {e}"
+            # Codifica a mensagem de log para ASCII/UTF-8 antes de imprimir
+            print(log_message.encode('ascii', 'ignore').decode('utf-8'))
+            data_store[key] = pd.DataFrame()
+            data_store[f'{key}_header_map'] = {}
 
     # Processa os 4 Arquivos JSON (Incluindo 'cultura_atributos')
     for key, (file_name, json_key) in JSON_CONFIG.items():
@@ -480,37 +480,12 @@ def get_all_product_data_for_city(city_id):
                     'valor_producao_display': f"R$ {valor_val}" if valor_val is not None else valor_str,
                 })
 
-    return products_data
+    # BUG CORRIGIDO: O código original tinha um laço 'for' duplicado aqui. Foi removido o duplicado.
+    # O laço 'for' acima (Linhas 541 a 561) já está completo.
+    # return products_data
 
-    # Itera pelas colunas de produto e extrai os dados
-    for id_normalizado, nome_original in header_map.items():
-        if id_normalizado not in ['CIDADE', 'ANO']:
-            # 1. Extração do Rendimento
-            rendimento_raw = rendimento_row.get(id_normalizado)
-            rendimento_val, rendimento_str = safe_numeric_conversion(rendimento_raw)
-
-            # 2. Extração do Valor
-            valor_raw = valor_row.get(id_normalizado)
-            valor_val, valor_str = safe_numeric_conversion(valor_raw)
-
-            # Só inclui se tiver pelo menos um dos dados numéricos válidos
-            if rendimento_val is not None or valor_val is not None:
-
-                # CORREÇÃO (Linha 513): Remove lógica de encoding redundante.
-                # O nome já deve estar correto (UTF-8) após a leitura do Pandas.
-                display_name = nome_original.title()
-
-                products_data.append({
-                    'id': id_normalizado,
-                    'nome': display_name,
-                    # Para ranking/comparação, usamos o valor numérico (None se indisponível)
-                    'rendimento_num': rendimento_val,
-                    'valor_producao_num': valor_val,
-                    # Para exibição, usamos o string formatado
-                    'rendimento_display': f"{rendimento_val} Kg/Ha" if rendimento_val is not None else rendimento_str,
-                    'valor_producao_display': f"R$ {valor_val}" if valor_val is not None else valor_str,
-                })
-
+    # FUNÇÃO ADICIONADA: O wrapper que a view está chamando.
+    # O restante da função 'get_all_product_data_for_city' estava duplicado, corrigindo para um único 'return'.
     return products_data
 
 
@@ -535,7 +510,7 @@ def get_ficha_tecnica(product_name, city_id):
             # Se não conseguir obter o nome, não pode buscar os dados
             return None
 
-            # 3. Gera a Ficha Técnica base (CSV + JSONs)
+    # 3. Gera a Ficha Técnica base (CSV + JSONs)
     ficha_data = generate_product_sheet(normalized_product_name, normalized_city_name)
 
     if ficha_data.get("error"):
