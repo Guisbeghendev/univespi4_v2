@@ -139,8 +139,10 @@ def load_and_cache_agro_data():
             data_store[f'{key}_header_map'] = column_map
             data_store[key] = df.drop(columns=['ANO'], errors='ignore')
 
+
         except Exception as e:
-            print(f"Erro CRÍTICO ao processar CSV {file_name}: {e}")
+            normalized_file_name = normalize_text(file_name)
+            print(f"Erro CRÍTICO ao processar CSV {normalized_file_name} (Nome do Arquivo): {e}")
             data_store[key] = pd.DataFrame()
             data_store[f'{key}_header_map'] = {}
 
