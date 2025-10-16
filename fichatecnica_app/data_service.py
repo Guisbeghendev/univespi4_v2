@@ -83,7 +83,7 @@ def load_and_cache_agro_data():
 
     data_store = {}
     # CORREÇÃO DE CAMINHO (Linha 78): Usa o diretório do arquivo atual para encontrar 'dados'
-    dados_dir = os.path.join(os.path.dirname(__file__), 'dados')
+    dados_dir = os.path.join(settings.BASE_DIR, 'agro_app', 'dados')
 
     # Processa os 5 DataFrames CSV (Leitura Individualizada e Sincronizada)
     for key, config in CSV_CONFIG.items():
