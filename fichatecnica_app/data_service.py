@@ -92,12 +92,12 @@ def load_and_cache_agro_data():
 
         try:
             # 1. Leitura do CABEÇALHO DE PRODUTOS (Linha 5 - header_index 4)
-            header_df = pd.read_csv(caminho_arquivo, sep=';', encoding='latin1',
+            header_df = pd.read_csv(caminho_arquivo, sep=';', encoding='utf-8',
                                     header=None, skiprows=header_index, nrows=1)
             product_header_line = header_df.iloc[0].tolist()
 
             # 2. Leitura dos DADOS (Começando da linha 6 - header_index + 1)
-            df = pd.read_csv(caminho_arquivo, sep=';', encoding='latin1',
+            df = pd.read_csv(caminho_arquivo, sep=';', encoding='utf-8',
                              header=None, skiprows=header_index + 1, skip_blank_lines=True)
 
             # Limpeza de colunas vazias
