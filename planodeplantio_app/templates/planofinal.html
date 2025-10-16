@@ -4,11 +4,11 @@
 {% block title %}AgroData - Plano de Plantio - Resumo{% endblock %}
 
 {% block content %}
-    <div class="dash-card mx-auto max-w-7xl" style="margin-top: 20px; margin-bottom: 30px;">
-        <h1 class="main-title text-green-700">Plano de Plantio Criado!</h1>
+    <div class="dash-card page-container">
+        <h1 class="main-title main-title-green">Plano de Plantio Criado!</h1>
         <h2 class="sub-title">Resumo da Configuração Inicial</h2>
 
-        <div class="terreno-info-box-status bg-green-50 border-green-300">
+        <div class="terreno-info-box-status success-box">
             <p>Status do Plano: <strong>{{ plano.status }} (Cultivo Definido)</strong></p>
             <p>Produto Selecionado: <strong>{{ plano.produto.nome }}</strong></p>
             <p>Terreno: <strong>{{ terreno.nome }}</strong></p>
@@ -18,16 +18,16 @@
             <p>Início Estimado: <strong>{{ plano.data_inicio|date:"d/m/Y" }}</strong></p>
         </div>
 
-        <div class="plan-wizard-grid mt-6">
+        <div class="plan-wizard-grid margin-top-20">
             <div class="dash-card">
                 <h3>Próximos Passos e Ações</h3>
-                <p class="text-gray-600 mb-4">
+                <p class="text-padrao">
                     O cultivo para o terreno foi selecionado com sucesso. O plano agora está no status **ANDAMENTO**.
                 </p>
 
-                <ul class="space-y-4">
+                <ul class="action-list-spacing">
                     <li>
-                        <a href="/dashboard/" class="plan-action-btn-secondary">
+                        <a href="/dashboard/" class="nav-control-buttons link-button-padrao">
                             Voltar para o Dashboard
                         </a>
                     </li>
@@ -36,7 +36,7 @@
 
             <div class="dash-card">
                 <h3>Ficha Técnica do Cultivo Selecionado</h3>
-                <p class="text-sm text-gray-600 mb-3">
+                <p class="small-text-padrao">
                     Revisão rápida dos dados técnicos de **{{ plano.produto.nome }}** para a sua região.
                 </p>
                 <div id="plan-preview-display">
@@ -55,7 +55,7 @@
                             </section>
                         {% endfor %}
                     {% else %}
-                        <p class="text-center text-red-500">
+                        <p class="text-red-error">
                             Não foi possível carregar a Ficha Técnica para revisão.
                         </p>
                     {% endif %}

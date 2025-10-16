@@ -4,17 +4,14 @@
 {% block title %}AgroData - Configurar Plano de Plantio{% endblock %}
 
 {% block content %}
-    <div class="dash-card mx-auto max-w-7xl" style="margin-top: 20px; margin-bottom: 30px;">
+    <div class="dash-card page-container">
         <h1 class="main-title">Configurar Plano de Plantio</h1>
         <h2 class="sub-title">Etapa 1: Seleção do Cultivo</h2>
 
         <div class="terreno-info-box-status">
             <p>Plano ID: <strong>{{ plano.pk }}</strong></p>
             <p>Terreno: <strong>{{ terreno.nome }}</strong></p>
-
-            {# CORREÇÃO CRÍTICA AQUI: Use a variável de contexto 'localizacao_display' #}
             <p>Local: <strong>{{ localizacao_display }}</strong></p>
-
             <p>Status: <strong>{{ plano.status }}</strong></p>
         </div>
 
@@ -25,7 +22,6 @@
                     {% csrf_token %}
 
                     <input type="hidden" id="planoId" value="{{ plano.pk }}">
-
                     <input type="hidden" id="cidadeIbgeId" value="{{ cidade_ibge_id }}">
 
                     <div class="form-field">
@@ -39,21 +35,21 @@
                         </select>
                     </div>
 
-                    <p class="text-sm text-gray-500 mb-3">
+                    <p class="small-text-padrao">
                         Selecione o produto desejado e visualize a ficha técnica ao lado.
                     </p>
-                    <button type="submit" id="salvarEtapa1Btn" class="plan-action-btn-main" disabled>
+                    <button type="submit" id="salvarEtapa1Btn" class="plan-action-btn-main action-btn-with-spinner" disabled>
                         <span id="btnEtapa1Text">Confirmar Seleção de Cultivo</span>
-                        <span id="loadingSpinnerEtapa1" class="hidden spinner ml-2"></span>
+                        <span id="loadingSpinnerEtapa1" class="hidden spinner spinner-small"></span>
                     </button>
-                    <p id="messageBoxEtapa1" class="text-center mt-3"></p>
+                    <p id="messageBoxEtapa1" class="text-center-mt3"></p>
                 </form>
             </div>
 
             <div class="dash-card">
                 <h3>Ficha Técnica para Análise</h3>
                 <div id="plan-preview-display">
-                    <p class="text-center text-gray-500">
+                    <p class="text-center-padrao">
                         Selecione um produto ao lado para carregar sua ficha técnica e auxiliar na decisão.
                     </p>
                 </div>

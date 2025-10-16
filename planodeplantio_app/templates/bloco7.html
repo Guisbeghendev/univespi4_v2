@@ -1,13 +1,13 @@
 {% load static %}
 
 <div class="dash-card">
-    <div style="margin-bottom: 15px;">
-        <h4 class="sub-title" style="text-align: left; margin: 0; border-bottom: 2px solid #2196F3; padding-bottom: 5px;">
+    <div class="header-divisor">
+        <h4 class="sub-title sub-title-left">
             Iniciar Novo Plano de Plantio
         </h4>
     </div>
 
-    <p style="color: #5D4037; margin-bottom: 20px; font-size: 1em;">
+    <p class="text-marrom">
         Selecione um terreno cadastrado para iniciar a configuração detalhada do seu plano de safra.
     </p>
 
@@ -19,52 +19,51 @@
     </div>
 
     <div id="terrenoDetails" class="terreno-details-box">
-        <p style="font-weight: bold; margin-bottom: 5px; font-size: 1em;">Detalhes do Terreno Selecionado:</p>
-        <ul style="list-style: none; padding: 0;">
-            <li style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9em;">
-                <span>Nome:</span> <span id="detailNome" style="font-weight: bold; color: #333;">N/A</span>
+        <p class="detail-title">Detalhes do Terreno Selecionado:</p>
+        <ul class="detail-list">
+            <li class="detail-item">
+                <span>Nome:</span> <span id="detailNome">N/A</span>
             </li>
-            <li style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9em;">
-                <span>Tamanho:</span> <span id="detailTamanho" style="font-weight: bold; color: #333;">0 ha</span>
+            <li class="detail-item">
+                <span>Tamanho:</span> <span id="detailTamanho">0 ha</span>
             </li>
-            <li style="display: flex; justify-content: space-between; font-size: 0.9em;">
-                <span>Localização (Cidade):</span> <span id="detailLocalizacao" style="font-weight: bold; color: #333;">N/A</span>
+            <li class="detail-item">
+                <span>Localização (Cidade):</span> <span id="detailLocalizacao">N/A</span>
             </li>
         </ul>
     </div>
 
-    <div style="margin-top: 20px;">
-        <button id="selecionarBtn" type="submit" disabled
-                style="display: flex; align-items: center; justify-content: center;">
+    <div class="submit-action-container">
+        <button id="selecionarBtn" type="submit" disabled class="action-btn-with-spinner">
             <span id="btnText">Selecione um Terreno</span>
-            <span id="loadingSpinner" class="spinner hidden" style="margin: 0 0 0 10px; width: 20px; height: 20px;"></span>
+            <span id="loadingSpinner" class="spinner hidden spinner-small"></span>
         </button>
         <p id="messageBox"></p>
     </div>
 </div>
 
-<div class="dash-card" style="margin-top: 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #2196F3; padding-bottom: 5px;">
-        <h4 class="sub-title" style="text-align: left; margin: 0; font-size: 1.5em;">
+<div class="dash-card margin-top-20">
+    <div class="header-divisor flex-space-between">
+        <h4 class="sub-title sub-title-left-small">
             Planos de Plantio Recentes
         </h4>
-        <a href="{% url 'plano:api_lista_planos' %}" style="color: #4CAF50; text-decoration: none; font-weight: bold; transition: color 0.3s ease; font-size: 0.9em;">
+        <a href="{% url 'plano:api_lista_planos' %}" class="link-verde">
             Ver Todos &rarr;
         </a>
     </div>
 
-    <div id="planosListContainer" style="margin-top: 15px;">
-        <div id="planosLoading" style="text-align: center; padding: 15px; color: #5D4037;">
-            <span class="spinner" style="width: 25px; height: 25px; margin: 0 auto 10px;"></span>
-            <p style="font-size: 0.9em; margin: 0;">Carregando planos...</p>
+    <div id="planosListContainer" class="planos-list-container">
+        <div id="planosLoading" class="loading-message-box">
+            <span class="spinner spinner-medium"></span>
+            <p>Carregando planos...</p>
         </div>
 
-        <div id="planosEmpty" class="hidden" style="text-align: center; padding: 15px; border: 1px dashed #ccc; border-radius: 5px; background-color: #f9f9f9;">
-            <p style="font-weight: bold; color: #5D4037; margin-bottom: 5px;">Nenhum plano ativo encontrado.</p>
-            <p style="font-size: 0.8em; color: #666; margin: 0;">Use a seção acima para iniciar um novo plano.</p>
+        <div id="planosEmpty" class="hidden empty-message-box">
+            <p class="text-marrom-bold">Nenhum plano ativo encontrado.</p>
+            <p>Use a seção acima para iniciar um novo plano.</p>
         </div>
 
-        <ul id="planosList" style="list-style: none; padding: 0;">
+        <ul id="planosList" class="terreno-list">
             </ul>
     </div>
 </div>
@@ -73,10 +72,7 @@
     // Definição das URLs do Django, antes do carregamento do arquivo JS
     const API_TERRENOS_URL = "{% url 'plano:api_terrenos' %}";
     const WIZARD_START_URL = "{% url 'plano:iniciar_wizard' %}";
-    // NOVO URL: API para listar planos
     const API_LISTA_PLANOS_URL = "{% url 'plano:api_lista_planos' %}";
-    // URL para visualização do plano (para os links da lista)
-    // Usamos um placeholder '0' para ser substituído pelo JS
     const PLANO_VISUALIZACAO_URL = "{% url 'plano:planofinal_plano' plano_id=0 %}";
 </script>
 <script src="{% static 'planodeplantio_app/js/bloco7.js' %}"></script>

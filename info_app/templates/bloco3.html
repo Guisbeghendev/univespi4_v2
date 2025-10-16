@@ -11,25 +11,31 @@
     </div>
 
     {# Card 5 - Filtros de Agropecuária #}
-    <div class="filter-card-content">
+    <div class="dash-card">
         <h4>Filtros de Agropecuária</h4>
         <p>Selecione um produto para começar:</p>
 
-        <p>1. Selecione o Estado:</p>
-        <select id="state-select-info" class="form-field">
-            <option value="">Carregando estados...</option>
-        </select>
+        <div class="form-field">
+            <label for="state-select-info">1. Selecione o Estado:</label>
+            <select id="state-select-info">
+                <option value="">Carregando estados...</option>
+            </select>
+        </div>
 
-        <p>2. Selecione a Cidade:</p>
-        <select id="city-select-info" class="form-field" disabled>
-            <option value="">Selecione um estado primeiro</option>
-        </select>
+        <div class="form-field">
+            <label for="city-select-info">2. Selecione a Cidade:</label>
+            <select id="city-select-info" disabled>
+                <option value="">Selecione um estado primeiro</option>
+            </select>
+        </div>
 
-        <p>3. Selecione o Tipo de Cultivo:</p>
-        <select id="produto-select-info" class="form-field" disabled>
-            <option value="">Selecione uma cidade primeiro</option>
-        </select>
-        <div id="produto-error-message" style="color: red; margin-top: 5px; display: none;"></div>
+        <div class="form-field">
+            <label for="produto-select-info">3. Selecione o Tipo de Cultivo:</label>
+            <select id="produto-select-info" disabled>
+                <option value="">Selecione uma cidade primeiro</option>
+            </select>
+        </div>
+        <div id="produto-error-message"></div>
     </div>
     {# Fim card5 #}
 

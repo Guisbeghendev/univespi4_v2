@@ -2,12 +2,12 @@
 | Paleta de Cores Oficial do Projeto - AgroData
 |--------------------------------------------------------------------------
 |
-| Marrom (#5D4037) - Fundo do nav e footer
-| Verde (#4CAF50) - Cor principal dos botões e links
-| Amarelo (#FFD700) - Cor do efeito hover
-| Azul (#2196F3) - Cor de destaque (usado na borda do main)
+| Marrom (#5D4037) - Fundo do nav e footer, textos principais, bordas
+| Verde (#4CAF50) - Cor principal dos botões e links, sucesso
+| Amarelo (#FFD700) - Cor do efeito hover, destaque secundário
+| Azul (#2196F3) - Cor de destaque (usado na borda do main, títulos)
 | Amarelo Pastel (#FFFDD0) - Fundo do card de autenticação
-| Azul Pastel (#E0F7FA) - Fundo do card da dashboard
+| Azul Pastel (#E0F7FA) - Fundo do card da dashboard, box de status do plano
 |
 */
 
@@ -181,6 +181,12 @@ button[type="submit"]:hover {
 }
 
 
+/* --- Estilo Adicional para o Home (Container de Centralização) --- */
+.text-center-container {
+    text-align: center;
+}
+
+
 /* --- Estilos Específicos da Dashboard --- */
 
 /* Container para a grade da dashboard */
@@ -308,6 +314,13 @@ button[type="submit"]:hover {
         /* Mantém o layout interno (2 cards pequenos + 1 card grande) */
         grid-template-columns: 1fr 1fr 2fr;
     }
+}
+
+/* Estilo Adicional para o Bloco 2 (Clima) */
+.temp-display {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0;
 }
 
 
@@ -581,9 +594,168 @@ button[type="submit"]:disabled {
 
 
 /* -------------------------------------------------------------------------------------------------------------------
-   NOVAS CLASSES DE ESTILO PARA O WIZARD (planoplantio.html)
-   Utiliza a paleta de cores definida: #5D4037 (Marrom), #4CAF50 (Verde), #FFD700 (Amarelo), #2196F3 (Azul).
+   NOVAS CLASSES DE ESTILO PARA O WIZARD (planoplantio.html e planofinal.html) E UTILIDADES GERAIS
 ------------------------------------------------------------------------------------------------------------------- */
+
+/* --- NOVAS CLASSES DE UTILIDADE (Para uniformidade) --- */
+
+/* Textos e Cores */
+.text-marrom {
+    color: #5D4037;
+    font-size: 1em;
+    margin-bottom: 20px; /* Padrão de parágrafos */
+}
+.text-marrom-bold {
+    font-weight: bold;
+    color: #5D4037;
+}
+.text-padrao {
+    color: #333; /* Cor de texto geral */
+    margin-bottom: 15px;
+}
+.small-text-padrao {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 15px;
+}
+.text-red-error {
+    color: #dc3545; /* Vermelho padrão para erro */
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Layout e Espaçamento */
+.page-container {
+    max-width: 1200px;
+    margin: 20px auto 30px; /* Centraliza o card principal */
+}
+.margin-top-20 {
+    margin-top: 20px;
+}
+.flex-space-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.action-list-spacing li {
+    margin-bottom: 10px;
+}
+
+/* Títulos/Divisores */
+.header-divisor {
+    border-bottom: 2px solid #2196F3;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+.sub-title-left {
+    text-align: left;
+    margin: 0;
+    font-size: 2em; /* Padrão de subtítulo */
+}
+.sub-title-left-small {
+    text-align: left;
+    margin: 0;
+    font-size: 1.5em;
+}
+.main-title-green {
+    color: #4CAF50 !important; /* Verde de sucesso/principal */
+}
+
+/* Botões e Links */
+.link-verde {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    font-size: 0.9em;
+}
+.link-button-padrao {
+    /* Estilos para o link se parecer com um botão de ação */
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #5D4037;
+    border-radius: 5px;
+    color: #5D4037;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+/* Botões com Spinner (Reuso) */
+.action-btn-with-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.spinner-small {
+    margin: 0 0 0 10px;
+    width: 20px;
+    height: 20px;
+}
+.spinner-medium {
+    width: 25px;
+    height: 25px;
+    margin: 0 auto 10px;
+}
+
+
+/* Caixa de Status/Sucesso (planofinal) */
+.terreno-info-box-status.success-box {
+    background-color: #e8f5e9; /* Verde Suave */
+    border-left-color: #4CAF50; /* Verde Principal */
+}
+
+/* Estilos de Lista de Detalhes (bloco7) */
+.detail-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 1em;
+}
+.detail-list {
+    list-style: none;
+    padding: 0;
+}
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+.detail-item span:last-child {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Estilos para a lista de planos (bloco7) */
+.planos-list-container {
+    margin-top: 15px;
+}
+.loading-message-box {
+    text-align: center;
+    padding: 15px;
+    color: #5D4037;
+}
+.empty-message-box {
+    text-align: center;
+    padding: 15px;
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+
+/* Estilos de Formulario/Texto (planoplantio) */
+.text-center-padrao {
+    text-align: center;
+    color: #666;
+    padding-top: 10px;
+}
+.text-center-mt3 {
+    text-align: center;
+    margin-top: 15px;
+}
+
 
 /* 1. Grid Layout para Seleção/Preview (1fr / 2fr split) */
 .plan-wizard-grid {

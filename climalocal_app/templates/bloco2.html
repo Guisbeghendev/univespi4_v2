@@ -1,17 +1,18 @@
 <div class="dash-clima-grid">
 
-    {# inicio card4 #}
-    <div class="dash-card dash-card-full">
+    {# inicio card1 - Removida a classe dash-card-full para respeitar o layout grid do clima #}
+    <div class="dash-card">
         <h4>Temperatura em {{ city_name|default:"-" }}</h4>
         {% if clima %}
-            <p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ clima.temperatura_c|default:"-" }}</p>
+            {# Usando classe padronizada no CSS para a temperatura principal #}
+            <p class="temp-display">{{ clima.temperatura_c|default:"-" }}</p>
             <p>Sensação térmica: {{ clima.sensacao_termica_c|default:"-" }}</p>
             <p>Mínima: {{ clima.temp_min_c|default:"-" }} / Máxima: {{ clima.temp_max_c|default:"-" }}</p>
         {% else %}
             <p>Dados de temperatura não disponíveis.</p>
         {% endif %}
     </div>
-    {# fim card4 #}
+    {# fim card1 #}
 
 
     {# inicio card2 #}
@@ -38,7 +39,5 @@
         {% endif %}
     </div>
     {# fim card3 #}
-
-
 
 </div>
