@@ -1,5 +1,13 @@
-
 <h2 class="sub-title">Bem-vindo à Dashboard do AgroData</h2>
 <p>Olá, {{ request.user.username }}! Esta é a sua dashboard pessoal.</p>
 <p>Você está em **{{ city_name|default:"-" }} / {{ state_name|default:"-" }}**</p>
+
+{# NOVO BLOCO DE MENSAGEM #}
+{% if not city_name %}
+<div class="alert-info">
+    <p>👋 **Dica:** Para ter a melhor experiência e receber dados agrícolas e climáticos relevantes, complete o seu perfil informando sua cidade de interesse.</p>
+</div>
+{% endif %}
+{# FIM DO NOVO BLOCO #}
+
 <p id="current-date"></p>

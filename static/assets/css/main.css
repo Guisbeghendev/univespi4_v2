@@ -893,3 +893,19 @@ footer .footer-link:hover {
 .footer-details p {
     margin: 5px 0;
 }
+
+/* Estilo para a mensagem de Dica/Alerta - no bloco 1 */
+.alert-info {
+    padding: 10px 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-left: 5px solid #ffae00; /* Cor Laranja/Amarelo */
+    background-color: #383838; /* Um tom escuro para contraste no fundo marrom (se for o caso) */
+    color: #f0f0f0;
+    border-radius: 4px;
+    font-size: 0.95em;
+}
+
+.alert-info p {
+    margin: 0; /* Remove margens internas do parágrafo */
+}
