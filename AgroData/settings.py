@@ -92,8 +92,12 @@ WSGI_APPLICATION = 'AgroData.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'agrodata_db',
+        'USER': 'agrodata_user',
+        'PASSWORD': 'Gsp@univesp2025',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
