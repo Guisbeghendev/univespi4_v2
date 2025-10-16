@@ -390,7 +390,12 @@ def get_all_product_data_for_city(city_id):
 
     Esta função é usada pelo bloco de Ranqueamento/Comparação.
     """
-    data_frames, _ = load_and_cache_agro_data()
+    data_frames, status = load_and_cache_agro_data()
+
+    # CORREÇÃO CRÍTICA (Linha 488): Verifica o status de carregamento do cache.
+    if status != "Sucesso (Cache carregado)":
+        return []
+
     if not data_frames:
         return []
 
@@ -410,7 +415,8 @@ def get_all_product_data_for_city(city_id):
     # O header map de Quantidade é usado pois ele lista todos os produtos
     header_map = data_frames.get('Quantidade produzida_header_map', {})
 
-    if df_rendimento is None or df_valor is None or header_map == {}:
+    # VERIFICAÇÃO EXTRA: Garante que os DataFrames foram carregados e não estão vazios
+    if df_rendimento is None or df_valor is None or header_map == {} or df_rendimento.empty or df_valor.empty:
         return []
 
     # Busca a linha no DataFrame usando o nome normalizado
@@ -443,6 +449,35 @@ def get_all_product_data_for_city(city_id):
             return None, str(value_raw)  # Retorna a string original se a conversão falhar
 
     products_data = []
+
+    # Itera pelas colunas de produto e extrai os dados
+    for id_normalizado, nome_original in header_map.items():
+        if id_normalizado not in ['CIDADE', 'ANO']:
+            # 1. Extração do Rendimento
+            rendimento_raw = rendimento_row.get(id_normalizado)
+            rendimento_val, rendimento_str = safe_numeric_conversion(rendimento_raw)
+
+            # 2. Extração do Valor
+            valor_raw = valor_row.get(id_normalizado)
+            valor_val, valor_str = safe_numeric_conversion(valor_raw)
+
+            # Só inclui se tiver pelo menos um dos dados numéricos válidos
+            if rendimento_val is not None or valor_val is not None:
+                # CORREÇÃO (Linha 551 no seu código): Removida lógica de encoding redundante.
+                display_name = nome_original.title()
+
+                products_data.append({
+                    'id': id_normalizado,
+                    'nome': display_name,
+                    # Para ranking/comparação, usamos o valor numérico (None se indisponível)
+                    'rendimento_num': rendimento_val,
+                    'valor_producao_num': valor_val,
+                    # Para exibição, usamos o string formatado
+                    'rendimento_display': f"{rendimento_val} Kg/Ha" if rendimento_val is not None else rendimento_str,
+                    'valor_producao_display': f"R$ {valor_val}" if valor_val is not None else valor_str,
+                })
+
+    return products_data
 
     # Itera pelas colunas de produto e extrai os dados
     for id_normalizado, nome_original in header_map.items():
