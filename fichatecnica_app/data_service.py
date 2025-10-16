@@ -82,7 +82,8 @@ def load_and_cache_agro_data():
         return FICHA_TECNICA_CACHE, "Sucesso (Cache carregado)"
 
     data_store = {}
-    dados_dir = os.path.join(settings.BASE_DIR, 'agro_app', 'dados')
+    # CORREÇÃO DE CAMINHO (Linha 78): Usa o diretório do arquivo atual para encontrar 'dados'
+    dados_dir = os.path.join(os.path.dirname(__file__), 'dados')
 
     # Processa os 5 DataFrames CSV (Leitura Individualizada e Sincronizada)
     for key, config in CSV_CONFIG.items():
@@ -92,11 +93,13 @@ def load_and_cache_agro_data():
 
         try:
             # 1. Leitura do CABEÇALHO DE PRODUTOS (Linha 5 - header_index 4)
+            # CORREÇÃO DE ENCODING (Linha 85): Usando 'utf-8'
             header_df = pd.read_csv(caminho_arquivo, sep=';', encoding='utf-8',
                                     header=None, skiprows=header_index, nrows=1)
             product_header_line = header_df.iloc[0].tolist()
 
             # 2. Leitura dos DADOS (Começando da linha 6 - header_index + 1)
+            # CORREÇÃO DE ENCODING (Linha 89): Usando 'utf-8'
             df = pd.read_csv(caminho_arquivo, sep=';', encoding='utf-8',
                              header=None, skiprows=header_index + 1, skip_blank_lines=True)
 
@@ -313,15 +316,10 @@ def get_product_name_by_id(product_id):
     for key in data_frames.keys():
         if key.endswith('_header_map'):
             header_map = data_frames.get(key, {})
-            original_name_raw = header_map.get(normalized_id)
-            if original_name_raw:
-                try:
-                    # Tenta decodificar de latin-1 para corrigir caracteres
-                    original_name = original_name_raw.encode('latin-1').decode('utf-8')
-                except:
-                    # Caso a decodificação falhe, usa o nome como está
-                    original_name = original_name_raw
-
+            original_name = header_map.get(normalized_id)
+            if original_name:
+                # CORREÇÃO (Linha 355): Remove lógica de encoding redundante.
+                # O nome já deve estar correto (UTF-8) após a leitura do Pandas.
                 return original_name.title()
 
     return None
@@ -371,11 +369,9 @@ def get_products_for_city(city_id):
             # Filtra apenas se o valor não for um indicador de 'Dado não disponível'
             if normalize_text(str(value)) not in [normalize_text('DADO NAO DISPONIVEL'), '-', '...']:
 
-                # Tenta corrigir a codificação do nome do produto (Problema do Algodão)
-                try:
-                    display_name = nome_original.encode('latin-1').decode('utf-8').title()
-                except:
-                    display_name = nome_original.title()
+                # CORREÇÃO (Linha 446): Remove lógica de encoding redundante.
+                # O nome já deve estar correto (UTF-8) após a leitura do Pandas.
+                display_name = nome_original.title()
 
                 products_list.append({
                     'id': id_normalizado,
@@ -460,11 +456,9 @@ def get_all_product_data_for_city(city_id):
             # Só inclui se tiver pelo menos um dos dados numéricos válidos
             if rendimento_val is not None or valor_val is not None:
 
-                # Tenta corrigir a codificação do nome do produto para exibição
-                try:
-                    display_name = nome_original.encode('latin-1').decode('utf-8').title()
-                except:
-                    display_name = nome_original.title()
+                # CORREÇÃO (Linha 513): Remove lógica de encoding redundante.
+                # O nome já deve estar correto (UTF-8) após a leitura do Pandas.
+                display_name = nome_original.title()
 
                 products_data.append({
                     'id': id_normalizado,
