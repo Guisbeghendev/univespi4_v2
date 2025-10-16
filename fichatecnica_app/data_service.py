@@ -6,6 +6,7 @@ import pandas as pd
 from django.conf import settings
 import requests
 import math  # Adicionado para checagem robusta de valores numéricos (NaN/Inf)
+import sys  # <--- ADICIONADO PARA TRATAMENTO ROBUSTO DE ERROS NO WSGI
 
 # ==============================================================================
 # 1. SETUP E UTILS
@@ -82,7 +83,7 @@ def load_and_cache_agro_data():
         return FICHA_TECNICA_CACHE, "Sucesso (Cache carregado)"
 
     data_store = {}
-    # CORREÇÃO DE CAMINHO (Linha 78): Usa o diretório do arquivo atual para encontrar 'dados'
+    # CORREÇÃO DE CAMINHO: Usa o diretório do arquivo atual para encontrar 'dados'
     dados_dir = os.path.join(settings.BASE_DIR, 'agro_app', 'dados')
 
     # Processa os 5 DataFrames CSV (Leitura Individualizada e Sincronizada)
@@ -93,13 +94,13 @@ def load_and_cache_agro_data():
 
         try:
             # 1. Leitura do CABEÇALHO DE PRODUTOS (Linha 5 - header_index 4)
-            # CORREÇÃO DE ENCODING (Linha 85): Usando 'utf-8'
+            # CORREÇÃO DE ENCODING: Usando 'utf-8'
             header_df = pd.read_csv(caminho_arquivo, sep=';', encoding='utf-8',
                                     header=None, skiprows=header_index, nrows=1)
             product_header_line = header_df.iloc[0].tolist()
 
             # 2. Leitura dos DADOS (Começando da linha 6 - header_index + 1)
-            # CORREÇÃO DE ENCODING (Linha 89): Usando 'utf-8'
+            # CORREÇÃO DE ENCODING: Usando 'utf-8'
             df = pd.read_csv(caminho_arquivo, sep=';', encoding='utf-8',
                              header=None, skiprows=header_index + 1, skip_blank_lines=True)
 
@@ -142,10 +143,16 @@ def load_and_cache_agro_data():
 
         except Exception as e:
             normalized_file_name = normalize_text(file_name)
-            # NOVO: Codifica a string de erro para evitar falha no WSGI
-            log_message = f"Erro CRÍTICO ao processar CSV {normalized_file_name} (Nome do Arquivo): {e}"
-            # Codifica a mensagem de log para ASCII/UTF-8 antes de imprimir
-            print(log_message.encode('ascii', 'ignore').decode('utf-8'))
+
+            # CORREÇÃO CRÍTICA DO ENCODING NO LOG:
+            # Substitui o print que falhava por uma escrita direta e robusta no stderr
+            log_message = f"Erro CRÍTICO ao processar CSV {normalized_file_name} (Nome do Arquivo): {e}\n"
+            try:
+                sys.stderr.write(log_message)
+            except UnicodeEncodeError:
+                # Fallback para ignorar caracteres não-ASCII
+                sys.stderr.write(log_message.encode('ascii', 'replace').decode('ascii'))
+
             data_store[key] = pd.DataFrame()
             data_store[f'{key}_header_map'] = {}
 
@@ -158,7 +165,13 @@ def load_and_cache_agro_data():
                 json_list = json.load(f)
                 data_store[key] = _normalize_json_list(json_list, json_key)
         except Exception as e:
-            print(f"Erro ao processar JSON {file_name}: {str(e)}")
+            # CORREÇÃO CRÍTICA DO ENCODING NO LOG:
+            log_message = f"Erro ao processar JSON {file_name}: {str(e)}\n"
+            try:
+                sys.stderr.write(log_message)
+            except UnicodeEncodeError:
+                sys.stderr.write(log_message.encode('ascii', 'replace').decode('ascii'))
+
             data_store[key] = {}
 
     FICHA_TECNICA_CACHE = data_store
@@ -300,10 +313,12 @@ def get_city_name_by_id(city_id):
         return None, None
 
     except requests.exceptions.HTTPError as http_err:
-        print(f"Erro IBGE (HTTP Error): {http_err} para o ID: {city_id}")
+        # CORREÇÃO CRÍTICA DO ENCODING NO LOG:
+        sys.stderr.write(f"Erro IBGE (HTTP Error): {http_err} para o ID: {city_id}\n")
         return None, None
     except Exception as e:
-        print(f"Erro IBGE (Geral): {e} para o ID: {city_id}")
+        # CORREÇÃO CRÍTICA DO ENCODING NO LOG:
+        sys.stderr.write(f"Erro IBGE (Geral): {e} para o ID: {city_id}\n")
         return None, None
 
 
@@ -323,7 +338,6 @@ def get_product_name_by_id(product_id):
             header_map = data_frames.get(key, {})
             original_name = header_map.get(normalized_id)
             if original_name:
-                # CORREÇÃO (Linha 355): Remove lógica de encoding redundante.
                 # O nome já deve estar correto (UTF-8) após a leitura do Pandas.
                 return original_name.title()
 
@@ -373,8 +387,6 @@ def get_products_for_city(city_id):
 
             # Filtra apenas se o valor não for um indicador de 'Dado não disponível'
             if normalize_text(str(value)) not in [normalize_text('DADO NAO DISPONIVEL'), '-', '...']:
-
-                # CORREÇÃO (Linha 446): Remove lógica de encoding redundante.
                 # O nome já deve estar correto (UTF-8) após a leitura do Pandas.
                 display_name = nome_original.title()
 
@@ -395,7 +407,7 @@ def get_all_product_data_for_city(city_id):
     """
     data_frames, status = load_and_cache_agro_data()
 
-    # CORREÇÃO CRÍTICA (Linha 488): Verifica o status de carregamento do cache.
+    # VERIFICAÇÃO CRÍTICA: Verifica o status de carregamento do cache.
     if status != "Sucesso (Cache carregado)":
         return []
 
@@ -466,7 +478,7 @@ def get_all_product_data_for_city(city_id):
 
             # Só inclui se tiver pelo menos um dos dados numéricos válidos
             if rendimento_val is not None or valor_val is not None:
-                # CORREÇÃO (Linha 551 no seu código): Removida lógica de encoding redundante.
+                # O nome já deve estar correto (UTF-8) após a leitura do Pandas.
                 display_name = nome_original.title()
 
                 products_data.append({
@@ -480,12 +492,6 @@ def get_all_product_data_for_city(city_id):
                     'valor_producao_display': f"R$ {valor_val}" if valor_val is not None else valor_str,
                 })
 
-    # BUG CORRIGIDO: O código original tinha um laço 'for' duplicado aqui. Foi removido o duplicado.
-    # O laço 'for' acima (Linhas 541 a 561) já está completo.
-    # return products_data
-
-    # FUNÇÃO ADICIONADA: O wrapper que a view está chamando.
-    # O restante da função 'get_all_product_data_for_city' estava duplicado, corrigindo para um único 'return'.
     return products_data
 
 
@@ -627,8 +633,11 @@ def get_weather_data(city_name):
         return weather_info
 
     except requests.exceptions.HTTPError as http_err:
-        print(f"Erro na API de Clima (HTTP Error): {http_err} para a cidade: {city_name} (Busca: {city_search_name})")
+        # CORREÇÃO CRÍTICA DO ENCODING NO LOG:
+        sys.stderr.write(
+            f"Erro na API de Clima (HTTP Error): {http_err} para a cidade: {city_name} (Busca: {city_search_name})\n")
         return None
     except Exception as e:
-        print(f"Erro na API de Clima (Geral): {e} para a cidade: {city_name} (Busca: {city_search_name})")
+        # CORREÇÃO CRÍTICA DO ENCODING NO LOG:
+        sys.stderr.write(f"Erro na API de Clima (Geral): {e} para a cidade: {city_name} (Busca: {city_search_name})\n")
         return None

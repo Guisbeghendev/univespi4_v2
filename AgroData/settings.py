@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-+3$=4#zfr_u1-9jgpxrt(!au5%oo=lifi9ak(q*6x38-8t5+cm
 
 # 1. DEBUG: Deve ser False em produção.
 #    DEBUG = True  # <-- Configuração de Desenvolvimento
-DEBUG = False    # <-- Configuração de Produção
+DEBUG = True    # <-- Configuração de Produção
 
 # 2. ALLOWED_HOSTS: Deve listar os domínios em produção.
 #    ALLOWED_HOSTS = []  # <-- Configuração de Desenvolvimento
@@ -155,3 +155,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
+
+# ------------------------------------------------------------------
+# CORREÇÃO DE ENCODING CRÍTICA PARA WSGI
+# ------------------------------------------------------------------
+
+# Garante que o Django use UTF-8 para codificação de requisições e arquivos,
+# o que complementa a correção que será feita no Apache/WSGI.
+DEFAULT_CHARSET = 'utf-8'
+FILE_CHARSET = 'utf-8'
