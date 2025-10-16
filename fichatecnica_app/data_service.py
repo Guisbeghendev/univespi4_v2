@@ -140,11 +140,14 @@ def load_and_cache_agro_data():
             data_store[key] = df.drop(columns=['ANO'], errors='ignore')
 
 
-        except Exception as e:
-            normalized_file_name = normalize_text(file_name)
-            print(f"Erro CRÍTICO ao processar CSV {normalized_file_name} (Nome do Arquivo): {e}")
-            data_store[key] = pd.DataFrame()
-            data_store[f'{key}_header_map'] = {}
+            except Exception as e:
+                normalized_file_name = normalize_text(file_name)
+                # NOVO: Codifica a string de erro para evitar falha no WSGI
+                log_message = f"Erro CRÍTICO ao processar CSV {normalized_file_name} (Nome do Arquivo): {e}"
+                # Codifica a mensagem de log para ASCII/UTF-8 antes de imprimir
+                print(log_message.encode('ascii', 'ignore').decode('utf-8'))
+                data_store[key] = pd.DataFrame()
+                data_store[f'{key}_header_map'] = {}
 
     # Processa os 4 Arquivos JSON (Incluindo 'cultura_atributos')
     for key, (file_name, json_key) in JSON_CONFIG.items():
